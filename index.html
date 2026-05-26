@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        
         /* Review Section Styling */
 .review-section { padding: 80px 10%; background: #FFF8F0; }
 .review-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
@@ -182,6 +183,24 @@
             .time-box { min-width: 90px; padding: 15px; }
             .time-box span { font-size: 2.5rem; }
         }
+        /* આ કોડ તારી CSS ફાઈલના સૌથી નીચે મૂકી દેજે */
+@media (max-width: 768px) {
+    /* રિવ્યુ સેક્શન માટે */
+    .grid-container {
+        grid-template-columns: 1fr !important; /* રિવ્યુ એકબીજાની નીચે આવી જશે */
+    }
+    
+    /* પેડિંગ ઘટાડવા માટે */
+    .section {
+        padding: 20px 5% !important;
+    }
+    
+    /* હેડિંગ સાઈઝ ઘટાડવા */
+    h2 {
+        font-size: 24px !important;
+    }
+}
+        
     </style>
 </head>
 <body>
