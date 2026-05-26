@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Registration | V & S Garba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        /* Animated Premium Background */
+        body {
+            background: linear-gradient(-45deg, #FF5722, #C62828, #D4AF37, #FF9800);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* VIP Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 50px 60px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: formEntry 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes formEntry {
+            from { opacity: 0; transform: translateY(60px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Header Area */
+        .form-header { text-align: center; margin-bottom: 40px; }
+        .form-header h2 { color: #C62828; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .form-header p { color: #666; font-size: 1.1rem; }
+
+        /* Grid Layout */
+        .row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 25px; }
+        .row-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 25px; }
+
+        /* Custom Input with Icons */
+        .input-group { position: relative; }
+        .input-group > i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FF5722;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            z-index: 2;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            color: #333;
+            background: #fdfdfd;
+            transition: all 0.3s ease;
+            outline: none;
+            appearance: none;
+        }
+
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'FontAwesome';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FF5722;
+            pointer-events: none;
+        }
+
+        input:focus, select:focus { border-color: #FF5722; background: #fff; box-shadow: 0 0 15px rgba(255, 87, 34, 0.1); }
+        input:focus + i, select:focus + i { color: #C62828; transform: translateY(-50%) scale(1.1); }
+
+        /* --- NEW PHONE BOX STYLING --- */
+        .phone-box {
+            display: flex;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: #fdfdfd;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .phone-box:focus-within {
+            border-color: #FF5722;
+            background: #fff;
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.1);
+        }
+        .phone-box i { left: 15px; } /* Adjust WA icon position */
+        .phone-box select {
+            width: 130px;
+            border: none;
+            background: transparent;
+            padding: 16px 5px 16px 45px;
+            border-right: 1px solid #ddd;
+            border-radius: 15px 0 0 15px;
+            font-weight: 600;
+        }
+        .phone-box input {
+            width: calc(100% - 130px);
+            border: none;
+            background: transparent;
+            padding: 16px 20px;
+            border-radius: 0 15px 15px 0;
+        }
+        .phone-box input:focus, .phone-box select:focus { box-shadow: none; border-color: inherit; }
+        /* --------------------------- */
+
+        /* Custom Gender Pills */
+        .gender-wrapper { display: flex; gap: 15px; height: 100%; }
+        .gender-option { flex: 1; position: relative; }
+        .gender-option input { display: none; }
+        .gender-option label {
+            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; height: 100%;
+            padding: 15px; border: 2px solid #e0e0e0; border-radius: 15px; cursor: pointer; font-weight: 500; color: #666; transition: 0.3s;
+        }
+        .gender-option input:checked + label { background: rgba(255, 87, 34, 0.1); border-color: #FF5722; color: #C62828; font-weight: 600; }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%; padding: 20px; background: linear-gradient(45deg, #FF5722, #C62828); color: white; border: none;
+            border-radius: 15px; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; margin-top: 20px; transition: all 0.4s ease; box-shadow: 0 10px 20px rgba(198, 40, 40, 0.3);
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+        }
+
+        .submit-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(198, 40, 40, 0.5); background: linear-gradient(45deg, #C62828, #FF5722); }
+        .submit-btn i { transition: 0.3s; }
+        .submit-btn:hover i { transform: translateX(10px); }
+
+        /* Mobile Responsive */
+        @media (max-width: 800px) {
+            .glass-card { padding: 40px 30px; }
+            .row-3, .row-2 { grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+            .form-header h2 { font-size: 2rem; }
+            .phone-box select { width: 110px; font-size: 0.9rem;}
+            .phone-box input { width: calc(100% - 110px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        
+        <div class="form-header">
+            <h2>Secure Your Spot</h2>
+            <p>Fill out the details below to join V&S Garba Classes</p>
+        </div>
+
+        <form id="vipRegistrationForm">
+            <div class="row-3">
+                <div class="input-group">
+                    <input type="text" id="fName" placeholder="First Name" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="mName" placeholder="Middle Name">
+                    <i class="fas fa-user-tag"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="lName" placeholder="Surname" required>
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+
+            <div class="row-3">
+                <div class="input-group">
+                    <input type="number" id="age" placeholder="Your Age" min="5" max="100" required>
+                    <i class="fas fa-child"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="dob" placeholder="Date of Birth" onfocus="(this.type='date')" onblur="(this.type='text')" required>
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="gender-wrapper">
+                    <div class="gender-option">
+                        <input type="radio" name="gender" id="male" value="Male" required>
+                        <label for="male"><i class="fas fa-mars"></i> Male</label>
+                    </div>
+                    <div class="gender-option">
+                        <input type="radio" name="gender" id="female" value="Female" required>
+                        <label for="female"><i class="fas fa-venus"></i> Female</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-2">
+                <div class="input-group">
+                    <div class="phone-box">
+                        <i class="fab fa-whatsapp"></i>
+                        <select id="countryCode" required>
+                            <option value="91" selected>+91 (IN)</option>
+                            <option value="1">+1 (US/CA)</option>
+                            <option value="44">+44 (UK)</option>
+                            <option value="61">+61 (AU)</option>
+                            <option value="971">+971 (UAE)</option>
+                            <option value="966">+966 (SA)</option>
+                            <option value="974">+974 (QA)</option>
+                            <option value="968">+968 (OM)</option>
+                            <option value="965">+965 (KW)</option>
+                            <option value="973">+973 (BH)</option>
+                            <option value="65">+65 (SG)</option>
+                            <option value="60">+60 (MY)</option>
+                            <option value="64">+64 (NZ)</option>
+                            <option value="27">+27 (ZA)</option>
+                            <option value="49">+49 (DE)</option>
+                            <option value="33">+33 (FR)</option>
+                            <option value="39">+39 (IT)</option>
+                            <option value="34">+34 (ES)</option>
+                            <option value="31">+31 (NL)</option>
+                            <option value="41">+41 (CH)</option>
+                            <option value="46">+46 (SE)</option>
+                            <option value="47">+47 (NO)</option>
+                            <option value="45">+45 (DK)</option>
+                            <option value="353">+353 (IE)</option>
+                            <option value="81">+81 (JP)</option>
+                            <option value="82">+82 (KR)</option>
+                            <option value="86">+86 (CN)</option>
+                            <option value="852">+852 (HK)</option>
+                            <option value="62">+62 (ID)</option>
+                            <option value="66">+66 (TH)</option>
+                            <option value="63">+63 (PH)</option>
+                            <option value="880">+880 (BD)</option>
+                            <option value="977">+977 (NP)</option>
+                            <option value="94">+94 (LK)</option>
+                            <option value="92">+92 (PK)</option>
+                        </select>
+                        <input type="tel" id="mobile" placeholder="WhatsApp Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Email Address (Optional)">
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+
+            <div class="row-2">
+                <div class="input-group select-wrapper">
+                    <select id="batch" required>
+                        <option value="" disabled selected>Select Batch Time</option>
+                        <option value="Morning (7:00 AM - 9:00 AM)">Morning (7:00 AM - 9:00 AM)</option>
+                        <option value="Evening Ladies (4:00 PM - 7:00 PM)">Evening Ladies (4:00 PM - 7:00 PM)</option>
+                        <option value="Evening Kids (7:00 PM - 8:00 PM)">Evening Kids (7:00 PM - 8:00 PM)</option>
+                        <option value="Mix Batches (8:00 PM - 11:00 PM)">Mix Batches (8:00 PM - 11:00 PM)</option>
+                    </select>
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="input-group select-wrapper">
+                    <select id="payment" required>
+                        <option value="" disabled selected>Payment Method</option>
+                        <option value="Online (UPI/GPay/PhonePe)">Online (UPI/GPay/PhonePe)</option>
+                        <option value="Cash at Studio">Cash at Studio</option>
+                    </select>
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Complete Registration <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="index.html" style="color: #666; text-decoration: none; font-weight: 500; font-size: 0.95rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('vipRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const fName = document.getElementById('fName').value;
+            const mName = document.getElementById('mName').value;
+            const lName = document.getElementById('lName').value;
+            const age = document.getElementById('age').value;
+            const dob = document.getElementById('dob').value;
+            
+            // Country Code ane Mobile Number bhega karva mate
+            const countryCode = document.getElementById('countryCode').value;
+            const mobileRaw = document.getElementById('mobile').value;
+            
+            // Check if exactly 10 digits
+            if(mobileRaw.length !== 10) {
+                alert("Please enter exactly 10 digits for the WhatsApp number.");
+                return; // Stop form submission
+            }
+            const mobile = "+" + countryCode + " " + mobileRaw;
+            
+            const emailInput = document.getElementById('email').value;
+            const email = emailInput ? emailInput : "Not Provided";
+            
+            const batch = document.getElementById('batch').value;
+            const payment = document.getElementById('payment').value;
+            
+            let gender = '';
+            if (document.getElementById('male').checked) { gender = 'Male'; }
+            else if (document.getElementById('female').checked) { gender = 'Female'; }
+
+            const ownerNumber = "919924247523";
+
+            let whatsappMessage = `*New V&S Garba Registration!* 🔥\n\n`;
+            whatsappMessage += `*Name:* ${fName} ${mName} ${lName}\n`;
+            whatsappMessage += `*Age:* ${age} | *DOB:* ${dob} | *Gender:* ${gender}\n`;
+            whatsappMessage += `*Mobile:* ${mobile}\n`;
+            whatsappMessage += `*Email:* ${email}\n\n`;
+            whatsappMessage += `*Selected Batch:* ${batch}\n`;
+            whatsappMessage += `*Payment Method:* ${payment}\n\n`;
+            whatsappMessage += `_Thank you for registering!_`;
+
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappUrl = `https://wa.me/${ownerNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
+</body>
+</html>

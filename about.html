@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | V & S Garba & Dodhiya Classes in Althan, Surat</title>
+    
+    <meta name="description" content="MAKE YOUR RAASSS! KHAASSS! Join V & S Garba by Kelvin Patel. Learn Sada Garba, 3 Tali, Dodhiya, and Dakhla from Basic to Advance in Althan, Surat.">
+    <meta name="keywords" content="Kelvin Patel Garba, Sada Garba, 3 Tali, Dakhla, Dodhiya Classes Althan, Dandiya Raas, Basic to Advance Garba, V&S Garba Althan, Best Garba Class in Surat, Garba Reviews">
+    <meta name="author" content="MihirSync">
+    
+    <meta name="geo.region" content="IN-GJ">
+    <meta name="geo.placename" content="Althan, Surat">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- GLOBAL PREMIUM THEME --- */
+        :root {
+            --bg-light: #FFF8F0; 
+            --text-dark: #2C1810; 
+            --gold: #D4AF37;
+            --orange: #FF5722;
+            --red: #C62828;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 87, 34, 0.2);
+            --shadow: 0 10px 30px rgba(255, 87, 34, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        body { background-color: var(--bg-light); color: var(--text-dark); }
+        
+        .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
+
+        /* --- ADVANCED ANIMATIONS CLASSES --- */
+        .anim { opacity: 0; transition: all 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .slide-up { transform: translateY(50px); }
+        .slide-left { transform: translateX(-50px); }
+        .slide-right { transform: translateX(50px); }
+        .zoom-in { transform: scale(0.9); }
+        
+        .anim.visible { opacity: 1; transform: translate(0) scale(1); }
+
+        /* --- NAVBAR --- */
+        nav { position: fixed; top: 0; width: 100%; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: 0.3s; }
+        .logo { display: flex; align-items: center; text-decoration: none; gap: 15px; }
+        .logo img { height: 60px; width: auto; object-fit: contain; }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text .main-title { font-size: 22px; font-weight: 800; color: var(--red); line-height: 1.2; }
+        .logo-text .sub-title { font-size: 14px; font-weight: 600; color: var(--orange); letter-spacing: 2px; }
+        .nav-links a { color: var(--text-dark); text-decoration: none; margin-left: 30px; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--orange); }
+
+        /* --- PAGE HEADER --- */
+        .about-header {
+            padding: 180px 10% 80px;
+            text-align: center;
+            background: linear-gradient(rgba(255, 248, 240, 0.9), var(--bg-light)), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=1600') center/cover;
+            position: relative;
+        }
+        .about-header h1 { color: var(--red); font-size: 3.5rem; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;}
+        .about-header p { color: var(--orange); font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- CONTENT SECTIONS --- */
+        .section-container { padding: 60px 10%; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-bottom: 80px; }
+        
+        .info-card { padding: 40px; position: relative; overflow: hidden; transition: 0.4s; }
+        .info-card:hover { transform: translateY(-10px); border-color: var(--red); box-shadow: 0 15px 40px rgba(198, 40, 40, 0.15); }
+        .info-card i { font-size: 3rem; color: var(--orange); margin-bottom: 20px; opacity: 0.8; }
+        .info-card h2 { color: var(--red); font-size: 2.2rem; margin-bottom: 20px; text-transform: uppercase; }
+        .info-card p { font-size: 1.15rem; line-height: 1.8; color: var(--text-dark); font-weight: 500; }
+        
+        .highlight-text { color: var(--red); font-weight: 800; font-size: 1.2rem;}
+
+        /* --- IMAGE STYLING --- */
+        .class-image {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: 0.4s ease;
+        }
+        .class-image:hover { transform: scale(1.03); }
+
+        .trainer-photo-frame {
+            width: 320px; 
+            height: 420px; 
+            object-fit: cover; 
+            border-radius: 15px;
+            border: 4px solid var(--orange); 
+            box-shadow: var(--shadow);
+            transition: 0.4s ease;
+            display: block;
+            margin: 0 auto; 
+        }
+        .trainer-photo-frame:hover { transform: scale(1.05) rotate(2deg); border-color: var(--red); }
+
+        /* --- STATS SECTION --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center; margin-top: 50px; }
+        .stat-box { padding: 40px 20px; border-bottom: 4px solid var(--orange); transition: 0.3s; }
+        .stat-box:hover { transform: translateY(-5px); border-bottom-color: var(--red); }
+        .stat-box h3 { font-size: 3.5rem; color: var(--red); margin-bottom: 10px; font-weight: 800; }
+        .stat-box p { font-size: 1.2rem; font-weight: 600; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px;}
+
+        /* --- STYLES/KEYWORDS GRID --- */
+        .styles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .style-card { padding: 35px 25px; text-align: center; border-radius: 15px; transition: 0.4s; background: #fff; }
+        .style-card:hover { transform: translateY(-10px); border-color: var(--red); box-shadow: 0 15px 40px rgba(198, 40, 40, 0.15); }
+        .style-card i { font-size: 3rem; color: var(--orange); margin-bottom: 20px; }
+        .style-card h3 { color: var(--red); font-size: 1.6rem; margin-bottom: 15px; text-transform: uppercase; }
+        .style-card p { font-size: 1.05rem; line-height: 1.7; color: var(--text-dark); }
+
+        /* --- REVIEWS SECTION STYLING (UPDATED WITHOUT PHOTOS) --- */
+        .review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 50px; }
+        .review-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: 0.4s;
+            border-top: 4px solid var(--orange);
+        }
+        .review-card:hover { transform: translateY(-10px); border-color: var(--red); }
+        
+        .stars { color: var(--gold); margin-bottom: 15px; font-size: 1.2rem; }
+        .review-text { font-size: 1rem; line-height: 1.7; color: var(--text-dark); font-style: italic; margin-bottom: 20px; }
+        .review-name { color: var(--red); font-weight: 800; font-size: 1.1rem; text-transform: uppercase; }
+        
+        .review-badge {
+            display: inline-block;
+            background: rgba(255, 87, 34, 0.1);
+            color: var(--orange);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer { background: var(--text-dark); color: #fff; padding: 30px; text-align: center; border-top: 5px solid var(--orange); margin-top: 80px;}
+        .mihirsync { color: var(--gold); font-weight: 800; text-decoration: none; }
+
+        /* Mobile Fixes */
+        @media (max-width: 768px) {
+            nav { padding: 15px; flex-direction: column; background: var(--bg-light); gap: 15px;}
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px;}
+            .nav-links a { margin: 0 5px; font-size: 14px;}
+            .content-grid { grid-template-columns: 1fr; gap: 30px;}
+            .stats-grid { grid-template-columns: 1fr; }
+            .about-header h1 { font-size: 2.2rem; }
+            .about-header p { font-size: 1.1rem; }
+            .trainer-photo-frame { width: 280px; height: 380px; }
+            .review-grid { grid-template-columns: 1fr; gap: 30px;}
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="glass">
+        <a href="index.html" class="logo">
+            <img src="vs-logo.jpg" alt="V & S Garba Classes Surat">
+            <div class="logo-text">
+                <span class="main-title">V&S GARBA</span>
+                <span class="sub-title">AND DODHIYA CLASSES</span>
+            </div>
+        </a>
+        
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html" style="color: var(--orange); border-bottom: 2px solid var(--orange);">About Us</a>
+            <a href="registration.html">Registration</a>
+            <a href="payment.html">Payment</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <header class="about-header">
+        <h1 class="anim slide-up">About V&S Garba</h1>
+        <p class="anim slide-up" style="transition-delay: 0.2s;">"MAKE YOUR RAASSS! KHAASSS!"</p>
+    </header>
+
+    <div class="section-container">
+        
+        <div class="content-grid">
+            <div class="glass info-card anim slide-left">
+                <i class="fas fa-fire-flame-curved"></i>
+                <h2>An Explosive Start</h2>
+                <p>We started our journey just <span class="highlight-text">last year</span>, and the response has been nothing short of spectacular! In just 1 year of starting the V&S Garba Classes, we successfully trained and built a community of <span class="highlight-text">400+ passionate students</span>.</p>
+                <br>
+                <p>This rapid growth is a testament to our dedication, pure traditional vibes, and the cinematic experience we provide on the dance floor.</p>
+            </div>
+            <div class="anim slide-right">
+                <img src="group-photo.jpg" alt="V&S Garba Students Group" class="class-image">
+            </div>
+        </div>
+
+        <div class="content-grid" style="direction: rtl;">
+            <div class="glass info-card anim slide-right" style="direction: ltr;">
+                <i class="fas fa-snowflake"></i>
+                <h2>Althan's Most Premium Studio</h2>
+                <p>We don't just teach Garba; we create an atmosphere! Located in the heart of <span class="highlight-text">Althan, Surat</span>, our class offers the most premium and comfortable learning experience.</p>
+                <br>
+                <p>Enjoy a <span class="highlight-text">Fully AC Garba Class</span> equipped with a <span class="highlight-text">Professional Sound System</span>. Jyare dhol na beat professional speakers mathi vage chhe, tyare you get the <em>"Pure vibe aave garba ramvani!"</em></p>
+            </div>
+            <div class="anim slide-left" style="direction: ltr;">
+                <img src="studio.jpg" alt="V&S Premium AC Studio Floor" class="class-image">
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="glass info-card anim slide-left">
+                <i class="fas fa-user-tie"></i>
+                <h2>Meet Your Head Trainer</h2>
+                <h3 style="color: var(--orange); font-size: 1.8rem; margin-bottom: 10px;">Kelvin Patel</h3>
+                <p>The energy and choreography behind V&S Garba come from our founder and head trainer, Kelvin Patel. With a rich <span class="highlight-text">8 Years of Experience</span> in professional Garba and Dodhiya training, Kelvin Sir knows exactly how to turn a beginner into a flawless performer.</p>
+                <br>
+                <p>His deep understanding of traditional beats and modern Dodhiya styles ensures that every student perfectly captures the true emotion of Navratri.</p>
+            </div>
+            <div class="anim slide-right" style="display: flex; justify-content: center; align-items: center;">
+                <img src="kelvin-sir.jpg" alt="Kelvin Patel Head Trainer" class="trainer-photo-frame">
+            </div>
+        </div>
+
+        <h2 class="anim zoom-in" style="text-align: center; color: var(--red); font-size: 2.5rem; margin-top: 50px;">The V&S Impact</h2>
+        <div class="stats-grid">
+            <div class="glass stat-box anim slide-up" style="transition-delay: 0.1s;">
+                <h3>8+</h3>
+                <p>Years Experience</p>
+            </div>
+            <div class="glass stat-box anim slide-up" style="transition-delay: 0.3s;">
+                <h3>400+</h3>
+                <p>Happy Students</p>
+            </div>
+            <div class="glass stat-box anim slide-up" style="transition-delay: 0.5s;">
+                <h3>100%</h3>
+                <p>Premium AC Vibe</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 100px;">
+            <h2 class="anim zoom-in" style="text-align: center; color: var(--red); font-size: 2.5rem; text-transform: uppercase;">What We Teach</h2>
+            <p class="anim slide-up" style="text-align: center; font-size: 1.2rem; margin-top: 10px; color: var(--text-dark);">From <span class="highlight-text">Basic to Advance</span>, we cover all traditional and modern Navratri styles in Surat!</p>
+
+            <div class="styles-grid">
+                <div class="glass style-card anim slide-up" style="transition-delay: 0.1s;">
+                    <i class="fas fa-hands"></i>
+                    <h3>Traditional Garba</h3>
+                    <p>Master the authentic Gujarati roots. We start from the absolute basics and teach proper footwork and hand coordination for <strong>Sada Garba</strong>, <strong>Be Tali (2 Tali)</strong>, and the classic <strong>Tran Tali (3 Tali)</strong>.</p>
+                </div>
+                <div class="glass style-card anim slide-up" style="transition-delay: 0.3s; border: 2px solid var(--orange);">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Surti Dodhiya</h3>
+                    <p>Feel the adrenaline! Learn Surat's famous high-speed, synchronized <strong>Dodhiya</strong> steps. From basic formations to advanced rolling and spinning Dodhiya variations.</p>
+                </div>
+                <div class="glass style-card anim slide-up" style="transition-delay: 0.5s;">
+                    <i class="fas fa-drum"></i>
+                    <h3>Dandiya & Dakhla</h3>
+                    <p>Elevate your energy with powerful folk beats. We provide expert training in rhythmic <strong>Dandiya Raas</strong>, aggressive and energetic <strong>Dakhla</strong> steps, and popular group forms.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 100px; text-align: center;">
+            <div class="review-badge anim zoom-in">⭐ 100+ Happy Student Reviews</div>
+            <h2 class="anim slide-up" style="color: var(--red); font-size: 2.5rem; text-transform: uppercase;">What Our Students Say</h2>
+            
+            <div class="review-grid">
+                <div class="review-card anim slide-up" style="transition-delay: 0.1s;">
+                    <div class="stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="review-text">"Kelvin Sir is an amazing trainer! I joined without knowing any basic steps, and within a month, I was performing high-speed Dodhiya perfectly. The AC studio makes practice so comfortable!"</p>
+                    <p class="review-name">- Priya Desai</p>
+                </div>
+
+                <div class="review-card anim slide-up" style="transition-delay: 0.3s;">
+                    <div class="stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="review-text">"Best garba class in Althan! The sound system is mind-blowing. When the traditional Dakhla beats drop, the energy in the room is exactly like the real Navratri ground."</p>
+                    <p class="review-name">- Rahul Patel</p>
+                </div>
+
+                <div class="review-card anim slide-up" style="transition-delay: 0.5s;">
+                    <div class="stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="review-text">"I love how they teach 3 Tali and Sada Garba. They focus on everyone individually. Truly 'Make your raasss khaasss!' If you are in Surat, this is the place to join."</p>
+                    <p class="review-name">- Nidhi Shah</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <footer>
+        <p>&copy; 2026 V & S Garba & Dodhiya Classes, Althan, Surat. All Rights Reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Powered by <a href="#" class="mihirsync">MihirSync</a></p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.anim').forEach((el) => observer.observe(el));
+    </script>
+</body>
+</html>
