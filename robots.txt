@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mihiratodariya6.github.io/vns-garba-and-dodhiya-class/sitemap.xml
