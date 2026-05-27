@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta name="google-site-verification" content="pV7b1iNNRKFMKu3sYbADPnlnnWuNQUZagRjJo7wU_0o" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>V & S Garba & Dodhiya Classes | Best Garba Class in Surat</title>
     
     <meta name="description" content="Join V & S Garba & Dodhiya Classes in Althan, Surat. The best Navratri Garba training, traditional Sada Garba, Dodhiya, and morning/evening batches. Feel the real Garba energy!">
-    <meta name="keywords" content="Garba Classes in Surat, Best Garba Class in Surat, Dodhiya Classes Althan Surat, Garba Workshop Surat, Navratri Garba Training Surat, Traditional Garba Class Surat, Morning Garba Classes Surat, Kelvin Patel Garba">
+    <meta name="keywords" content="Garba Classes in Surat, Best Garba Class in Surat, Dodhiya Classes Althan Surat, Garba Workshop Surat, Navratri Garba Training Surat, Traditional Garba Class Surat, Morning Garba Classes Surat, Kelvin Patel Garba, Special Garba Event">
     <meta name="author" content="MihirSync">
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -35,6 +36,10 @@
         .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
         .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* NEW ANIMATIONS FOR EVENT */
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         h1, h2, h3 { color: var(--red); text-transform: uppercase; font-weight: 800; }
         .text-orange { color: var(--orange); }
@@ -104,6 +109,14 @@
         .time-box span { display: block; font-size: 3rem; font-weight: 800; color: var(--gold); line-height: 1; }
         .time-box p { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; color: #ddd; }
         
+        /* NEW REELS CSS */
+        .reels-container { display: flex; gap: 20px; overflow-x: auto; padding: 20px 10px 40px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .reels-container::-webkit-scrollbar { height: 8px; }
+        .reels-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .reels-container::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 10px; }
+        .reel-card { min-width: 280px; height: 500px; border-radius: 20px; overflow: hidden; position: relative; scroll-snap-align: center; background: #000; box-shadow: var(--shadow); transition: 0.3s; flex-shrink: 0; display:flex; align-items:center; justify-content:center;}
+        .reel-card video { width: 100%; height: 100%; object-fit: cover; }
+
         .cta-banner { background: linear-gradient(45deg, var(--red), var(--orange)); border-radius: 25px; padding: 60px 40px; text-align: center; color: white; box-shadow: 0 15px 40px rgba(198, 40, 40, 0.3); margin: 60px 10%; }
         .cta-banner h2 { color: white; font-size: 2.8rem; margin-bottom: 20px; }
 
@@ -163,6 +176,9 @@
             .time-box span { font-size: 1.6rem; }
             .time-box p { font-size: 0.75rem; letter-spacing: 0; }
             
+            /* Reel/Video Cards Fix */
+            .reel-card { min-width: 240px; height: 420px; }
+            
             /* Footer Fixes */
             .footer-grid { gap: 30px; text-align: center; }
         }
@@ -200,6 +216,7 @@
         <div class="nav-links">
             <a href="index.html" style="color: var(--orange); border-bottom: 2px solid var(--orange);">Home</a>
             <a href="about.html">About Us</a>
+            <a href="event.html" style="color: var(--red); font-weight: 800;">Event <span style="background: var(--red); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; position: relative; top: -8px; animation: blink 1s infinite;">NEW</span></a>
             <a href="registration.html">Registration</a>
             <a href="contact.html">Contact</a>
         </div>
@@ -222,6 +239,16 @@
 
             </div>
         </div>
+    </section>
+
+    <section class="section" style="padding-top: 40px; padding-bottom: 20px;">
+        <a href="event.html" style="text-decoration: none;">
+            <div class="fade-in" style="background: linear-gradient(45deg, #FBB03B, #D4145A); border-radius: 25px; padding: 40px; text-align: center; box-shadow: 0 15px 40px rgba(212, 20, 90, 0.4); animation: float 3s ease-in-out infinite; border: 3px solid #FFD700;">
+                <h2 style="color: white; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">🎉 MEGA PRE-NAVRATRI EVENT 🎉</h2>
+                <p style="color: #FFF8F0; font-size: 1.2rem; font-weight: 600; margin-bottom: 20px;">Special Workshop & Competition • Limited Seats Available!</p>
+                <span class="btn" style="background: white; color: var(--red); font-weight: 900; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">Click Here For Details & Register</span>
+            </div>
+        </a>
     </section>
 
     <section class="section">
@@ -313,6 +340,18 @@
         </div>
     </div>
 
+    <section class="section" style="background: white;">
+        <h2 class="section-title fade-in">Trending Reels & Vibes 🎬</h2>
+        <p class="fade-in" style="text-align: center; margin-bottom: 40px; font-size: 1.1rem;">Watch our energetic batches and special choreographies.</p>
+        
+        <div class="reels-container fade-in">
+            <div class="reel-card"><video src="videos/v1.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v2.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v3.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v4.mp4" controls preload="metadata"></video></div>
+        </div>
+    </section>
+
     <div class="cta-banner fade-in">
         <h2>Don't Miss The Beat! 🎶</h2>
         <p style="font-size: 1.2rem; margin-bottom: 30px;">Batches are filling up fast. Register today to secure your spot.</p>
@@ -336,6 +375,7 @@
                 <h3>Quick Links</h3>
                 <a href="index.html">Home</a>
                 <a href="about.html">About Us</a>
+                <a href="event.html">Special Event</a>
                 <a href="registration.html">Join Batch</a>
             </div>
             <div class="footer-col">
@@ -346,7 +386,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 V & S Garba & Dodhiya Classes. Designed By MihirSync.</p>
+            <p>© 2026 V & S Garba & Dodhiya Classes. Designed By MihirSync.</p>
         </div>
     </footer>
 
@@ -423,7 +463,9 @@
                 <h4 style="color: var(--red); margin-top:10px;">- ${name}</h4>
             </div>
         `;
-        reviewsContainer.insertAdjacentHTML('afterbegin', newReviewHtml);
+        if(reviewsContainer) {
+            reviewsContainer.insertAdjacentHTML('afterbegin', newReviewHtml);
+        }
     }
 </script>
 </body>
