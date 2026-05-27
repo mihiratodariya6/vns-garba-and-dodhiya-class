@@ -357,77 +357,77 @@
     </a>
 
     <script>
-        // Animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.fade-in').forEach((element) => {
-            observer.observe(element);
-        });
-
-        // ----------------------------------------------------
-        // NEW: Real-Time Navratri Countdown (Including Seconds)
-        // ----------------------------------------------------
-        // નવરાત્રી ૨૦૨૬ ની તારીખ (૧૦ ઓક્ટોબર ૨૦૨૬)
-        const navratriDate = new Date('October 10, 2026 00:00:00').getTime();
-        
-        setInterval(() => {
-            const now = new Date().getTime();
-            const distance = navratriDate - now;
-            
-            if(distance > 0) {
-                document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-                document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-                document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-                document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            } else {
-                document.getElementById('days').innerText = "00";
-                document.getElementById('hours').innerText = "00";
-                document.getElementById('minutes').innerText = "00";
-                document.getElementById('seconds').innerText = "00";
+    // Animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
             }
-        }, 1000);
-
-        // ----------------------------------------------------
-        // NEW: Live Review Adding Logic (Front-end)
-        // ----------------------------------------------------
-        const reviewForm = document.getElementById('reviewForm');
-        const reviewsContainer = document.getElementById('all-reviews-container');
-
-        reviewForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // પેજ રીલોડ થતું અટકાવવા
-
-            // ફોર્મમાંથી ડેટા લેવા
-            const name = document.getElementById('reviewerName').value;
-            const ratingValue = document.getElementById('reviewRating').value;
-            const text = document.getElementById('reviewText').value;
-
-            // સ્ટાર બનાવવા (દા.ત. 5 હોય તો 5 સ્ટાર)
-            const stars = '⭐'.repeat(ratingValue);
-
-            // નવો રિવ્યુ ડબ્બો (કાર્ડ) બનાવવો
-            const newReviewHtml = `
-                <div class="review-card fade-in visible">
-                    <div class="star-rating">${stars}</div>
-                    <p style="font-style: italic;">"${text}"</p>
-                    <h4 style="color: var(--red); margin-top:10px;">- ${name}</h4>
-                </div>
-            `;
-
-            // જૂના રિવ્યુની ઉપર નવો રિવ્યુ ઉમેરવો
-            reviewsContainer.insertAdjacentHTML('afterbegin', newReviewHtml);
-
-            // ફોર્મ ખાલી કરવું
-            reviewForm.reset();
-            alert("Thank you! Your review has been submitted successfully.");
-
-            // અહી તું તારો Firebase નો 'addDoc' વાળો કોડ લગાવી શકે છે જેથી ડેટાબેઝમાં કાયમ માટે સેવ થઇ જાય.
         });
-    </script>
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach((element) => {
+        observer.observe(element);
+    });
+
+    // Real-Time Navratri Countdown
+    const navratriDate = new Date('October 10, 2026 00:00:00').getTime();
+    setInterval(() => {
+        const now = new Date().getTime();
+        const distance = navratriDate - now;
+        
+        if(distance > 0) {
+            document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+            document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        }
+    }, 1000);
+
+    // ----------------------------------------------------
+    // UPDATED: LocalStorage Review System 
+    // આનાથી રિફ્રેશ કરવા છતાં રિવ્યુ ગાયબ નહીં થાય
+    // ----------------------------------------------------
+    const reviewForm = document.getElementById('reviewForm');
+    const reviewsContainer = document.getElementById('all-reviews-container');
+
+    // પેજ લોડ થાય ત્યારે જૂના સેવ કરેલા રિવ્યુ દેખાડવા
+    document.addEventListener("DOMContentLoaded", function() {
+        let savedReviews = JSON.parse(localStorage.getItem('vnsReviews')) || [];
+        savedReviews.forEach(review => displayReview(review.name, review.stars, review.text));
+    });
+
+    reviewForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('reviewerName').value;
+        const ratingValue = document.getElementById('reviewRating').value;
+        const text = document.getElementById('reviewText').value;
+        const stars = '⭐'.repeat(ratingValue);
+
+        // સ્ક્રીન પર નવો રિવ્યુ દેખાડવો
+        displayReview(name, stars, text);
+
+        // બ્રાઉઝરની મેમરીમાં (Local Storage) કાયમ માટે સેવ કરવું
+        let savedReviews = JSON.parse(localStorage.getItem('vnsReviews')) || [];
+        savedReviews.unshift({ name, stars, text }); // નવો રિવ્યુ લિસ્ટમાં સૌથી ઉપર ઉમેરવા
+        localStorage.setItem('vnsReviews', JSON.stringify(savedReviews));
+
+        reviewForm.reset();
+        alert("તમારો રિવ્યુ સફળતાપૂર્વક સબમિટ થઈ ગયો છે!");
+    });
+
+    // રિવ્યુનો ડબ્બો બનાવવાનું ફંક્શન
+    function displayReview(name, stars, text) {
+        const newReviewHtml = `
+            <div class="review-card fade-in visible">
+                <div class="star-rating">${stars}</div>
+                <p style="font-style: italic;">"${text}"</p>
+                <h4 style="color: var(--red); margin-top:10px;">- ${name}</h4>
+            </div>
+        `;
+        reviewsContainer.insertAdjacentHTML('afterbegin', newReviewHtml);
+    }
+</script>
 </body>
 </html>
