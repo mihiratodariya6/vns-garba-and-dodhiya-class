@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Contact V&S Garba & Dodhiya Classes | Althan, Surat</title>
     
     <meta name="description" content="Contact V&S Garba & Dodhiya Classes at 312,3, Sai Vittorio, Althan Canal Rd, Surat. Get details about batch timings, fees, and Navratri workshops. Call +91 6353757027.">
@@ -24,7 +24,8 @@
     <style>
         :root { --bg-light: #FFF8F0; --text-dark: #2C1810; --gold: #D4AF37; --orange: #FF5722; --red: #C62828; --glass-bg: rgba(255, 255, 255, 0.85); --shadow: 0 10px 30px rgba(255, 87, 34, 0.1); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; }
+        /* આડી સ્ક્રીન ખેંચાતી રોકવા માટે width: 100% ઉમેર્યું */
+        body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; width: 100%; }
 
         .glass { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 87, 34, 0.2); border-radius: 15px; box-shadow: var(--shadow); }
         h1, h2, h3 { color: var(--red); text-transform: uppercase; font-weight: 800; }
@@ -78,16 +79,26 @@
         .map-container { padding: 0 10% 80px; }
         .map-iframe { width: 100%; height: 450px; border: none; border-radius: 20px; box-shadow: var(--shadow); }
 
-        /* Mobile Responsive */
+        /* ----------------------------------------------------
+           POWERFUL MOBILE RESPONSIVE SETUP (AUTO-FIT)
+           ---------------------------------------------------- */
         @media (max-width: 768px) {
-            nav { padding: 15px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
-            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; margin-left: 0; }
-            .contact-header { padding-top: 140px; }
-            .contact-header h1 { font-size: 2.2rem; }
-            .contact-container { grid-template-columns: 1fr; padding: 40px 5%; gap: 30px; }
-            .info-box, .form-box { padding: 25px; }
-            .map-container { padding: 0 5% 60px; }
-            .map-iframe { height: 350px; }
+            nav { padding: 12px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; margin-left: 0; }
+            .nav-links a { margin: 0 5px; font-size: 14px; }
+            
+            .contact-header { padding-top: 110px; padding-bottom: 30px; }
+            .contact-header h1 { font-size: 2rem; line-height: 1.2; }
+            .contact-header p { font-size: 1rem; padding: 0 10px; }
+            
+            .contact-container { grid-template-columns: 1fr; padding: 30px 5%; gap: 25px; }
+            .info-box, .form-box { padding: 25px 20px; }
+            .form-box h2 { font-size: 1.6rem; }
+            
+            .map-container { padding: 0 5% 50px; }
+            .map-iframe { height: 300px; }
+            
+            .btn { padding: 12px; font-size: 1rem; }
         }
     </style>
 </head>

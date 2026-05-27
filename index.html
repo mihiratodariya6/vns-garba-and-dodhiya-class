@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>V & S Garba & Dodhiya Classes | Best Garba Class in Surat</title>
     
     <meta name="description" content="Join V & S Garba & Dodhiya Classes in Althan, Surat. The best Navratri Garba training, traditional Sada Garba, Dodhiya, and morning/evening batches. Feel the real Garba energy!">
@@ -28,7 +28,8 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
-        body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; }
+        /* Prevent horizontal scroll globally */
+        body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; width: 100%; }
 
         .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
         .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
@@ -50,7 +51,7 @@
         .nav-links a:hover { color: var(--orange); }
 
         /* Hero */
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255, 248, 240, 0.7), rgba(255, 248, 240, 0.85)), url('https://images.unsplash.com/photo-1662991024340-97645d94411d?q=80&w=1600') center/cover; position: relative; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255, 248, 240, 0.7), rgba(255, 248, 240, 0.85)), url('https://images.unsplash.com/photo-1662991024340-97645d94411d?q=80&w=1600') center/cover; position: relative; overflow: hidden; /* Added overflow hidden */ }
         .hero-logo-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 25px; width: 240px; height: 240px; }
         .center-main-logo { width: 90%; height: auto; position: relative; z-index: 3; filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.15)); }
         .spinning-ring { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 3px dashed var(--orange); border-radius: 50%; z-index: 2; animation: spinCircle 12s linear infinite; box-shadow: 0 0 20px rgba(255, 87, 34, 0.15); }
@@ -131,29 +132,49 @@
         .floating-wa { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; box-shadow: 0 0 20px rgba(37, 211, 102, 0.5); z-index: 1000; text-decoration: none; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
 
-        /* Responsive Setup */
+        /* ----------------------------------------------------
+           POWERFUL MOBILE RESPONSIVE SETUP (AUTO-FIT)
+           ---------------------------------------------------- */
         @media (max-width: 768px) {
-            nav { padding: 15px; flex-direction: column; background: var(--glass-bg); gap: 15px; }
-            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 5px; }
-            .nav-links a { margin: 0 5px; font-size: 14px; }
+            /* Navbar Fixes */
+            nav { padding: 12px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; }
+            .nav-links a { margin: 0 5px; font-size: 13px; }
             
-            .hero { padding-top: 100px; }
-            .hero h1 { font-size: 2.2rem; padding: 0 10px; }
-            .hero p { font-size: 1.2rem; padding: 0 10px; }
-            .hero-logo-wrapper { width: 160px; height: 160px; margin-bottom: 20px; } 
+            /* Hero Fixes */
+            .hero { padding-top: 100px; height: auto; min-height: 100vh; }
+            .hero h1 { font-size: 2rem; padding: 0 10px; line-height: 1.2; margin-bottom: 15px; }
+            .hero p { font-size: 1.1rem; padding: 0 10px; }
+            .hero-logo-wrapper { width: 140px; height: 140px; margin-bottom: 15px; } 
             
-            .btn { width: 100%; margin-bottom: 15px; display: flex; }
+            /* Button & Grid Fixes */
+            .btn { width: 100%; margin-bottom: 15px; display: flex; font-size: 1rem; padding: 12px 20px; }
             .grid-container, .grid-2, .grid-3 { grid-template-columns: 1fr !important; gap: 20px; }
             
-            .section, .review-section { padding: 40px 5% !important; }
-            .section-title { font-size: 2rem; }
+            /* Section Padding */
+            .section, .review-section, .countdown-wrapper { padding: 40px 5% !important; }
+            .section-title { font-size: 1.8rem !important; }
             
-            .about-box { padding: 25px; border-left: none; border-top: 5px solid var(--red); }
+            /* Images and About Box */
+            .about-box { padding: 20px; border-left: none; border-top: 5px solid var(--red); }
             img { max-width: 100%; height: auto; }
-            h2 { font-size: 22px !important; }
-            .cta-banner { margin: 40px 5%; padding: 40px 20px; }
-            .time-box { min-width: 70px; padding: 10px; }
-            .time-box span { font-size: 2rem; }
+            h2 { font-size: 20px !important; }
+            
+            /* CTA & Features */
+            .cta-banner { margin: 40px 5%; padding: 30px 15px; }
+            .feature-card { padding: 30px 15px; }
+            
+            /* Countdown Boxes Fix - So they don't overflow */
+            .countdown-container { gap: 10px; }
+            .time-box { min-width: 65px; padding: 10px 5px; flex: 1; }
+            .time-box span { font-size: 1.6rem; }
+            .time-box p { font-size: 0.75rem; letter-spacing: 0; }
+            
+            /* Reel/Video Cards Fix */
+            .reel-card { min-width: 240px; height: 420px; }
+            
+            /* Footer Fixes */
+            .footer-grid { gap: 30px; text-align: center; }
         }
     </style>
 </head>
@@ -171,7 +192,7 @@
             <a href="index.html" style="color: var(--orange); border-bottom: 2px solid var(--orange);">Home</a>
             <a href="about.html">About Us</a>
             <a href="registration.html">Registration</a>
-            <a href="contact">Contact</a>
+            <a href="contact.html">Contact</a>
         </div>
     </nav>
 
@@ -186,7 +207,7 @@
             </div>
             <h1 class="fade-in">Feel The Real Garba Energy</h1>
             <p class="fade-in text-orange">Surat's Premium Traditional & Dodhiya Classes</p>
-            <div class="fade-in" style="margin-top: 20px;">         
+            <div class="fade-in" style="margin-top: 20px;">        
                 <a href="registration.html" class="btn btn-primary">Join Now</a>            
                 <a href="https://wa.me/916353757027?text=Hello,%20I%20want%20inquiry%20about%20V%20%26%20S%20Garba%20Classes." target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
             </div>
@@ -279,20 +300,20 @@
         
         <div class="reels-container fade-in">
             <div class="reel-card"><video src="videos/v1.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v2.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v3.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v4.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v5.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v6.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v7.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v8.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v9.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v10.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v11.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v12.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v13.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v14.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v15.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v2.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v3.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v4.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v5.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v6.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v7.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v8.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v9.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v10.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v11.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v12.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v13.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v14.mp4" controls preload="metadata"></video></div>
+            <div class="reel-card"><video src="videos/v15.mp4" controls preload="metadata"></video></div>
             
             <a href="gallery.html" class="reel-card show-more-card" style="text-decoration: none;">
                 <div class="show-more-content">
@@ -353,7 +374,7 @@
             <div class="footer-col">
                 <h3>Contact Info</h3>
                 <p><i class="fas fa-map-marker-alt"></i> 312,3, Sai Vittorio, Althan Canal Rd, Surat, Gujarat 395007</p>
-                <p><i class="fas fa-phone"></i> +91 +91 63537 57027</p>
+                <p><i class="fas fa-phone"></i> +91 63537 57027</p>
                 <p><i class="fab fa-instagram"></i> @vsgarbaclasses</p>
             </div>
         </div>
@@ -396,7 +417,6 @@
 
     // ----------------------------------------------------
     // UPDATED: LocalStorage Review System 
-    // આનાથી રિફ્રેશ કરવા છતાં રિવ્યુ ગાયબ નહીં થાય
     // ----------------------------------------------------
     const reviewForm = document.getElementById('reviewForm');
     const reviewsContainer = document.getElementById('all-reviews-container');

@@ -2,23 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All Videos | V & S Garba</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* ---------------------------------
+           Core & Reset 
+           --------------------------------- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #FFF8F0; color: #2C1810; padding: 20px; }
+        body { background-color: #FFF8F0; color: #2C1810; padding: 20px; overflow-x: hidden; width: 100%; }
         
         .header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
-        .header h1 { color: #C62828; font-size: 2.5rem; text-transform: uppercase; }
+        .header h1 { color: #C62828; font-size: 2.5rem; text-transform: uppercase; font-weight: 800; }
+        .header p { font-size: 1.1rem; color: #555; margin-top: 10px; }
         
         /* Grid for all videos */
         .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .video-card { background: #000; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .video-card { background: #000; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: transform 0.3s; }
+        .video-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
         .video-card video { width: 100%; height: 500px; object-fit: cover; display: block; }
         
-        .back-btn { display: inline-block; padding: 10px 20px; background: #C62828; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin-bottom: 20px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #C62828; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin-bottom: 20px; transition: 0.3s; box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3); }
+        .back-btn:hover { background: #FF5722; transform: translateY(-2px); }
+
+        /* ----------------------------------------------------
+           POWERFUL MOBILE RESPONSIVE SETUP (AUTO-FIT)
+           ---------------------------------------------------- */
+        @media (max-width: 768px) {
+            body { padding: 15px; } 
+            .header { margin-bottom: 20px; }
+            .header h1 { font-size: 1.8rem; line-height: 1.2; } 
+            .header p { font-size: 0.95rem; }
+            
+            .video-grid { grid-template-columns: 1fr; gap: 20px; padding: 10px 0; }
+            .video-card video { height: 400px; border-radius: 15px; }
+            
+            .back-btn { width: 100%; justify-content: center; padding: 12px; font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
@@ -30,23 +53,26 @@
         <p>Watch all our amazing moments and choreographies here.</p>
     </div>
 
-    <div class="video-grid">
-        <div class="reel-card"><video src="videos/v1.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v2.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v3.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v4.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v5.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v6.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v7.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v8.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v9.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v10.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v11.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v12.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v13.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v14.mp4" controls preload="metadata"></video></div>
-<div class="reel-card"><video src="videos/v15.mp4" controls preload="metadata"></video></div>
-    </div>
+    <div class="video-grid" id="allVideosContainer">
+        </div>
+
+    <script>
+        // ⚠️ ફક્ત આ આંકડો બદલવાનો છે!
+        // તારી પાસે જેટલા વિડીયો હોય એ અહી લખી દે (દા.ત. 15)
+        const totalVideos = 15; 
+        
+        const videoContainer = document.getElementById('allVideosContainer');
+        
+        // આ કોડ તારા આંકડા પ્રમાણે જાતે જ ડબ્બા બનાવી દેશે
+        for (let i = 1; i <= totalVideos; i++) {
+            const videoHtml = `
+                <div class="video-card">
+                    <video src="videos/v${i}.mp4" controls preload="metadata"></video>
+                </div>
+            `;
+            videoContainer.innerHTML += videoHtml;
+        }
+    </script>
 
 </body>
 </html>
