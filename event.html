@@ -8,13 +8,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { --bg-light: #FFF8F0; --text-dark: #2C1810; --gold: #D4AF37; --orange: #FF5722; --red: #C62828; --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 87, 34, 0.2); --shadow: 0 10px 30px rgba(255, 87, 34, 0.1); }
+        /* ---------------------------------
+           Core Variables & Reset 
+           --------------------------------- */
+        :root {
+            --bg-light: #FFF8F0; 
+            --text-dark: #2C1810; 
+            --gold: #D4AF37;
+            --orange: #FF5722;
+            --red: #C62828;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 87, 34, 0.2);
+            --shadow: 0 10px 30px rgba(255, 87, 34, 0.1);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
         body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; width: 100%; }
-        
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        h1, h2, h3 { color: var(--red); text-transform: uppercase; font-weight: 800; }
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
+
         /* Navbar */
-        .glass { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
         nav { position: fixed; top: 0; width: 100%; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: 0.3s; }
         .logo { display: flex; align-items: center; text-decoration: none; gap: 15px; }
         .logo img { height: 60px; width: auto; object-fit: contain; }
@@ -24,41 +46,61 @@
         .nav-links a { color: var(--text-dark); text-decoration: none; margin-left: 30px; font-weight: 600; transition: 0.3s; }
         .nav-links a:hover { color: var(--orange); }
 
-        /* Hero */
+        /* Hero Event */
         .hero-event { height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(198, 40, 40, 0.8), rgba(44, 24, 16, 0.9)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1600') center/cover; position: relative; padding-top: 80px; }
-        .hero-event h1 { font-size: 3.5rem; color: #fff; margin-bottom: 15px; }
-        .hero-event p { font-size: 1.4rem; color: var(--gold); font-weight: 600; letter-spacing: 2px;}
+        .hero-event h1 { font-size: 3.5rem; color: #fff; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); margin-bottom: 15px; }
+        .hero-event p { font-size: 1.4rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 2px;}
 
-        /* Grids & Common */
+        /* Section & Grid */
         .section { padding: 80px 10%; }
-        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 20px; color: var(--red); text-transform: uppercase; font-weight: 800;}
         .grid-container { display: grid; gap: 30px; }
-        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         
-        /* Dynamic Theme Cards CSS (Prepared for Admin Panel) */
-        .theme-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column;}
-        .theme-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(255, 87, 34, 0.2); }
-        .theme-img-wrapper { width: 100%; height: 220px; overflow: hidden; }
-        .theme-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .theme-card:hover .theme-img-wrapper img { transform: scale(1.08); }
-        .theme-content { padding: 25px; text-align: left; flex-grow: 1; border-bottom: 5px solid var(--orange); }
-        .theme-content h3 { font-size: 1.6rem; color: var(--text-dark); margin-bottom: 10px; }
-        .theme-date { display: inline-block; background: #fff8f5; border: 1px solid var(--orange); color: var(--orange); padding: 6px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px; }
-        .theme-content p { font-size: 1rem; color: #555; line-height: 1.6; }
+        /* POWERFUL MOBILE GRID (Auto-fit) */
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+        /* Dynamic Theme Cards CSS */
+        .theme-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; border: 1px solid #eee;}
+        .theme-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(255, 87, 34, 0.2); border-color: var(--orange); }
+        .theme-img-wrapper { width: 100%; height: 220px; overflow: hidden; background: #000; }
+        .theme-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.9; }
+        .theme-card:hover .theme-img-wrapper img { transform: scale(1.08); opacity: 1; }
+        .theme-content { padding: 25px; text-align: left; flex-grow: 1; border-bottom: 5px solid var(--orange); display: flex; flex-direction: column;}
+        .theme-date { display: inline-block; align-self: flex-start; background: #fff8f5; border: 1px solid var(--orange); color: var(--orange); padding: 6px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px; }
+        .theme-content h3 { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 10px; line-height: 1.3;}
+        .theme-content p { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 15px; flex-grow: 1;}
+        .book-btn { display: inline-block; text-align: center; background: var(--red); color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; transition: 0.3s;}
+        .book-btn:hover { background: var(--orange); }
 
         /* Footer */
         footer { background: var(--text-dark); color: #fff; padding: 60px 10% 30px; border-top: 5px solid var(--orange); }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { color: var(--gold); margin-bottom: 20px; font-size: 1.3rem; }
-        .footer-col a, .footer-col p { color: #ddd; text-decoration: none; display: block; margin-bottom: 10px; font-size: 1rem; }
-        
+        .footer-col a, .footer-col p { color: #ddd; text-decoration: none; display: block; margin-bottom: 10px; font-size: 1rem; transition: 0.3s; }
+        .footer-col a:hover { color: var(--orange); padding-left: 5px; }
+
+        /* ---------------------------------------------------------
+           STRICT MOBILE RESPONSIVENESS (Phone ma set thay jay)
+           --------------------------------------------------------- */
         @media (max-width: 768px) {
             nav { padding: 12px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
             .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; }
+            .nav-links a { margin: 0 5px; font-size: 13px; }
+            
             .hero-event { height: auto; padding: 120px 20px 60px; }
-            .hero-event h1 { font-size: 2.2rem; }
+            .hero-event h1 { font-size: 2.2rem; line-height: 1.2; }
+            .hero-event p { font-size: 1.1rem; }
+            
             .section { padding: 40px 5% !important; }
             .section-title { font-size: 1.8rem !important; }
+            
+            /* Make cards stack 1 by 1 on mobile perfectly */
+            .grid-container, .grid-3 { grid-template-columns: 1fr !important; gap: 20px; }
+            
+            .theme-img-wrapper { height: 200px; }
+            .theme-content { padding: 20px; }
+            .theme-content h3 { font-size: 1.3rem; }
+            
+            .footer-grid { gap: 30px; text-align: center; }
         }
     </style>
 </head>
@@ -82,16 +124,16 @@
     </nav>
 
     <section class="hero-event">
-        <h1>Special Events & Themes</h1>
-        <p>Make Your Navratri Preparation Extra Ordinary</p>
+        <h1 class="fade-in visible">Special Events & Themes</h1>
+        <p class="fade-in visible">Make Your Navratri Preparation Extra Ordinary</p>
     </section>
 
-    <section class="section" id="themes">
-        <h2 class="section-title">Upcoming Events 🎉</h2>
+    <section class="section" id="themes" style="min-height: 50vh;">
+        <h2 class="section-title fade-in visible">Upcoming Events 🎉</h2>
         <p style="text-align: center; margin-bottom: 40px; font-size: 1.1rem; color: #666;">Check out our latest announcements and theme days below.</p>
         
         <div class="grid-container grid-3" id="dynamic-events">
-            <p style="text-align: center; grid-column: 1 / -1; font-weight: bold; color: #888;">Loading events...</p>
+            <p id="loading-text" style="text-align: center; grid-column: 1 / -1; font-weight: bold; color: #888; font-size: 1.2rem;"><i class="fas fa-spinner fa-spin"></i> Fetching amazing events...</p>
         </div>
     </section>
 
@@ -109,14 +151,70 @@
             </div>
             <div class="footer-col">
                 <h3>Contact Info</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Althan Canal Rd, Surat</p>
+                <p><i class="fas fa-map-marker-alt"></i> 312, 3, Sai Vittorio, Althan Canal Rd, Surat</p>
                 <p><i class="fas fa-phone"></i> +91 63537 57027</p>
+                <p><i class="fab fa-instagram"></i> @vnsgarbaclasses</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 V & S Garba & Dodhiya Classes.</p>
+            <p>© 2026 V & S Garba & Dodhiya Classes. Designed By MihirSync.</p>
         </div>
     </footer>
 
+    <script>
+        // ---------------------------------------------------------
+        // અગત્યનું: અહીં તારા Firebase ના સેટિંગ્સ નાખવા પડશે! 
+        // (જે તેં admin.html માં નાખ્યા હતા એ જ સેમ કોડ)
+        // ---------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // ડેટાબેઝમાંથી ઈવેન્ટ્સ લાવવાનું ફંક્શન
+        const eventsContainer = document.getElementById('dynamic-events');
+        const loadingText = document.getElementById('loading-text');
+
+        db.ref('events').on('value', (snapshot) => {
+            eventsContainer.innerHTML = ''; // જૂનો ડેટા સાફ કરો
+            
+            if (snapshot.exists()) {
+                let eventsHTML = '';
+                // ડેટાબેઝમાં જેટલી ઈવેન્ટ્સ હશે, તેટલા કાર્ડ જાતે જ બની જશે
+                snapshot.forEach((childSnapshot) => {
+                    const event = childSnapshot.val();
+                    
+                    eventsHTML += `
+                        <div class="theme-card fade-in visible">
+                            <div class="theme-img-wrapper">
+                                <img src="${event.image}" alt="${event.title}" onerror="this.src='vs-logo.jpg'">
+                            </div>
+                            <div class="theme-content">
+                                <div class="theme-date"><i class="far fa-calendar-alt"></i> ${event.date}</div>
+                                <h3>${event.title}</h3>
+                                <p>${event.desc}</p>
+                                <a href="https://wa.me/916353757027?text=Hello,%20I%20want%20to%20register%20for%20${encodeURIComponent(event.title)}" target="_blank" class="book-btn">Book Your Spot</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                eventsContainer.innerHTML = eventsHTML;
+            } else {
+                // જો ડેટાબેઝ ખાલી હોય તો આ મેસેજ દેખાશે
+                eventsContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--red); font-weight: bold; font-size: 1.2rem;">New events coming very soon! Stay tuned.</p>';
+            }
+        });
+    </script>
 </body>
 </html>
