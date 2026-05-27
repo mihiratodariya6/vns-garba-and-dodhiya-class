@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V&S Admin Panel - Add Event</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #FFF8F0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .admin-container { width: 100%; max-width: 500px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #FF5722; }
+        h2 { text-align: center; color: #C62828; margin-bottom: 5px; text-transform: uppercase; font-weight: 800; }
+        p.subtitle { text-align: center; color: #666; margin-bottom: 30px; font-weight: 600; }
+        
+        label { font-weight: 600; color: #333; display: block; margin-bottom: 8px; font-size: 0.95rem; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box; background: #fafafa; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: #FF5722; outline: none; background: white; box-shadow: 0 0 5px rgba(255, 87, 34, 0.2); }
+        
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #FF5722, #C62828); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(198, 40, 40, 0.4); }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h2>V&S Admin Panel</h2>
+        <p class="subtitle">Post a New Theme Day or Event</p>
+
+        <form id="eventForm">
+            <label>Event Title (e.g., Blue Day 💙)</label>
+            <input type="text" id="eventTitle" placeholder="Enter title here..." required>
+
+            <label>Event Date (e.g., 15 September, 2026)</label>
+            <input type="text" id="eventDate" placeholder="Enter date here..." required>
+
+            <label>Image Name (e.g., blue-day.jpg)</label>
+            <input type="text" id="eventImage" placeholder="group-photo.jpg" required>
+
+            <label>Event Details</label>
+            <textarea id="eventDesc" rows="4" placeholder="Write what will happen on this day..." required></textarea>
+
+            <button type="submit">Publish Event to Website</button>
+        </form>
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // 1. YOUR FIREBASE CONFIGURATION (API KEYS) GO HERE
+        // ---------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // ---------------------------------------------------------
+        // 2. SAVE DATA TO FIREBASE WHEN BUTTON IS CLICKED
+        // ---------------------------------------------------------
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const image = document.getElementById('eventImage').value;
+            const desc = document.getElementById('eventDesc').value;
+
+            // Push to 'events' collection/node in Realtime Database
+            db.ref('events').push({
+                title: title,
+                date: date,
+                image: image,
+                desc: desc,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                alert("Boom! 💥 Event Successfully Posted to Live Website!");
+                document.getElementById('eventForm').reset();
+            }).catch((error) => {
+                console.error("Error adding event: ", error);
+                alert("Error saving event. Please check Firebase Rules.");
+            });
+        });
+    </script>
+</body>
+</html>
