@@ -103,14 +103,6 @@
         .time-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); min-width: 100px; }
         .time-box span { display: block; font-size: 3rem; font-weight: 800; color: var(--gold); line-height: 1; }
         .time-box p { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; color: #ddd; }
-
-        /* Reels Update */
-        .reels-container { display: flex; gap: 20px; overflow-x: auto; padding: 20px 10px 40px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
-        .reels-container::-webkit-scrollbar { height: 8px; }
-        .reels-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .reels-container::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 10px; }
-        .reel-card { min-width: 280px; height: 500px; border-radius: 20px; overflow: hidden; position: relative; scroll-snap-align: center; background: #000; box-shadow: var(--shadow); transition: 0.3s; flex-shrink: 0; display:flex; align-items:center; justify-content:center;}
-        .reel-card video { width: 100%; height: 100%; object-fit: cover; }
         
         .cta-banner { background: linear-gradient(45deg, var(--red), var(--orange)); border-radius: 25px; padding: 60px 40px; text-align: center; color: white; box-shadow: 0 15px 40px rgba(198, 40, 40, 0.3); margin: 60px 10%; }
         .cta-banner h2 { color: white; font-size: 2.8rem; margin-bottom: 20px; }
@@ -170,9 +162,6 @@
             .time-box { min-width: 65px; padding: 10px 5px; flex: 1; }
             .time-box span { font-size: 1.6rem; }
             .time-box p { font-size: 0.75rem; letter-spacing: 0; }
-            
-            /* Reel/Video Cards Fix */
-            .reel-card { min-width: 240px; height: 420px; }
             
             /* Footer Fixes */
             .footer-grid { gap: 30px; text-align: center; }
@@ -259,7 +248,16 @@
                     <li><i class="fas fa-check-circle"></i> High-Bass Professional Sound System</li>
                     <li><i class="fas fa-check-circle"></i> 100% Pure Traditional Vibe</li>
                 </ul>
-                <a href="about.html" class="btn btn-outline" style="margin-top: 20px;">Read More <i class="fas fa-arrow-right"></i></a>
+                
+                <div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--orange);">
+                    <img src="kelvin-sir.jpg" alt="Kelvin Sir" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold);">
+                    <div>
+                        <h4 style="color: var(--text-dark); margin-bottom: 5px; font-size: 1.1rem;">Meet Kelvin Sir</h4>
+                        <p style="font-size: 0.9rem; color: #666; margin: 0; line-height: 1.2;">Founder & Lead Trainer<br><span style="color: var(--orange); font-weight: bold;">8+ Years Experience</span></p>
+                    </div>
+                </div>
+
+                <a href="about.html" class="btn btn-outline" style="margin-top: 25px;">Read More <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -315,15 +313,18 @@
         </div>
     </div>
 
-    
-
     <div class="cta-banner fade-in">
         <h2>Don't Miss The Beat! 🎶</h2>
         <p style="font-size: 1.2rem; margin-bottom: 30px;">Batches are filling up fast. Register today to secure your spot.</p>
         <a href="registration.html" class="btn" style="background: white; color: var(--red);">Register Now</a>
     </div>
 
-    
+    <section class="section" style="padding-top: 20px; padding-bottom: 60px;">
+        <h2 class="section-title fade-in">Find Us Here 📍</h2>
+        <div class="fade-in" style="width: 100%; height: 400px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);">
+            <iframe src="https://maps.google.com/maps?q=Sai+Vittorio,+Althan+Canal+Rd,+Surat&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
 
     <footer id="contact">
         <div class="footer-grid">
