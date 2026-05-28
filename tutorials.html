@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Learn Garba Online | Live Classes & Tutorials</title>
+    
+    <meta name="description" content="Learn Garba and Dodhiya online from home! Join our Live Zoom Batches or enroll in our upcoming Premium Navratri Choreography Course with V&S Garba Classes.">
+    <meta name="keywords" content="Learn Garba Online, Garba steps for beginners, Live Garba Classes, Dodhiya steps online, How to do Garba, Surat Garba classes, Navratri preparation, Kelvin Patel Garba">
+    <meta name="author" content="MihirSync">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LQ9GB7GS4J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LQ9GB7GS4J');
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { --bg-light: #FFF8F0; --text-dark: #2C1810; --gold: #D4AF37; --orange: #FF5722; --red: #C62828; --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 87, 34, 0.2); --shadow: 0 10px 30px rgba(255, 87, 34, 0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; width: 100%; }
+
+        /* Navbar */
+        .glass { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 15px; box-shadow: var(--shadow); }
+        nav { position: fixed; top: 0; width: 100%; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: 0.3s; }
+        .logo { display: flex; align-items: center; text-decoration: none; gap: 15px; }
+        .logo img { height: 60px; width: auto; object-fit: contain; }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text .main-title { font-size: 22px; font-weight: 800; color: var(--red); line-height: 1.2; }
+        .logo-text .sub-title { font-size: 14px; font-weight: 600; color: var(--orange); letter-spacing: 2px; }
+        .nav-links a { color: var(--text-dark); text-decoration: none; margin-left: 30px; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--orange); }
+
+        /* Hero */
+        .hero-tutorials { height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(198, 40, 40, 0.85), rgba(44, 24, 16, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1600') center/cover; padding-top: 80px; }
+        .hero-tutorials h1 { font-size: 3.5rem; color: #fff; margin-bottom: 15px; text-transform: uppercase; font-weight: 800;}
+        .hero-tutorials p { font-size: 1.2rem; color: var(--gold); font-weight: 600; max-width: 600px;}
+
+        /* Layout & Common */
+        .section { padding: 80px 10%; }
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--red); text-transform: uppercase; font-weight: 800;}
+        .grid-container { display: grid; gap: 30px; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+
+        /* Online Course Cards (No Videos Needed Yet) */
+        .course-card { background: white; border-radius: 20px; padding: 40px; box-shadow: var(--shadow); border-top: 5px solid var(--orange); transition: 0.3s; text-align: center; display: flex; flex-direction: column;}
+        .course-card:hover { transform: translateY(-10px); }
+        .course-card i { font-size: 3.5rem; color: var(--red); margin-bottom: 20px; }
+        .course-card h3 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 15px; }
+        .course-card p { color: #666; font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; flex-grow: 1;}
+        .badge { display: inline-block; background: #fff8f5; color: var(--orange); padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; border: 1px solid var(--orange);}
+        .btn-course { background: linear-gradient(45deg, var(--red), var(--orange)); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: 0.3s; display: inline-block;}
+        .btn-course:hover { box-shadow: 0 10px 20px rgba(198, 40, 40, 0.3); transform: scale(1.05); }
+        
+        .waitlist-btn { background: white; color: var(--text-dark); border: 2px solid var(--text-dark); }
+        .waitlist-btn:hover { background: var(--text-dark); color: white; }
+
+        /* Blog / Tips Cards */
+        .blog-card { background: var(--glass-bg); padding: 30px; border-radius: 20px; border-left: 5px solid var(--orange); box-shadow: var(--shadow); transition: 0.3s;}
+        .blog-card:hover { background: white; transform: translateX(10px); }
+        .blog-card h3 { color: var(--red); margin-bottom: 15px; font-size: 1.4rem;}
+        .blog-card p { color: #555; line-height: 1.6; margin-bottom: 15px; }
+
+        /* SEO FAQ Section */
+        .faq-box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee;}
+        .faq-box h3 { color: var(--text-dark); font-size: 1.2rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        .faq-box h3 i { color: var(--orange); }
+        .faq-box p { color: #666; line-height: 1.7; font-size: 1rem; }
+
+        /* Footer */
+        footer { background: var(--text-dark); color: #fff; padding: 60px 10% 30px; border-top: 5px solid var(--orange); }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-col h3 { color: var(--gold); margin-bottom: 20px; font-size: 1.3rem; }
+        .footer-col a, .footer-col p { color: #ddd; text-decoration: none; display: block; margin-bottom: 10px; font-size: 1rem; }
+        .footer-col a:hover { color: var(--orange); padding-left: 5px; }
+
+        @media (max-width: 768px) {
+            nav { padding: 12px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; }
+            .nav-links a { margin: 0 5px; font-size: 13px; }
+            .hero-tutorials { padding-top: 100px; height: auto; padding-bottom: 50px;}
+            .hero-tutorials h1 { font-size: 2.2rem; line-height: 1.2;}
+            .section { padding: 40px 5% !important; }
+            .section-title { font-size: 1.8rem; }
+            .grid-container { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="glass">
+        <a href="index.html" class="logo">
+            <img src="vs-logo.jpg" alt="V & S Garba Logo">
+            <div class="logo-text">
+                <span class="main-title">V&S GARBA</span>
+                <span class="sub-title">AND DODHIYA CLASSES</span>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="event.html" style="color: var(--red); font-weight: 800;">Event</a>
+            <a href="tutorials.html" style="color: var(--orange); border-bottom: 2px solid var(--orange); font-weight: 800;">Learn Online</a>
+            <a href="registration.html">Registration</a>
+        </div>
+    </nav>
+
+    <section class="hero-tutorials">
+        <h1>Learn Garba Online</h1>
+        <p>Master the authentic steps of Surat's famous Garba and Dodhiya from anywhere in India!</p>
+    </section>
+
+    <section class="section" style="background: white;">
+        <h2 class="section-title">Join Our Online Programs 🌍</h2>
+        <p style="text-align: center; margin-bottom: 40px; font-size: 1.1rem; color: #666;">Can't make it to our offline studio in Surat? We bring the Garba ground to your screen!</p>
+        
+        <div class="grid-container grid-2">
+            
+            <div class="course-card">
+                <div class="badge">🔴 LIVE SESSIONS</div>
+                <i class="fas fa-laptop-house"></i>
+                <h3>Live Zoom Batches</h3>
+                <p>Interact directly with our expert trainers. Learn footwork, hand movements, and group sync in real-time online classes. Perfect for out-of-city students.</p>
+                <a href="https://wa.me/916353757027?text=Hello,%20I%20want%20to%20inquire%20about%20your%20LIVE%20Online%20Zoom%20Garba%20Batches." target="_blank" class="btn-course"><i class="fab fa-whatsapp"></i> Inquire For Live Batch</a>
+            </div>
+
+            <div class="course-card">
+                <div class="badge">🚀 LAUNCHING SOON</div>
+                <i class="fas fa-photo-video"></i>
+                <h3>Premium Video Course</h3>
+                <p>We are recording high-quality, step-by-step video tutorials (from 2-Taali to Fast Dodhiya). Join the VIP Waitlist today to get a special 50% discount on launch!</p>
+                <a href="https://wa.me/916353757027?text=Hello,%20Please%20add%20me%20to%20the%20VIP%20Waitlist%20for%20your%20upcoming%20Online%20Video%20Course!" target="_blank" class="btn-course waitlist-btn"><i class="fas fa-lock"></i> Join VIP Waitlist</a>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Navratri Preparation Guide 📝</h2>
+        <div class="grid-container grid-2">
+            
+            <div class="blog-card">
+                <h3>Top 5 Garba Steps for Beginners</h3>
+                <p>If you have never danced before, don't worry! Start with the simple Hitch, 3-Taali, and basic Dodhiya. These steps are easy to master and look incredibly graceful on slow traditional Gujarati songs.</p>
+            </div>
+
+            <div class="blog-card">
+                <h3>How to Build Stamina for Navratri</h3>
+                <p>Dancing non-stop for 4 hours requires immense energy. Hydration, learning the correct breathing techniques during high-bass Dakla beats, and doing warm-up exercises is the key to surviving all 9 nights.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section" style="background: white;">
+        <h2 class="section-title">Frequently Asked Questions 🤔</h2>
+        <p style="text-align: center; margin-bottom: 40px; font-size: 1.1rem; color: #666;">Everything you need to know about learning Garba.</p>
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            
+            <div class="faq-box">
+                <h3><i class="fas fa-question-circle"></i> Can I learn Garba at home online?</h3>
+                <p>Absolutely! With our live online sessions and upcoming video tutorials, you can master traditional Gujarati Garba steps, Surti Dodhiya, and Dandiya online from anywhere in India. Practice daily using our step-by-step breakdown.</p>
+            </div>
+
+            <div class="faq-box">
+                <h3><i class="fas fa-question-circle"></i> Which is the best Garba class in Surat?</h3>
+                <p>V&S Garba & Dodhiya Classes, located in Althan, Surat, is recognized as a premium garba institute. With over 8 years of professional training experience, Kelvin Patel and the team provide authentic training for beginners and advanced dancers.</p>
+            </div>
+
+            <div class="faq-box">
+                <h3><i class="fas fa-question-circle"></i> What are the different types of Garba styles?</h3>
+                <p>The most popular styles include 2-Taali (Be Taali), 3-Taali (Tran Taali), Dodhiya (Surat special), Hitch, Popat, and Dakla (high-energy trance). We teach all these variations in our offline batches and online programs.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <img src="vs-logo.jpg" alt="Logo" style="width: 120px; border-radius: 10px; margin-bottom: 15px;">
+                <p>Premium Garba & Dodhiya Classes. Make your Raasss Khaasss with us!</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <a href="index.html">Home</a>
+                <a href="tutorials.html" style="color: var(--orange);">Learn Online</a>
+                <a href="event.html">Special Events</a>
+                <a href="registration.html">Join Batch</a>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 312, 3, Sai Vittorio, Althan Canal Rd, Surat</p>
+                <p><i class="fas fa-phone"></i> +91 63537 57027</p>
+            </div>
+        </div>
+        <div class="footer-bottom" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
+            <p>© 2026 V & S Garba & Dodhiya Classes. Designed By MihirSync.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
