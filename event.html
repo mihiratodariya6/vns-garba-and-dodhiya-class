@@ -55,21 +55,25 @@
         .section { padding: 80px 10%; }
         .grid-container { display: grid; gap: 30px; }
         
-        /* POWERFUL MOBILE GRID (Auto-fit) */
         .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
-        /* Dynamic Theme Cards CSS */
+        /* -----------------------------------------------------------
+           UPDATED DYNAMIC THEME CARDS CSS (ફોટો કપાય નહિ એના માટે)
+           ----------------------------------------------------------- */
         .theme-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; border: 1px solid #eee;}
         .theme-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(255, 87, 34, 0.2); border-color: var(--orange); }
-        .theme-img-wrapper { width: 100%; height: 220px; overflow: hidden; background: #000; }
-        .theme-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.9; }
-        .theme-card:hover .theme-img-wrapper img { transform: scale(1.08); opacity: 1; }
-        .theme-content { padding: 25px; text-align: left; flex-grow: 1; border-bottom: 5px solid var(--orange); display: flex; flex-direction: column;}
+        
+        /* અહી હાઈટ Auto કરી છે જેથી પોસ્ટર આખું દેખાય */
+        .theme-img-wrapper { width: 100%; background: #FFF8F0; overflow: hidden; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--orange); }
+        .theme-img-wrapper img { width: 100%; height: auto; max-height: 400px; object-fit: contain; transition: 0.5s; display: block; margin: 0 auto; }
+        .theme-card:hover .theme-img-wrapper img { transform: scale(1.05); }
+        
+        .theme-content { padding: 25px; text-align: left; flex-grow: 1; display: flex; flex-direction: column;}
         .theme-date { display: inline-block; align-self: flex-start; background: #fff8f5; border: 1px solid var(--orange); color: var(--orange); padding: 6px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px; }
         .theme-content h3 { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 10px; line-height: 1.3;}
         .theme-content p { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 15px; flex-grow: 1;}
-        .book-btn { display: inline-block; text-align: center; background: var(--red); color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; transition: 0.3s;}
-        .book-btn:hover { background: var(--orange); }
+        .book-btn { display: inline-block; text-align: center; background: var(--red); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; transition: 0.3s; width: 100%; box-sizing: border-box; font-size: 1.1rem; text-transform: uppercase;}
+        .book-btn:hover { background: var(--orange); box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3); }
 
         /* Footer */
         footer { background: var(--text-dark); color: #fff; padding: 60px 10% 30px; border-top: 5px solid var(--orange); }
@@ -79,7 +83,7 @@
         .footer-col a:hover { color: var(--orange); padding-left: 5px; }
 
         /* ---------------------------------------------------------
-           STRICT MOBILE RESPONSIVENESS (Phone ma set thay jay)
+           STRICT MOBILE RESPONSIVENESS (ફોન માટે પરફેક્ટ ફિટ)
            --------------------------------------------------------- */
         @media (max-width: 768px) {
             nav { padding: 12px; flex-direction: column; background: var(--glass-bg); gap: 10px; }
@@ -93,10 +97,11 @@
             .section { padding: 40px 5% !important; }
             .section-title { font-size: 1.8rem !important; }
             
-            /* Make cards stack 1 by 1 on mobile perfectly */
             .grid-container, .grid-3 { grid-template-columns: 1fr !important; gap: 20px; }
             
-            .theme-img-wrapper { height: 200px; }
+            /* અહીથી ફિક્સ હાઈટ કાઢી નાખી છે જેથી ફોટા ના કપાય */
+            .theme-img-wrapper img { max-height: 300px; }
+            
             .theme-content { padding: 20px; }
             .theme-content h3 { font-size: 1.3rem; }
             
@@ -162,40 +167,36 @@
     </footer>
 
     <script>
-        // ---------------------------------------------------------
-        // અગત્યનું: અહીં તારા Firebase ના સેટિંગ્સ નાખવા પડશે! 
-        // (જે તેં admin.html માં નાખ્યા હતા એ જ સેમ કોડ)
-        // ---------------------------------------------------------
         const firebaseConfig = {
-  apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
-  authDomain: "vns-garba-and-dodhiya-classes.firebaseapp.com",
-  databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
-  projectId: "vns-garba-and-dodhiya-classes",
-  storageBucket: "vns-garba-and-dodhiya-classes.firebasestorage.app",
-  messagingSenderId: "29528312835",
-  appId: "1:29528312835:web:bf7e6e283c09236df75236",
-  measurementId: "G-LQ9GB7GS4J"
-};
+            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+            authDomain: "vns-garba-and-dodhiya-classes.firebaseapp.com",
+            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+            projectId: "vns-garba-and-dodhiya-classes",
+            storageBucket: "vns-garba-and-dodhiya-classes.firebasestorage.app",
+            messagingSenderId: "29528312835",
+            appId: "1:29528312835:web:bf7e6e283c09236df75236",
+            measurementId: "G-LQ9GB7GS4J"
+        };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.database();
 
-        // ડેટાબેઝમાંથી ઈવેન્ટ્સ લાવવાનું ફંક્શન
         const eventsContainer = document.getElementById('dynamic-events');
         const loadingText = document.getElementById('loading-text');
 
         db.ref('events').on('value', (snapshot) => {
-            eventsContainer.innerHTML = ''; // જૂનો ડેટા સાફ કરો
+            eventsContainer.innerHTML = ''; 
             
             if (snapshot.exists()) {
                 let eventsHTML = '';
-                // ડેટાબેઝમાં જેટલી ઈવેન્ટ્સ હશે, તેટલા કાર્ડ જાતે જ બની જશે
-                snapshot.forEach((childSnapshot) => {
-                    const event = childSnapshot.val();
-                    
+                // નવી ઈવેન્ટ સૌથી ઉપર દેખાય એના માટે reverse order
+                const events = [];
+                snapshot.forEach((child) => { events.push(child.val()); });
+                events.reverse();
+
+                events.forEach((event) => {
                     eventsHTML += `
                         <div class="theme-card fade-in visible">
                             <div class="theme-img-wrapper">
@@ -212,7 +213,6 @@
                 });
                 eventsContainer.innerHTML = eventsHTML;
             } else {
-                // જો ડેટાબેઝ ખાલી હોય તો આ મેસેજ દેખાશે
                 eventsContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--red); font-weight: bold; font-size: 1.2rem;">New events coming very soon! Stay tuned.</p>';
             }
         });
