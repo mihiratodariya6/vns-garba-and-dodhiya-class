@@ -23,7 +23,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body>
 
@@ -38,7 +37,7 @@
             <label>Event Date (e.g., 15 September, 2026)</label>
             <input type="text" id="eventDate" placeholder="Enter date here..." required>
 
-            <label>Upload Event Image</label>
+            <label>Upload Event Image (100% Free)</label>
             <input type="file" id="eventImage" accept="image/*" required>
 
             <label>Event Details</label>
@@ -49,7 +48,14 @@
     </div>
 
     <script>
-        // તારું ફાયરબેઝ કોન્ફિગરેશન 
+        // ---------------------------------------------------------
+        // ૧. IMGBB API KEY (અહીં તારો કોડ નાખ)
+        // ---------------------------------------------------------
+        const IMGBB_API_KEY = "9f760ae89c17e720f59310f8f38ce7cb"; 
+
+        // ---------------------------------------------------------
+        // ૨. FIREBASE CONFIG 
+        // ---------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
             authDomain: "vns-garba-and-dodhiya-classes.firebaseapp.com",
@@ -61,12 +67,10 @@
             measurementId: "G-LQ9GB7GS4J"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.database();
-        const storage = firebase.storage();
 
         document.getElementById('eventForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -79,29 +83,41 @@
                 const title = document.getElementById('eventTitle').value;
                 const date = document.getElementById('eventDate').value;
                 const desc = document.getElementById('eventDesc').value;
-                const file = document.getElementById('eventImage').files[0];
+                const fileInput = document.getElementById('eventImage');
+                const file = fileInput.files[0];
 
-                // 1. ફોટાને Firebase Storage માં અપલોડ કરો (યુનિક નામ સાથે જેથી જૂનો ફોટો ડીલીટ ના થાય)
-                const storageRef = storage.ref('events/' + new Date().getTime() + '_' + file.name);
-                await storageRef.put(file);
-                
-                // 2. અપલોડ થયેલા ફોટાની ઓરિજિનલ લિંક મેળવો
-                const imageUrl = await storageRef.getDownloadURL();
+                // જુગાડ: પહેલા ફોટો ImgBB (ફ્રી સર્વર) પર મોકલો
+                const formData = new FormData();
+                formData.append('image', file);
 
-                // 3. બધી વિગતો અને ફોટાની લિંકને ડેટાબેઝમાં સેવ કરો
-                await db.ref('events').push({
-                    title: title,
-                    date: date,
-                    image: imageUrl,
-                    desc: desc,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
                 });
 
-                alert("Boom! 💥 Event & Image Successfully Posted to Live Website!");
-                document.getElementById('eventForm').reset();
+                const imgbbData = await imgbbResponse.json();
+                
+                if(imgbbData.success) {
+                    const imageUrl = imgbbData.data.url; // ફ્રી લિંક મળી ગઈ!
+
+                    // હવે આ લિંકને આપણા ફ્રી ફાયરબેઝ ડેટાબેઝમાં સેવ કરી દો
+                    await db.ref('events').push({
+                        title: title,
+                        date: date,
+                        image: imageUrl,
+                        desc: desc,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+
+                    alert("Boom! 💥 Event & Image Successfully Posted for FREE!");
+                    document.getElementById('eventForm').reset();
+                } else {
+                    alert("Image upload failed. Check API Key.");
+                }
+
             } catch (error) {
-                console.error("Error adding event: ", error);
-                alert("Error! Please make sure Firebase Storage 'Rules' are set to True.");
+                console.error("Error: ", error);
+                alert("Something went wrong!");
             } finally {
                 btn.innerText = "Publish Event to Website";
                 btn.disabled = false;
