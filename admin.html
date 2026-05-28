@@ -14,13 +14,16 @@
         label { font-weight: 600; color: #333; display: block; margin-bottom: 8px; font-size: 0.95rem; }
         input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box; background: #fafafa; transition: 0.3s; }
         input:focus, textarea:focus { border-color: #FF5722; outline: none; background: white; box-shadow: 0 0 5px rgba(255, 87, 34, 0.2); }
+        input[type="file"] { padding: 10px; background: #fff; cursor: pointer; border: 1px dashed #FF5722; }
         
         button { width: 100%; padding: 15px; background: linear-gradient(45deg, #FF5722, #C62828); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
         button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(198, 40, 40, 0.4); }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body>
 
@@ -35,62 +38,74 @@
             <label>Event Date (e.g., 15 September, 2026)</label>
             <input type="text" id="eventDate" placeholder="Enter date here..." required>
 
-            <label>Image Name (e.g., blue-day.jpg)</label>
-            <input type="text" id="eventImage" placeholder="group-photo.jpg" required>
+            <label>Upload Event Image</label>
+            <input type="file" id="eventImage" accept="image/*" required>
 
             <label>Event Details</label>
             <textarea id="eventDesc" rows="4" placeholder="Write what will happen on this day..." required></textarea>
 
-            <button type="submit">Publish Event to Website</button>
+            <button type="submit" id="submitBtn">Publish Event to Website</button>
         </form>
     </div>
 
     <script>
-        // ---------------------------------------------------------
-        // 1. YOUR FIREBASE CONFIGURATION (API KEYS) GO HERE
-        // ---------------------------------------------------------
+        // તારું ફાયરબેઝ કોન્ફિગરેશન 
         const firebaseConfig = {
-  apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
-  authDomain: "vns-garba-and-dodhiya-classes.firebaseapp.com",
-  databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
-  projectId: "vns-garba-and-dodhiya-classes",
-  storageBucket: "vns-garba-and-dodhiya-classes.firebasestorage.app",
-  messagingSenderId: "29528312835",
-  appId: "1:29528312835:web:bf7e6e283c09236df75236",
-  measurementId: "G-LQ9GB7GS4J"
-};
+            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+            authDomain: "vns-garba-and-dodhiya-classes.firebaseapp.com",
+            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+            projectId: "vns-garba-and-dodhiya-classes",
+            storageBucket: "vns-garba-and-dodhiya-classes.firebasestorage.app",
+            messagingSenderId: "29528312835",
+            appId: "1:29528312835:web:bf7e6e283c09236df75236",
+            measurementId: "G-LQ9GB7GS4J"
+        };
 
         // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.database();
+        const storage = firebase.storage();
 
-        // ---------------------------------------------------------
-        // 2. SAVE DATA TO FIREBASE WHEN BUTTON IS CLICKED
-        // ---------------------------------------------------------
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const title = document.getElementById('eventTitle').value;
-            const date = document.getElementById('eventDate').value;
-            const image = document.getElementById('eventImage').value;
-            const desc = document.getElementById('eventDesc').value;
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Uploading Image... Please wait ⏳";
+            btn.disabled = true;
 
-            // Push to 'events' collection/node in Realtime Database
-            db.ref('events').push({
-                title: title,
-                date: date,
-                image: image,
-                desc: desc,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                alert("Boom! 💥 Event Successfully Posted to Live Website!");
+            try {
+                const title = document.getElementById('eventTitle').value;
+                const date = document.getElementById('eventDate').value;
+                const desc = document.getElementById('eventDesc').value;
+                const file = document.getElementById('eventImage').files[0];
+
+                // 1. ફોટાને Firebase Storage માં અપલોડ કરો (યુનિક નામ સાથે જેથી જૂનો ફોટો ડીલીટ ના થાય)
+                const storageRef = storage.ref('events/' + new Date().getTime() + '_' + file.name);
+                await storageRef.put(file);
+                
+                // 2. અપલોડ થયેલા ફોટાની ઓરિજિનલ લિંક મેળવો
+                const imageUrl = await storageRef.getDownloadURL();
+
+                // 3. બધી વિગતો અને ફોટાની લિંકને ડેટાબેઝમાં સેવ કરો
+                await db.ref('events').push({
+                    title: title,
+                    date: date,
+                    image: imageUrl,
+                    desc: desc,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                alert("Boom! 💥 Event & Image Successfully Posted to Live Website!");
                 document.getElementById('eventForm').reset();
-            }).catch((error) => {
+            } catch (error) {
                 console.error("Error adding event: ", error);
-                alert("Error saving event. Please check Firebase Rules.");
-            });
+                alert("Error! Please make sure Firebase Storage 'Rules' are set to True.");
+            } finally {
+                btn.innerText = "Publish Event to Website";
+                btn.disabled = false;
+            }
         });
     </script>
 </body>
