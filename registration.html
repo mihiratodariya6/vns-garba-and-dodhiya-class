@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VIP Registration | V & S Garba</title>
@@ -317,6 +320,12 @@
     </div>
 
     <script>
+        const firebaseConfig = {
+    apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+    databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+    projectId: "vns-garba-and-dodhiya-classes"
+};
+firebase.initializeApp(firebaseConfig);
         document.getElementById('vipRegistrationForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
 
