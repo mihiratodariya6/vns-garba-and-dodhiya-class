@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -306,7 +306,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn">
+            <button type="submit" class="submit-btn" id="submitBtn">
                 Complete Registration <i class="fas fa-arrow-right"></i>
             </button>
             
@@ -321,13 +321,22 @@
 
     <script>
         const firebaseConfig = {
-    apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
-    databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
-    projectId: "vns-garba-and-dodhiya-classes"
-};
-firebase.initializeApp(firebaseConfig);
+            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+            projectId: "vns-garba-and-dodhiya-classes"
+        };
+        
+        // ડેટાબેઝ શરુ કરવા માટે નો કોડ
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
         document.getElementById('vipRegistrationForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
+            
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = `Processing... <i class="fas fa-spinner fa-spin"></i>`;
 
             const fName = document.getElementById('fName').value;
             const mName = document.getElementById('mName').value;
@@ -340,6 +349,7 @@ firebase.initializeApp(firebaseConfig);
             
             if(mobileRaw.length !== 10) {
                 alert("Please enter exactly 10 digits for the WhatsApp number.");
+                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
                 return;
             }
             const mobile = "+" + countryCode + " " + mobileRaw;
@@ -354,21 +364,47 @@ firebase.initializeApp(firebaseConfig);
             if (document.getElementById('male').checked) { gender = 'Male'; }
             else if (document.getElementById('female').checked) { gender = 'Female'; }
 
-            const ownerNumber = "916353757027"; // Kelvin Patel's number used in this file
+            // બધો ડેટા ભેગો કરીને એક પેકેટ (Object) બનાવ્યું
+            const formData = {
+                name: `${fName} ${mName} ${lName}`,
+                age: age,
+                dob: dob,
+                gender: gender,
+                phone: mobile,
+                email: email,
+                batch: batch,
+                payment: payment,
+                date: new Date().toLocaleString()
+            };
 
-            let whatsappMessage = `*New V&S Garba Registration!* 🔥\n\n`;
-            whatsappMessage += `*Name:* ${fName} ${mName} ${lName}\n`;
-            whatsappMessage += `*Age:* ${age} | *DOB:* ${dob} | *Gender:* ${gender}\n`;
-            whatsappMessage += `*Mobile:* ${mobile}\n`;
-            whatsappMessage += `*Email:* ${email}\n\n`;
-            whatsappMessage += `*Selected Batch:* ${batch}\n`;
-            whatsappMessage += `*Payment Method:* ${payment}\n\n`;
-            whatsappMessage += `_Thank you for registering!_`;
+            // આ કમાન્ડ ડેટાને તારા ફાયરબેઝ (view-registrations) માં મોકલશે
+            db.ref('registrations').push(formData).then(() => {
+                
+                // ડેટા સેવ થયા પછી વોટ્સએપ પર મેસેજ જશે
+                const ownerNumber = "916353757027"; 
 
-            const encodedMessage = encodeURIComponent(whatsappMessage);
-            const whatsappUrl = `https://wa.me/${ownerNumber}?text=${encodedMessage}`;
+                let whatsappMessage = `*New V&S Garba Registration!* 🔥\n\n`;
+                whatsappMessage += `*Name:* ${formData.name}\n`;
+                whatsappMessage += `*Age:* ${formData.age} | *DOB:* ${formData.dob} | *Gender:* ${formData.gender}\n`;
+                whatsappMessage += `*Mobile:* ${formData.phone}\n`;
+                whatsappMessage += `*Email:* ${formData.email}\n\n`;
+                whatsappMessage += `*Selected Batch:* ${formData.batch}\n`;
+                whatsappMessage += `*Payment Method:* ${formData.payment}\n\n`;
+                whatsappMessage += `_Thank you for registering!_`;
 
-            window.open(whatsappUrl, '_blank');
+                const encodedMessage = encodeURIComponent(whatsappMessage);
+                const whatsappUrl = `https://wa.me/${ownerNumber}?text=${encodedMessage}`;
+
+                window.open(whatsappUrl, '_blank');
+                
+                // ફોર્મ ક્લીયર કરી દેશે 
+                document.getElementById('vipRegistrationForm').reset();
+                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
+                
+            }).catch((error) => {
+                alert("Error saving data: " + error.message);
+                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
+            });
         });
     </script>
 </body>
