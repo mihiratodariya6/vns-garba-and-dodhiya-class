@@ -381,21 +381,35 @@
             db.ref('registrations').push(formData).then(() => {
                 
                 // ડેટા સેવ થયા પછી વોટ્સએપ પર મેસેજ જશે
-                const ownerNumber = "916353757027"; 
+                const BOT_TOKEN = "8526718255:AAEkKAJ5OKXHsxIYedl277x6exDDQctdtCg";
+const CHAT_ID = "-1004295830268";
 
-                let whatsappMessage = `*New V&S Garba Registration!* 🔥\n\n`;
-                whatsappMessage += `*Name:* ${formData.name}\n`;
-                whatsappMessage += `*Age:* ${formData.age} | *DOB:* ${formData.dob} | *Gender:* ${formData.gender}\n`;
-                whatsappMessage += `*Mobile:* ${formData.phone}\n`;
-                whatsappMessage += `*Email:* ${formData.email}\n\n`;
-                whatsappMessage += `*Selected Batch:* ${formData.batch}\n`;
-                whatsappMessage += `*Payment Method:* ${formData.payment}\n\n`;
-                whatsappMessage += `_Thank you for registering!_`;
+const telegramMessage =
+`🎉 New V&S Garba Registration
 
-                const encodedMessage = encodeURIComponent(whatsappMessage);
-                const whatsappUrl = `https://wa.me/${ownerNumber}?text=${encodedMessage}`;
+👤 Name: ${formData.name}
+🎂 Age: ${formData.age}
+📅 DOB: ${formData.dob}
+🚻 Gender: ${formData.gender}
 
-                window.open(whatsappUrl, '_blank');
+📱 Mobile: ${formData.phone}
+📧 Email: ${formData.email}
+
+🕒 Batch: ${formData.batch}
+💳 Payment: ${formData.payment}
+
+🗓 Date: ${formData.date}`;
+
+fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: telegramMessage
+    })
+});
                 
                 // ફોર્મ ક્લીયર કરી દેશે 
                 document.getElementById('vipRegistrationForm').reset();
