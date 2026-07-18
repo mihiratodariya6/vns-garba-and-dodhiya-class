@@ -1,0 +1,29 @@
+{
+  "name": "vns-garba-and-dodhiya-class",
+  "version": "1.0.0",
+  "description": "Website live update.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mihiratodariya6/vns-garba-and-dodhiya-class.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mihiratodariya6/vns-garba-and-dodhiya-class/issues"
+  },
+  "homepage": "https://github.com/mihiratodariya6/vns-garba-and-dodhiya-class#readme",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.2.0"
+  }
+}
