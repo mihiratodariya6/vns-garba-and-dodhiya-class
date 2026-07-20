@@ -28,12 +28,12 @@
         .main-container { width: 100%; max-width: 500px; position: relative; }
         .glass-card {
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-            border-radius: 25px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.20);
+            border-radius: 25px; padding: 35px 25px; box-shadow: 0 25px 60px rgba(0,0,0,0.20);
             border: 1px solid rgba(255,255,255,0.5); text-align: center;
         }
         
-        .logo-area img { width: 90px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); margin-bottom: 10px; }
-        h2 { color: #c62828; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; }
+        .logo-area img { width: 80px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); margin-bottom: 10px; }
+        h2 { color: #c62828; font-weight: 800; font-size: 1.5rem; margin-bottom: 5px; }
         p.subtitle { font-size: 13px; color: #666; margin-bottom: 25px; }
 
         .input-group { position: relative; margin-bottom: 20px; text-align: left; }
@@ -48,14 +48,36 @@
         .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
         .btn-check { background: #333; margin-bottom: 20px; }
 
-        .details-box { background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; }
-        .details-box p { font-size: 14px; margin-bottom: 5px; }
-        .details-box h3 { color: #c62828; margin-top: 10px; font-size: 22px; }
+        /* Student Details Box */
+        .details-box { background: #f9f9f9; padding: 20px; border-radius: 15px; border-left: 5px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .details-box p { font-size: 13px; margin-bottom: 8px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
+        .details-box h3 { color: #c62828; margin-top: 15px; font-size: 20px; text-align: center; background: #fff0eb; padding: 10px; border-radius: 10px; border: 1px solid #ffd5c2; }
+        
+        .student-list { margin-top: 15px; background: white; padding: 10px; border-radius: 10px; border: 1px solid #ddd; max-height: 150px; overflow-y: auto; }
+        .student-list h4 { font-size: 14px; color: #ff5722; margin-bottom: 10px; }
+        .student-list ul { list-style: none; padding: 0; }
+        .student-list li { font-size: 12px; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
+        .student-list li:last-child { border-bottom: none; }
 
-        .qr-box { border: 2px dashed #ccc; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
-        .qr-box img { width: 180px; border-radius: 10px; margin: 10px 0; }
+        /* Status Messages */
+        .pending-msg { background: #fff3cd; color: #ff9800; padding: 15px; border-radius: 10px; border: 2px dashed #ff9800; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
+        .approved-msg { background: #e8f5e9; color: #4CAF50; padding: 10px; border-radius: 10px; border: 2px solid #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
 
-        /* Loader */
+        /* Payment Section Update */
+        .qr-box { border: 2px dashed #ccc; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: #fff; text-align: center; }
+        .qr-box img { width: 220px; height: 220px; border-radius: 10px; margin: 10px 0; border: 3px solid #eee; padding: 5px; }
+        
+        .upi-link { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff0eb; border: 1px dashed #ff5722; border-radius: 20px; color: #c62828; font-weight: bold; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .upi-link:hover { background: #ff5722; color: #fff; }
+
+        /* Social Links */
+        .social-links { margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; }
+        .social-links h4 { margin-bottom: 10px; color: #555; font-size: 14px; }
+        .social-wrap { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .social-wrap a { text-decoration: none; color: #fff; padding: 8px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; transition: 0.3s; }
+        .social-wrap a:hover { transform: translateY(-2px); }
+
+        /* Overlays */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
@@ -68,9 +90,9 @@
         <div class="glass-card">
             
             <div class="logo-area">
-                <img src="favicon.png" alt="V&S Logo" onerror="this.src='https://via.placeholder.com/90?text=V%26S'">
+                <img src="favicon.png" alt="V&S Logo" onerror="this.src='https://via.placeholder.com/80?text=V%26S'">
                 <h2>Payment Portal</h2>
-                <p class="subtitle">Enter your Token Number to proceed with payment</p>
+                <p class="subtitle">Enter your Token Number to verify and pay</p>
             </div>
 
             <!-- Token Entry Section -->
@@ -80,39 +102,75 @@
                     <input type="text" id="tokenInput" placeholder="e.g. VNS-12345" style="text-transform: uppercase;" required>
                     <i class="fas fa-ticket-alt"></i>
                 </div>
-                <button class="btn btn-check" onclick="verifyToken()">Verify Token <i class="fas fa-search"></i></button>
+                <button class="btn btn-check" onclick="verifyToken()">Verify Details <i class="fas fa-search"></i></button>
             </div>
 
-            <!-- Payment Section (Hidden initially) -->
-            <form id="paymentForm" style="display: none;">
+            <!-- Details Section -->
+            <div class="details-box" id="studentDetails">
+                <p><i class="fas fa-users" style="color:#ff5722; margin-right:5px;"></i> <strong>Type:</strong> <span id="dispType"></span></p>
+                <p><i class="fas fa-phone" style="color:#ff5722; margin-right:5px;"></i> <strong>Leader Mobile:</strong> <span id="dispMob"></span></p>
+                <p><i class="fas fa-clock" style="color:#ff5722; margin-right:5px;"></i> <strong>Batch:</strong> <span id="dispBatch"></span></p>
                 
-                <div class="details-box" id="studentDetails">
-                    <p><strong>Type:</strong> <span id="dispType"></span></p>
-                    <p><strong>Mobile:</strong> <span id="dispMob"></span></p>
-                    <h3>Total Fee: <span id="dispFee">₹0</span></h3>
+                <div class="student-list" id="studentsListDiv">
+                    <h4><i class="fas fa-list-ul"></i> Students List:</h4>
+                    <ul id="studentsUl"></ul>
                 </div>
 
+                <h3>Total Fee: <span id="dispFee">₹0</span></h3>
+            </div>
+
+            <!-- Pending Message -->
+            <div class="pending-msg" id="pendingMsg">
+                <i class="fas fa-hourglass-half fa-spin"></i> Your Token is Pending.<br>
+                <span style="font-size: 12px; font-weight: normal; color: #666;">Please wait for Admin approval on Telegram. The payment form will open once approved.</span>
+            </div>
+
+            <div class="approved-msg" id="approvedMsg">
+                <i class="fas fa-check-circle"></i> Token Approved! Proceed to Pay.
+            </div>
+
+            <!-- Payment Form -->
+            <form id="paymentForm" style="display: none;">
+                
                 <div class="qr-box" id="qrContainer">
-                    <p style="font-weight: bold; color: #333;">Scan QR to Pay</p>
-                    <!-- તારો અસલી QR Code ની લિંક અહિંયા નાખજે -->
-                    <img src="https://via.placeholder.com/180x180.png?text=V%26S+QR+Code" alt="QR Code">
-                    <p style="font-size: 13px; color: #666; font-weight: bold;">UPI ID: vnsgarba@upi</p>
+                    <p style="font-weight: bold; color: #333; margin-bottom: 5px;">Scan QR to Pay</p>
+                    
+                    <!-- Direct Clickable QR and Link -->
+                    <a href="upi://pay?pa=vnsgarba@upi&pn=V%20%26%20S%20Garba%20Classes" title="Click to pay">
+                        <img src="qr.jpeg" alt="QR Code" onerror="this.src='https://via.placeholder.com/220x220.png?text=QR+Code'">
+                    </a>
+                    <br>
+                    <a href="upi://pay?pa=vnsgarba@upi&pn=V%20%26%20S%20Garba%20Classes" class="upi-link">
+                        <i class="fas fa-external-link-alt"></i> Pay via App (UPI: vnsgarba@upi)
+                    </a>
                 </div>
 
                 <div class="input-group">
-                    <label>Transaction ID / UTR Number</label>
-                    <input type="text" id="txnId" placeholder="12 Digit UTR Number" required>
+                    <label>Transaction ID / UTR Number <span style="color:#ff5722; font-size:11px;">(Optional)</span></label>
+                    <input type="text" id="txnId" placeholder="Enter UTR (Optional)">
                     <i class="fas fa-receipt"></i>
                 </div>
 
                 <div class="input-group file-group">
-                    <label>Upload Payment Screenshot</label>
+                    <label>Upload Payment Screenshot <span style="color:red;">*</span></label>
                     <input type="file" id="payScreenshot" accept="image/*" required>
                 </div>
 
-                <button type="submit" class="btn">Submit Payment <i class="fas fa-check-circle"></i></button>
-                <button type="button" class="btn" style="background: #999; margin-top: 10px;" onclick="window.location.reload()">Back</button>
+                <button type="submit" class="btn">Submit Payment <i class="fas fa-paper-plane"></i></button>
             </form>
+
+            <button type="button" class="btn" id="backBtn" style="background: #e0e0e0; color: #555; margin-top: 15px; display: none;" onclick="window.location.reload()"><i class="fas fa-arrow-left"></i> Check Another Token</button>
+
+            <!-- Social Links Area -->
+            <div class="social-links" id="socialLinksArea" style="display: none;">
+                <h4>✨ Follow & Join Us</h4>
+                <div class="social-wrap">
+                    <a href="https://www.instagram.com/vnsgarbanddodhiya?igsh=aWpqa2xtYjY3MnJj" target="_blank" style="background: #E1306C;"><i class="fab fa-instagram"></i> Main</a>
+                    <a href="https://www.instagram.com/vnsgarbacommunity?igsh=YjZ5M2xtY2o1M3Fz" target="_blank" style="background: #C13584;"><i class="fab fa-instagram"></i> Community</a>
+                    <a href="https://www.facebook.com/share/1SW1efRYPy/" target="_blank" style="background: #1877F2;"><i class="fab fa-facebook-f"></i> FB</a>
+                    <a href="https://chat.whatsapp.com/BcjVSvaRJPT59ZybZ5YSXv" target="_blank" style="background: #25D366;"><i class="fab fa-whatsapp"></i> WA Group</a>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -121,7 +179,7 @@
     <div class="overlay" id="loadingOverlay">
         <div class="popup-box">
             <div class="loader"></div>
-            <h3 style="color:#ff5722;">Verifying...</h3>
+            <h3 style="color:#ff5722;">Fetching Details...</h3>
             <p style="font-size:14px; margin-top:10px;">Please wait.</p>
         </div>
     </div>
@@ -130,7 +188,7 @@
         <div class="popup-box">
             <i class="fas fa-check-circle" style="font-size: 60px; color: #4CAF50; margin-bottom: 15px;"></i>
             <h3 style="color:#4CAF50;">Payment Submitted!</h3>
-            <p style="font-size:14px; margin-top:10px;">Your payment details have been sent to the Admin. Your admission will be confirmed shortly.</p>
+            <p style="font-size:14px; margin-top:10px;">Your transaction screenshot has been sent to the Admin.</p>
             <button class="btn" style="margin-top:20px; width:100%;" onclick="window.location.href='index.html'">Back to Home</button>
         </div>
     </div>
@@ -150,8 +208,13 @@
 
         let verifiedAmount = 0;
         let verifiedToken = "";
+        
+        // પેમેન્ટ મેસેજ માટે ડેટા સાચવવાના વેરીએબલ્સ
+        let verifiedType = "";
+        let verifiedLeaderName = "";
+        let verifiedMobile = "";
+        let verifiedTotalStudents = 1;
 
-        // 1. Verify Token Function
         async function verifyToken() {
             let tokenInput = document.getElementById('tokenInput').value.trim().toUpperCase();
             if(!tokenInput) { alert("Please enter Token Number"); return; }
@@ -163,21 +226,48 @@
                 let snapshot = await db.ref('registrations/' + tokenInput).once('value');
                 if(snapshot.exists()) {
                     let data = snapshot.val();
+                    
+                    // ડેટા સ્ટોર કરી લો જેથી પેમેન્ટ વખતે કામ લાગે
                     verifiedToken = tokenInput;
                     verifiedAmount = data.totalAmount;
+                    verifiedType = data.type.toUpperCase();
+                    verifiedMobile = data.mobile;
+                    verifiedTotalStudents = data.totalStudents;
+                    if(data.students && data.students.length > 0) {
+                        verifiedLeaderName = data.students[0].name; // પહેલા સ્ટુડન્ટનું નામ લીડર તરીકે લેશે
+                    }
 
-                    // Show Details
-                    document.getElementById('dispType').innerText = data.type.toUpperCase();
-                    document.getElementById('dispMob').innerText = data.mobile;
-                    document.getElementById('dispFee').innerText = `₹${data.totalAmount}`;
+                    // ડિસ્પ્લે કરો
+                    document.getElementById('dispType').innerText = verifiedType + ` (${verifiedTotalStudents} Students)`;
+                    document.getElementById('dispMob').innerText = verifiedMobile;
+                    document.getElementById('dispBatch').innerText = data.batch;
+                    document.getElementById('dispFee').innerText = `₹${verifiedAmount}`;
                     
-                    // Switch UI
+                    let ul = document.getElementById('studentsUl');
+                    ul.innerHTML = "";
+                    if(data.students && data.students.length > 0) {
+                        data.students.forEach((s, idx) => {
+                            ul.innerHTML += `<li><b>${idx+1}. ${s.name}</b> (Age: ${s.age}, ${s.gender})</li>`;
+                        });
+                    }
+
                     document.getElementById('tokenSection').style.display = 'none';
                     document.getElementById('studentDetails').style.display = 'block';
-                    document.getElementById('qrContainer').style.display = 'block';
-                    document.getElementById('paymentForm').style.display = 'block';
+                    document.getElementById('backBtn').style.display = 'block';
+                    document.getElementById('socialLinksArea').style.display = 'block';
+
+                    if(data.status === "Approved" || data.status === "Approve") {
+                        document.getElementById('approvedMsg').style.display = 'block';
+                        document.getElementById('paymentForm').style.display = 'block';
+                        document.getElementById('pendingMsg').style.display = 'none';
+                    } else {
+                        document.getElementById('pendingMsg').style.display = 'block';
+                        document.getElementById('approvedMsg').style.display = 'none';
+                        document.getElementById('paymentForm').style.display = 'none';
+                    }
+
                 } else {
-                    alert("Token not found! Please check the token number or contact Admin.");
+                    alert("Token not found! Please check the token number.");
                 }
             } catch(e) {
                 alert("Error checking token. Try again.");
@@ -191,33 +281,37 @@
             document.getElementById('loadingOverlay').style.display = 'flex';
             document.querySelector('#loadingOverlay h3').innerText = "Submitting Payment...";
 
-            let txnId = document.getElementById('txnId').value;
+            let txnId = document.getElementById('txnId').value.trim() || "Not Provided (Screenshot Only)";
             let screenshot = document.getElementById('payScreenshot').files[0];
 
-            let msg = `💰 *Payment Received Alert*\n\n`;
+            // નવો અને ડિટેલ વાળો ટેલિગ્રામ મેસેજ
+            let msg = `💰 *New Payment Submitted!*\n\n`;
             msg += `🎟 *Token:* ${verifiedToken}\n`;
-            msg += `🧾 *Transaction ID:* ${txnId}\n`;
-            msg += `💵 *Amount:* ₹${verifiedAmount}\n`;
-            msg += `⏳ *Status:* Pending Admin Verification`;
+            msg += `👤 *Name:* ${verifiedLeaderName}\n`;
+            msg += `📱 *Mobile:* ${verifiedMobile}\n`;
+            msg += `📋 *Type:* ${verifiedType} (${verifiedTotalStudents} Entry)\n\n`;
+            msg += `💵 *Amount Paid:* ₹${verifiedAmount}\n`;
+            msg += `🧾 *UTR Number:* ${txnId}\n`;
+            msg += `⏳ *Status:* Please Check Screenshot`;
 
             try {
-                // Update Firebase
+                // Update Firebase Status
                 await db.ref('registrations/' + verifiedToken).update({
                     transactionId: txnId,
-                    paymentStatus: "Screenshot Submitted"
+                    status: "Payment Screenshot Sent"
                 });
 
-                // Send Msg to Telegram
+                // Send Text Msg to Telegram
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: "Markdown" })
                 });
 
-                // Send Screenshot to Telegram
+                // Send Screenshot to Telegram with short caption
                 let form = new FormData();
                 form.append("chat_id", CHAT_ID);
                 form.append("photo", screenshot);
-                form.append("caption", `Payment Screenshot for ${verifiedToken}`);
+                form.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName}`);
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
 
                 document.getElementById('loadingOverlay').style.display = 'none';

@@ -196,6 +196,14 @@
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
+                    <div class="input-group" style="margin-bottom: 20px;">
+    <label>Payment Method (પેમેન્ટ કઈ રીતે કરશો?)</label>
+    <select id="payMethod" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #ddd;" required>
+        <option value="" disabled selected>Select Payment Method...</option>
+        <option value="Online">Online (Pay via Portal)</option>
+        <option value="Cash">Cash (Pay at Class)</option>
+    </select>
+</div>
                     
                     <div class="btn-flex">
                         <button type="button" class="btn btn-secondary" onclick="changeStep(2)">Back</button>
@@ -263,6 +271,15 @@
     </div>
 
  <script>
+        // FIREBASE SETUP
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+            projectId: "vns-garba-and-dodhiya-classes"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
         // TELEGRAM BOT SETUP
         const BOT_TOKEN = "8526718255:AAEkKAJ5OKXHsxIYedl277x6exDDQctdtCg";
         const CHAT_ID = "-1004295830268";
@@ -280,24 +297,15 @@
         }
 
         function goToStep2() {
-            if(!currentType) { 
-                alert("Please select Registration Type!"); 
-                return; 
-            }
-            
+            if(!currentType) { alert("Please select Registration Type!"); return; }
             let countInput = document.getElementById('memberCount').value;
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
-            
-            if(currentType === 'group' && totalStudents < 2) { 
-                alert("Group must have at least 2 members!"); 
-                return; 
-            }
+            if(currentType === 'group' && totalStudents < 2) { alert("Group must have at least 2 members!"); return; }
             
             totalAmount = currentType === 'single' ? 1500 : (totalStudents * 1400);
             
             let container = document.getElementById('dynamic-students');
             container.innerHTML = '';
-            
             for(let i = 1; i <= totalStudents; i++) {
                 container.innerHTML += `
                     <div class="student-block">
@@ -336,29 +344,19 @@
 
         function goToStep3() {
             for(let i = 1; i <= totalStudents; i++) {
-                let fName = document.getElementById(`fName_${i}`).value;
-                let lName = document.getElementById(`lName_${i}`).value;
-                let stdMob = document.getElementById(`stdMobile_${i}`).value;
-                let aadhaarFiles = document.getElementById(`aadhaar_${i}`).files;
-                let photoFiles = document.getElementById(`photo_${i}`).files;
-
-                if(!fName || !lName || aadhaarFiles.length === 0 || photoFiles.length === 0) {
-                    alert(`Please fill all details and upload photos for Student ${i}`); 
-                    return;
+                if(!document.getElementById(`fName_${i}`).value || !document.getElementById(`lName_${i}`).value || document.getElementById(`aadhaar_${i}`).files.length === 0 || document.getElementById(`photo_${i}`).files.length === 0) {
+                    alert(`Please fill all details and upload photos for Student ${i}`); return;
                 }
-                if(stdMob.length !== 10) {
-                    alert(`Please enter a valid 10-digit mobile number for Student ${i}`); 
-                    return;
+                if(document.getElementById(`stdMobile_${i}`).value.length !== 10) {
+                    alert(`Please enter a valid 10-digit mobile number for Student ${i}`); return;
                 }
             }
             changeStep(3);
         }
 
         function changeStep(step) {
-            let formSteps = document.querySelectorAll('.form-step');
-            formSteps.forEach(el => el.classList.remove('active-step'));
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active-step'));
             document.getElementById('step' + step).classList.add('active-step');
-            
             for(let i = 1; i <= 3; i++) {
                 let st = document.getElementById('st' + i);
                 let ln = document.getElementById('ln' + i);
@@ -367,7 +365,8 @@
             }
         }
 
-        // બેકગ્રાઉન્ડ ઈમેજ અપલોડ ફંક્શન
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
         async function sendFileToTelegram(file, caption) {
             if(!file) return;
             let form = new FormData();
@@ -376,6 +375,7 @@
             form.append("caption", caption);
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
+                await sleep(500); 
             } catch(e) {
                 console.error("Image send error:", e);
             }
@@ -393,74 +393,101 @@
             
             let mob = document.getElementById('mobile').value;
             let btc = document.getElementById('batch').value;
+            let payMethod = document.getElementById('payMethod') ? document.getElementById('payMethod').value : "Not Selected"; // પેમેન્ટ મેથડ લીધી
             
-            if(mob.length !== 10 || !btc) { 
-                alert("Please provide a valid 10-digit Leader WhatsApp number and select a batch."); 
+            if(mob.length !== 10 || !btc || !payMethod) { 
+                alert("Please provide a valid 10-digit Leader WhatsApp number, select a batch, and choose a Payment Method."); 
                 return; 
             }
             
             document.getElementById('loadingOverlay').style.display = 'flex';
 
             const tokenNum = "VNS-" + Math.floor(10000 + Math.random() * 90000);
-            let countryCode = document.getElementById('countryCode').value;
-            let leaderMobile = "+" + countryCode + " " + mob;
+            let leaderMobile = "+" + document.getElementById('countryCode').value + " " + mob;
             let emailVal = document.getElementById('email').value || "Not Provided";
             let dateStr = new Date().toLocaleString();
             
+            let studentsData = []; 
+
+            // ડેટા ભેગો કરો
+            for(let i = 1; i <= totalStudents; i++) {
+                studentsData.push({
+                    name: `${document.getElementById(`fName_${i}`).value} ${document.getElementById(`mName_${i}`).value} ${document.getElementById(`lName_${i}`).value}`,
+                    age: document.getElementById(`age_${i}`).value,
+                    dob: document.getElementById(`dob_${i}`).value,
+                    gender: document.querySelector(`input[name="gender_${i}"]:checked`).value,
+                    mobile: document.getElementById(`stdMobile_${i}`).value
+                });
+            }
+
+            let fullData = {
+                token: tokenNum,
+                type: currentType,
+                totalStudents: totalStudents,
+                totalAmount: totalAmount,
+                mobile: leaderMobile,
+                email: emailVal,
+                batch: btc,
+                paymentMethod: payMethod, // Firebase માં સેવ થશે
+                date: dateStr,
+                status: "Pending Payment",
+                students: studentsData
+            };
+
             try {
-                // 1. ટેક્સ્ટ મેસેજ મોકલો (આ એક જ સેકન્ડમાં થઈ જશે)
+                // 1. સૌથી પહેલા Firebase માં સેવ કરો
+                await db.ref('registrations/' + tokenNum).set(fullData);
+
+                // 2. હવે ટેલિગ્રામ પર મેસેજ મોકલો (Payment Method અને Approve બટન સાથે!)
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
                 headerText += `🕒 <b>Batch:</b> ${btc}\n`;
+                headerText += `💳 <b>Payment Method:</b> ${payMethod}\n`; // ટેલિગ્રામ માં દેખાશે
                 headerText += `💰 <b>Total Amount:</b> ₹${totalAmount} (Pending)\n`;
                 headerText += `📱 <b>Leader WhatsApp:</b> ${leaderMobile}\n`;
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
                 headerText += `🗓 <b>Date:</b> ${dateStr}`;
 
+                // Approve બટન (Inline Keyboard)
+                let keyboard = {
+                    inline_keyboard: [[
+                        { text: `✅ Approve ${tokenNum}`, callback_data: `APPROVE_${tokenNum}` }
+                    ]]
+                };
+
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: headerText, parse_mode: "HTML" })
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        chat_id: CHAT_ID, 
+                        text: headerText, 
+                        parse_mode: "HTML",
+                        reply_markup: keyboard // આનાથી ટેલિગ્રામમાં બટન દેખાશે!
+                    })
                 });
+                await sleep(500);
 
-                // દરેક સ્ટુડન્ટની ડિટેલ્સ અને ફોટા (બેકગ્રાઉન્ડમાં)
                 for(let i = 1; i <= totalStudents; i++) {
-                    let gender = document.querySelector(`input[name="gender_${i}"]:checked`).value;
-                    let sName = `${document.getElementById(`fName_${i}`).value} ${document.getElementById(`mName_${i}`).value} ${document.getElementById(`lName_${i}`).value}`;
-                    let sAge = document.getElementById(`age_${i}`).value;
-                    let sDob = document.getElementById(`dob_${i}`).value;
-                    let sMob = document.getElementById(`stdMobile_${i}`).value;
-
-                    let studentText = `👤 <b>Student ${i} Details</b>\n\n`;
-                    studentText += `<b>Name:</b> ${sName}\n`;
-                    studentText += `<b>Age:</b> ${sAge} | <b>DOB:</b> ${sDob}\n`;
-                    studentText += `<b>Gender:</b> ${gender}\n`;
-                    studentText += `<b>Personal Mobile:</b> +91 ${sMob}`;
-
+                    let s = studentsData[i-1];
+                    let studentText = `👤 <b>Student ${i} Details</b>\n\n<b>Name:</b> ${s.name}\n<b>Age:</b> ${s.age} | <b>DOB:</b> ${s.dob}\n<b>Gender:</b> ${s.gender}\n<b>Personal Mobile:</b> +91 ${s.mobile}`;
+                    
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                        method: "POST", 
-                        headers: { "Content-Type": "application/json" },
+                        method: "POST", headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ chat_id: CHAT_ID, text: studentText, parse_mode: "HTML" })
                     });
+                    await sleep(500);
 
-                    // ફોટા બેકગ્રાઉન્ડમાં મોકલો (આમાં 'await' નથી વાપર્યું એટલે સ્ક્રીન નહિ ચોંટે)
                     let aadhaarFile = document.getElementById(`aadhaar_${i}`).files[0];
                     let photoFile = document.getElementById(`photo_${i}`).files[0];
                     sendFileToTelegram(aadhaarFile, `Aadhaar - ${tokenNum} - Std ${i}`);
                     sendFileToTelegram(photoFile, `Photo - ${tokenNum} - Std ${i}`);
                 }
-
             } catch (error) {
-                console.log("Error sending some messages, but continuing to show popup.");
+                console.log("Telegram delay, but data saved to Firebase.");
             } finally {
-                // 3. ગમે તે થાય, લોડિંગ બંધ થઈને પોપઅપ ખુલશે જ (Fail-safe)
+                // પોપઅપ બતાવો
                 try {
-                    if (document.getElementById('tokenDisplay')) {
-                        document.getElementById('tokenDisplay').innerText = tokenNum;
-                    }
-                    if (document.getElementById('popupTotalFee')) {
-                        document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
-                    }
+                    if (document.getElementById('tokenDisplay')) document.getElementById('tokenDisplay').innerText = tokenNum;
+                    if (document.getElementById('popupTotalFee')) document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
                 } catch(e) {}
                 
                 document.getElementById('loadingOverlay').style.display = 'none';
