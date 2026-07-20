@@ -1,424 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VIP Registration | V & S Garba</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-
-        /* Animated Premium Background */
         body {
-            background: linear-gradient(-45deg, #FF5722, #C62828, #D4AF37, #FF9800);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            padding: 40px 20px;
-            overflow-x: hidden; /* આડી સ્ક્રીન ખેંચાતી રોકવા માટે */
-            width: 100%;
+            background: linear-gradient(-45deg, #ff512f, #dd2476, #ff9800, #ff5722);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+            padding: 40px 15px; color: #333;
         }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* VIP Glassmorphism Card */
+        @keyframes bgMove { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        
+        .main-container { width: 100%; max-width: 900px; margin: auto; position: relative; }
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 50px 60px;
-            border-radius: 30px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 900px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            animation: formEntry 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        @keyframes formEntry {
-            from { opacity: 0; transform: translateY(60px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Header Area */
-        .form-header { text-align: center; margin-bottom: 40px; }
-        .form-header h2 { color: #C62828; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .form-header p { color: #666; font-size: 1.1rem; }
-
-        /* Grid Layout */
-        .row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 25px; }
-        .row-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 25px; }
-
-        /* Custom Input with Icons */
-        .input-group { position: relative; }
-        .input-group > i {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #FF5722;
-            font-size: 1.2rem;
-            transition: 0.3s;
-            z-index: 2;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-radius: 25px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.20);
+            border: 1px solid rgba(255,255,255,0.5);
         }
         
-        input, select {
-            width: 100%;
-            padding: 16px 20px 16px 55px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 1rem;
-            color: #333;
-            background: #fdfdfd;
-            transition: all 0.3s ease;
-            outline: none;
-            appearance: none;
-        }
+        .logo-area { text-align: center; margin-bottom: 25px; }
+        .logo-area img { width: 100px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
+        .logo-area h2 { color: #c62828; font-weight: 800; font-size: 1.8rem; margin-top: 10px; }
 
-        .select-wrapper { position: relative; }
-        .select-wrapper::after {
-            content: '\f107';
-            font-family: 'FontAwesome';
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #FF5722;
-            pointer-events: none;
-        }
+        /* WIZARD STEPS (3 STEPS) */
+        .steps { display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 30px; flex-wrap: wrap; }
+        .step { display: flex; flex-direction: column; align-items: center; width: 60px; }
+        .step span { width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #777; transition: 0.3s; }
+        .step.active span { background: #ff5722; color: #fff; box-shadow: 0 5px 15px rgba(255,87,34,0.4); transform: scale(1.1); }
+        .step p { font-size: 11px; font-weight: 600; margin-top: 5px; color: #888; text-align: center; }
+        .step.active p { color: #ff5722; }
+        .line { width: 40px; height: 3px; background: #e0e0e0; margin-top: -20px; transition: 0.3s; }
+        .line.active { background: #ff5722; }
 
-        input:focus, select:focus { border-color: #FF5722; background: #fff; box-shadow: 0 0 15px rgba(255, 87, 34, 0.1); }
-        input:focus + i, select:focus + i { color: #C62828; transform: translateY(-50%) scale(1.1); }
+        .form-step { display: none; animation: fadeIn 0.4s ease; }
+        .active-step { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Phone Box Styling */
-        .phone-box {
-            display: flex;
-            width: 100%;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            background: #fdfdfd;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .phone-box:focus-within {
-            border-color: #FF5722;
-            background: #fff;
-            box-shadow: 0 0 15px rgba(255, 87, 34, 0.1);
-        }
-        .phone-box i { left: 15px; } 
-        .phone-box select {
-            width: 130px;
-            border: none;
-            background: transparent;
-            padding: 16px 5px 16px 45px;
-            border-right: 1px solid #ddd;
-            border-radius: 15px 0 0 15px;
-            font-weight: 600;
-        }
-        .phone-box input {
-            width: calc(100% - 130px);
-            border: none;
-            background: transparent;
-            padding: 16px 20px;
-            border-radius: 0 15px 15px 0;
-        }
-        .phone-box input:focus, .phone-box select:focus { box-shadow: none; border-color: inherit; }
+        h3.section-title { color: #c62828; text-align: center; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px dashed #eee; padding-bottom: 10px; }
 
-        /* Custom Gender Pills */
-        .gender-wrapper { display: flex; gap: 15px; height: 100%; }
-        .gender-option { flex: 1; position: relative; }
+        /* CARDS & INPUTS */
+        .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .type-card { background: #fff; padding: 30px; border-radius: 15px; text-align: center; border: 3px solid #eee; cursor: pointer; transition: 0.3s; }
+        .type-card:hover, .type-card.selected { border-color: #ff5722; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,87,34,0.15); }
+        .type-card i { font-size: 40px; color: #ff5722; margin-bottom: 15px; }
+
+        .student-block { background: #fdfdfd; border: 2px solid #ffeedd; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .student-block h4 { color: #ff5722; margin-bottom: 15px; }
+        
+        .row-2, .row-3 { display: grid; gap: 15px; margin-bottom: 15px; }
+        .row-2 { grid-template-columns: 1fr 1fr; }
+        .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .input-group { position: relative; }
+        .input-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 5px; color: #555; }
+        .input-group input, .input-group select { width: 100%; padding: 10px 10px 10px 35px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+        .input-group input:focus, .input-group select:focus { border-color: #ff5722; }
+        .input-group i { position: absolute; left: 12px; top: 35px; color: #888; font-size: 14px; }
+        
+        /* Phone Box */
+        .phone-box { display: flex; align-items: center; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: #fff; position: relative; margin-top: 5px; }
+        .phone-box:focus-within { border-color: #ff5722; }
+        .phone-box select { width: 100px; padding: 10px 5px 10px 30px; border: none; background: #f9f9f9; outline: none; font-size: 13px; font-weight: 600; }
+        .phone-box input { flex: 1; border: none; padding: 10px; font-size: 14px; outline: none; }
+        .phone-box i { position: absolute; left: 10px; color: #25D366; font-size: 16px; top: 12px; }
+
+        /* Gender Radio */
+        .gender-wrapper { display: flex; gap: 10px; align-items: flex-end; height: 100%; padding-bottom: 5px; }
         .gender-option input { display: none; }
-        .gender-option label {
-            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; height: 100%;
-            padding: 15px; border: 2px solid #e0e0e0; border-radius: 15px; cursor: pointer; font-weight: 500; color: #666; transition: 0.3s;
-        }
-        .gender-option input:checked + label { background: rgba(255, 87, 34, 0.1); border-color: #FF5722; color: #C62828; font-weight: 600; }
+        .gender-option label { padding: 8px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #555; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .gender-option input:checked + label { border-color: #ff5722; background: #ff5722; color: #fff; }
 
-        /* Submit Button */
-        .submit-btn {
-            width: 100%; padding: 20px; background: linear-gradient(45deg, #FF5722, #C62828); color: white; border: none;
-            border-radius: 15px; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; margin-top: 20px; transition: all 0.4s ease; box-shadow: 0 10px 20px rgba(198, 40, 40, 0.3);
-            display: flex; justify-content: center; align-items: center; gap: 15px;
-        }
+        /* File Upload */
+        .file-group input[type="file"] { padding: 8px; border: 2px dashed #ff5722; border-radius: 8px; background: #fff5f2; font-size: 12px; padding-left: 10px; }
 
-        .submit-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(198, 40, 40, 0.5); background: linear-gradient(45deg, #C62828, #FF5722); }
-        .submit-btn i { transition: 0.3s; }
-        .submit-btn:hover i { transform: translateX(10px); }
+        .btn-flex { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: #fff; }
+        .btn-primary { background: linear-gradient(45deg, #ff5722, #dd2476); }
+        .btn-secondary { background: #999; }
 
-        /* ----------------------------------------------------
-           POWERFUL MOBILE RESPONSIVE SETUP (AUTO-FIT)
-           ---------------------------------------------------- */
-        @media (max-width: 768px) {
-            body { padding: 20px 15px; } /* ફોનમાં સાઈડની જગ્યા થોડી ઘટાડી */
-            .glass-card { padding: 35px 20px; border-radius: 20px; }
-            
-            /* ટાઇટલ ફોનની સાઈઝ પ્રમાણે નાનું કર્યું */
-            .form-header h2 { font-size: 1.8rem; line-height: 1.2; margin-bottom: 5px; }
-            .form-header p { font-size: 0.95rem; }
-            
-            /* બધા જ બોક્સ એકની નીચે એક (1 Column) ગોઠવાઈ જશે */
-            .row-3, .row-2 { grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
-            
-            /* Gender ના બટન પણ ફોનમાં નીચે-નીચે સેટ કરી દીધા */
-            .gender-wrapper { flex-direction: column; gap: 10px; }
-            .gender-option label { padding: 12px; }
+        /* Overlays & Popup */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-            /* કન્ટ્રી કોડનું બોક્સ નાનું કર્યું જેથી મોબાઈલ નંબર આખો દેખાય */
-            .phone-box select { width: 100px; padding: 14px 5px 14px 40px; font-size: 0.9rem; }
-            .phone-box input { width: calc(100% - 100px); padding: 14px 15px; }
-            
-            /* ઇનપુટ બોક્સ અને આઇકોન થોડા નાના કર્યા */
-            input, select { padding: 14px 15px 14px 50px; font-size: 0.95rem; }
-            .input-group > i { left: 18px; font-size: 1.1rem; }
-            
-            .submit-btn { padding: 18px; font-size: 1.1rem; }
-        }
+        /* Custom Success Token Styling */
+        .success-icon { font-size: 50px; color: #4CAF50; margin-bottom: 10px; }
+        .token-box { background: #fff5f2; padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #ff5722; border: 2px dashed #ff5722; }
+        .policy-text { font-size: 13px; color: #555; margin-top: 15px; line-height: 1.6; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #c62828; }
+
+        @media(max-width: 768px) { .row-3, .row-2, .type-grid { grid-template-columns: 1fr; } .line{width:20px;} }
     </style>
 </head>
 <body>
 
-    <div class="glass-card">
-        
-        <div class="form-header">
-            <h2>Secure Your Spot</h2>
-            <p>Fill out the details below to join V&S Garba Classes</p>
-        </div>
-
-        <form id="vipRegistrationForm">
-            <div class="row-3">
-                <div class="input-group">
-                    <input type="text" id="fName" placeholder="First Name" required>
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="mName" placeholder="Middle Name">
-                    <i class="fas fa-user-tag"></i>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="lName" placeholder="Surname" required>
-                    <i class="fas fa-users"></i>
-                </div>
-            </div>
-
-            <div class="row-3">
-                <div class="input-group">
-                    <input type="number" id="age" placeholder="Your Age" min="5" max="100" required>
-                    <i class="fas fa-child"></i>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="dob" placeholder="Date of Birth" onfocus="(this.type='date')" onblur="(this.type='text')" required>
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <div class="gender-wrapper">
-                    <div class="gender-option">
-                        <input type="radio" name="gender" id="male" value="Male" required>
-                        <label for="male"><i class="fas fa-mars"></i> Male</label>
-                    </div>
-                    <div class="gender-option">
-                        <input type="radio" name="gender" id="female" value="Female" required>
-                        <label for="female"><i class="fas fa-venus"></i> Female</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row-2">
-                <div class="input-group">
-                    <div class="phone-box">
-                        <i class="fab fa-whatsapp"></i>
-                        <select id="countryCode" required>
-                            <option value="91" selected>+91 (IN)</option>
-                            <option value="1">+1 (US/CA)</option>
-                            <option value="44">+44 (UK)</option>
-                            <option value="61">+61 (AU)</option>
-                            <option value="971">+971 (UAE)</option>
-                            <option value="966">+966 (SA)</option>
-                            <option value="974">+974 (QA)</option>
-                            <option value="968">+968 (OM)</option>
-                            <option value="965">+965 (KW)</option>
-                            <option value="973">+973 (BH)</option>
-                            <option value="65">+65 (SG)</option>
-                            <option value="60">+60 (MY)</option>
-                            <option value="64">+64 (NZ)</option>
-                            <option value="27">+27 (ZA)</option>
-                            <option value="49">+49 (DE)</option>
-                            <option value="33">+33 (FR)</option>
-                            <option value="39">+39 (IT)</option>
-                            <option value="34">+34 (ES)</option>
-                            <option value="31">+31 (NL)</option>
-                            <option value="41">+41 (CH)</option>
-                            <option value="46">+46 (SE)</option>
-                            <option value="47">+47 (NO)</option>
-                            <option value="45">+45 (DK)</option>
-                            <option value="353">+353 (IE)</option>
-                            <option value="81">+81 (JP)</option>
-                            <option value="82">+82 (KR)</option>
-                            <option value="86">+86 (CN)</option>
-                            <option value="852">+852 (HK)</option>
-                            <option value="62">+62 (ID)</option>
-                            <option value="66">+66 (TH)</option>
-                            <option value="63">+63 (PH)</option>
-                            <option value="880">+880 (BD)</option>
-                            <option value="977">+977 (NP)</option>
-                            <option value="94">+94 (LK)</option>
-                            <option value="92">+92 (PK)</option>
-                        </select>
-                        <input type="tel" id="mobile" placeholder="WhatsApp Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="Email Address (Optional)">
-                    <i class="fas fa-envelope"></i>
-                </div>
-            </div>
-
-            <div class="row-2">
-                <div class="input-group select-wrapper">
-                    <select id="batch" required>
-                        <option value="" disabled selected>Select Batch Time</option>
-                        <option value="Morning (7:00 AM - 9:00 AM)">Morning (7:00 AM - 9:00 AM)</option>
-                        <option value="Evening Ladies (4:00 PM - 7:00 PM)">Evening Ladies (4:00 PM - 7:00 PM)</option>
-                        <option value="Evening Kids (7:00 PM - 8:00 PM)">Evening Kids (7:00 PM - 8:00 PM)</option>
-                        <option value="Mix Batches (8:00 PM - 11:00 PM)">Mix Batches (8:00 PM - 11:00 PM)</option>
-                    </select>
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="input-group select-wrapper">
-                    <select id="payment" required>
-                        <option value="" disabled selected>Payment Method</option>
-                        <option value="Online (UPI/GPay/PhonePe)">Online (UPI/GPay/PhonePe)</option>
-                        <option value="Cash at Studio">Cash at Studio</option>
-                    </select>
-                    <i class="fas fa-rupee-sign"></i>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">
-                Complete Registration <i class="fas fa-arrow-right"></i>
-            </button>
+    <div class="main-container">
+        <div class="glass-card">
             
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="index.html" style="color: #666; text-decoration: none; font-weight: 500; font-size: 0.95rem;">
-                    <i class="fas fa-arrow-left"></i> Back to Home
-                </a>
+            <div class="logo-area">
+                <img src="favicon.png" alt="V&S Logo" onerror="this.src='https://via.placeholder.com/100?text=V%26S'">
+                <h2>Secure Your Spot</h2>
+                <p style="font-size: 14px; color: #666;">Fill out the details below to join V&S Garba Classes</p>
             </div>
 
-        </form>
+            <!-- 3 Steps Wizard -->
+            <div class="steps">
+                <div class="step active" id="st1"><span>1</span><p>Type</p></div>
+                <div class="line" id="ln1"></div>
+                <div class="step" id="st2"><span>2</span><p>Students</p></div>
+                <div class="line" id="ln2"></div>
+                <div class="step" id="st3"><span>3</span><p>Contact</p></div>
+            </div>
+
+            <form id="vipRegistrationForm">
+                
+                <!-- STEP 1: Registration Type -->
+                <div id="step1" class="form-step active-step">
+                    <h3 class="section-title">Select Registration Type</h3>
+                    <div class="type-grid">
+                        <div class="type-card" id="card-single" onclick="selectType('single')">
+                            <i class="fas fa-user"></i>
+                            <h3>Single Entry</h3>
+                        </div>
+                        <div class="type-card" id="card-group" onclick="selectType('group')">
+                            <i class="fas fa-users"></i>
+                            <h3>Group Entry</h3>
+                        </div>
+                    </div>
+                    
+                    <div id="group-count-box" style="display: none; margin-top: 25px; text-align: center;">
+                        <label style="font-weight: bold; font-size: 16px;">How many students in group?</label><br>
+                        <input type="number" id="memberCount" min="2" max="50" value="2" style="width: 100px; padding: 10px; text-align: center; font-size: 18px; border: 2px solid #ff5722; border-radius: 10px; margin-top: 10px;">
+                    </div>
+
+                    <div class="btn-flex">
+                        <button type="button" class="btn btn-primary" onclick="goToStep2()">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Student Details -->
+                <div id="step2" class="form-step">
+                    <h3 class="section-title">Student Details</h3>
+                    <div id="dynamic-students"></div>
+                    <div class="btn-flex">
+                        <button type="button" class="btn btn-secondary" onclick="changeStep(1)">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="goToStep3()">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Contact & Batch -->
+                <div id="step3" class="form-step">
+                    <h3 class="section-title">Contact & Batch Selection</h3>
+                    <div class="student-block">
+                        <div class="row-2">
+                            <div class="input-group">
+                                <label>WhatsApp Number</label>
+                                <div class="phone-box">
+                                    <i class="fab fa-whatsapp"></i>
+                                    <select id="countryCode">
+                                        <option value="91" selected>+91 (IN)</option>
+                                        <option value="1">+1 (US)</option>
+                                        <option value="44">+44 (UK)</option>
+                                    </select>
+                                    <input type="tel" id="mobile" placeholder="10 Digits" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Email Address (Optional)</label>
+                                <input type="email" id="email" placeholder="example@mail.com">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label>Select Batch Time</label>
+                            <select id="batch" required>
+                                <option value="" disabled selected>Select Batch Time</option>
+                                <option value="Morning (7:00 AM - 9:00 AM)">Morning (7:00 AM - 9:00 AM)</option>
+                                <option value="Evening Ladies (4:00 PM - 7:00 PM)">Evening Ladies (4:00 PM - 7:00 PM)</option>
+                                <option value="Evening Kids (7:00 PM - 8:00 PM)">Evening Kids (7:00 PM - 8:00 PM)</option>
+                                <option value="Mix Batches (8:00 PM - 11:00 PM)">Mix Batches (8:00 PM - 11:00 PM)</option>
+                            </select>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-flex">
+                        <button type="button" class="btn btn-secondary" onclick="changeStep(2)">Back</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Generate Token & Book <i class="fas fa-check-circle"></i></button>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
-            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
-            projectId: "vns-garba-and-dodhiya-classes"
-        };
-        
-        // ડેટાબેઝ શરુ કરવા માટે નો કોડ
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
+    <!-- Loading Overlay -->
+    <div class="overlay" id="loadingOverlay">
+        <div class="popup-box">
+            <div class="loader"></div>
+            <h3 style="color:#ff5722;">Generating Token...</h3>
+            <p style="font-size:14px; margin-top:10px;">Sending details securely. Please wait.</p>
+        </div>
+    </div>
+    
+   <!-- Success Token Overlay (આ આખું નવું છે, લિંક્સ અને 40% ડિસ્કાઉન્ટ સાથે) -->
+    <div class="overlay" id="successOverlay" style="align-items: flex-start; padding-top: 20px; overflow-y: auto;">
+        <div class="popup-box" style="max-width: 450px; margin: auto; padding: 30px 20px;">
+            <i class="fas fa-check-circle success-icon" style="font-size: 50px; color: #4CAF50; margin-bottom: 10px;"></i>
+            <h3 style="color:#4CAF50; font-size: 20px;">Registration Request Sent!</h3>
+            
+            <div style="background: #fff5f2; border: 2px dashed #ff5722; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                <p style="font-size: 14px; color: #555; margin-bottom: 5px;">Your Unique Token Number:</p>
+                <h2 id="tokenDisplay" style="color: #ff5722; font-size: 26px; letter-spacing: 2px;">VNS-00000</h2>
+                <button class="btn btn-secondary" type="button" onclick="copyToken()" style="padding: 5px 15px; font-size: 12px; margin-top: 10px; display: inline-block; width: auto;">
+                    <i class="fas fa-copy"></i> Copy Token
+                </button>
+            </div>
 
-        document.getElementById('vipRegistrationForm').addEventListener('submit', function(e) {
+            <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #c62828; margin-bottom: 20px;">
+                <h4 style="color: #c62828; margin-bottom: 5px;">💰 Total Fees to Pay: <span id="popupTotalFee">₹0</span></h4>
+                <p style="color: #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 10px;">🎉 Congratulations! You got 40% Discount!</p>
+                
+                <h4 style="color: #c62828; margin-bottom: 5px;"><i class="fas fa-exclamation-triangle"></i> Important Rules:</h4>
+                <p style="font-size: 13px; color: #555; line-height: 1.5;">
+                    • <strong>No Refund Policy:</strong> Fees once paid will not be refunded under any circumstances.<br>
+                    • <strong>Community Rule:</strong> Only Hindu community members are allowed.<br>
+                    • Our team will contact you shortly for payment confirmation. Keep this token safe.
+                </p>
+            </div>
+
+            <!-- Follow & Join Links -->
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px; color: #444;">✨ Follow Us</h4>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="https://www.instagram.com/vnsgarbanddodhiya?igsh=aWpqa2xtYjY3MnJj" target="_blank" style="text-decoration: none; background: #E1306C; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Main Insta</a>
+                    <a href="https://www.instagram.com/vnsgarbacommunity?igsh=YjZ5M2xtY2o1M3Fz" target="_blank" style="text-decoration: none; background: #C13584; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Community</a>
+                    <a href="https://www.facebook.com/share/1SW1efRYPy/" target="_blank" style="text-decoration: none; background: #1877F2; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-facebook-f"></i> Facebook</a>
+                </div>
+
+                <h4 style="margin-top: 15px; margin-bottom: 10px; color: #444;">🤝 Join V&S Community</h4>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="https://chat.whatsapp.com/BcjVSvaRJPT59ZybZ5YSXv" target="_blank" style="text-decoration: none; background: #25D366; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
+                    <a href="https://ig.me/j/AbbZd0Pxrmbz5-x7/" target="_blank" style="text-decoration: none; background: #E1306C; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Insta Group</a>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width:100%;" onclick="window.location.reload()">Done</button>
+        </div>
+    </div>
+
+ <script>
+        // TELEGRAM BOT SETUP
+        const BOT_TOKEN = "8526718255:AAEkKAJ5OKXHsxIYedl277x6exDDQctdtCg";
+        const CHAT_ID = "-1004295830268";
+
+        let currentType = '';
+        let totalStudents = 1;
+        let totalAmount = 0;
+
+        function selectType(type) {
+            currentType = type;
+            document.getElementById('card-single').classList.remove('selected');
+            document.getElementById('card-group').classList.remove('selected');
+            document.getElementById('card-' + type).classList.add('selected');
+            document.getElementById('group-count-box').style.display = type === 'group' ? 'block' : 'none';
+        }
+
+        function goToStep2() {
+            if(!currentType) { 
+                alert("Please select Registration Type!"); 
+                return; 
+            }
+            
+            let countInput = document.getElementById('memberCount').value;
+            totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
+            
+            if(currentType === 'group' && totalStudents < 2) { 
+                alert("Group must have at least 2 members!"); 
+                return; 
+            }
+            
+            totalAmount = currentType === 'single' ? 1500 : (totalStudents * 1400);
+            
+            let container = document.getElementById('dynamic-students');
+            container.innerHTML = '';
+            
+            for(let i = 1; i <= totalStudents; i++) {
+                container.innerHTML += `
+                    <div class="student-block">
+                        <h4>Student ${i} Details</h4>
+                        <div class="row-3">
+                            <div class="input-group"><label>First Name</label><input type="text" id="fName_${i}" required><i class="fas fa-user"></i></div>
+                            <div class="input-group"><label>Middle Name</label><input type="text" id="mName_${i}"><i class="fas fa-user-tag"></i></div>
+                            <div class="input-group"><label>Surname</label><input type="text" id="lName_${i}" required><i class="fas fa-users"></i></div>
+                        </div>
+                        <div class="row-3">
+                            <div class="input-group"><label>Age</label><input type="number" id="age_${i}" min="5" required><i class="fas fa-child"></i></div>
+                            <div class="input-group"><label>DOB</label><input type="date" id="dob_${i}" required><i class="fas fa-calendar-alt"></i></div>
+                            <div class="input-group">
+                                <label>Gender</label>
+                                <div class="gender-wrapper">
+                                    <div class="gender-option"><input type="radio" name="gender_${i}" id="male_${i}" value="Male" checked><label for="male_${i}">Male</label></div>
+                                    <div class="gender-option"><input type="radio" name="gender_${i}" id="female_${i}" value="Female"><label for="female_${i}">Female</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-2" style="margin-bottom: 15px;">
+                            <div class="input-group">
+                                <label>Student ${i} Mobile Number</label>
+                                <input type="tel" id="stdMobile_${i}" placeholder="10 Digits Required" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
+                                <i class="fas fa-phone" style="top: 35px;"></i>
+                            </div>
+                        </div>
+                        <div class="row-2">
+                            <div class="input-group file-group"><label>Aadhaar Card Photo</label><input type="file" id="aadhaar_${i}" accept="image/*" required></div>
+                            <div class="input-group file-group"><label>Student Photo</label><input type="file" id="photo_${i}" accept="image/*" required></div>
+                        </div>
+                    </div>`;
+            }
+            changeStep(2);
+        }
+
+        function goToStep3() {
+            for(let i = 1; i <= totalStudents; i++) {
+                let fName = document.getElementById(`fName_${i}`).value;
+                let lName = document.getElementById(`lName_${i}`).value;
+                let stdMob = document.getElementById(`stdMobile_${i}`).value;
+                let aadhaarFiles = document.getElementById(`aadhaar_${i}`).files;
+                let photoFiles = document.getElementById(`photo_${i}`).files;
+
+                if(!fName || !lName || aadhaarFiles.length === 0 || photoFiles.length === 0) {
+                    alert(`Please fill all details and upload photos for Student ${i}`); 
+                    return;
+                }
+                if(stdMob.length !== 10) {
+                    alert(`Please enter a valid 10-digit mobile number for Student ${i}`); 
+                    return;
+                }
+            }
+            changeStep(3);
+        }
+
+        function changeStep(step) {
+            let formSteps = document.querySelectorAll('.form-step');
+            formSteps.forEach(el => el.classList.remove('active-step'));
+            document.getElementById('step' + step).classList.add('active-step');
+            
+            for(let i = 1; i <= 3; i++) {
+                let st = document.getElementById('st' + i);
+                let ln = document.getElementById('ln' + i);
+                if(st) st.classList.toggle('active', i <= step);
+                if(ln && i < 3) ln.classList.toggle('active', i < step);
+            }
+        }
+
+        // બેકગ્રાઉન્ડ ઈમેજ અપલોડ ફંક્શન
+        async function sendFileToTelegram(file, caption) {
+            if(!file) return;
+            let form = new FormData();
+            form.append("chat_id", CHAT_ID);
+            form.append("photo", file);
+            form.append("caption", caption);
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
+            } catch(e) {
+                console.error("Image send error:", e);
+            }
+        }
+
+        function copyToken() {
+            let tokenText = document.getElementById('tokenDisplay').innerText;
+            navigator.clipboard.writeText(tokenText).then(() => {
+                alert("Token Copied: " + tokenText);
+            });
+        }
+
+        document.getElementById('vipRegistrationForm').addEventListener('submit', async function(e) {
             e.preventDefault(); 
             
-            const btn = document.getElementById('submitBtn');
-            btn.innerHTML = `Processing... <i class="fas fa-spinner fa-spin"></i>`;
-
-            const fName = document.getElementById('fName').value;
-            const mName = document.getElementById('mName').value;
-            const lName = document.getElementById('lName').value;
-            const age = document.getElementById('age').value;
-            const dob = document.getElementById('dob').value;
+            let mob = document.getElementById('mobile').value;
+            let btc = document.getElementById('batch').value;
             
-            const countryCode = document.getElementById('countryCode').value;
-            const mobileRaw = document.getElementById('mobile').value;
-            
-            if(mobileRaw.length !== 10) {
-                alert("Please enter exactly 10 digits for the WhatsApp number.");
-                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
-                return;
+            if(mob.length !== 10 || !btc) { 
+                alert("Please provide a valid 10-digit Leader WhatsApp number and select a batch."); 
+                return; 
             }
-            const mobile = "+" + countryCode + " " + mobileRaw;
             
-            const emailInput = document.getElementById('email').value;
-            const email = emailInput ? emailInput : "Not Provided";
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            const tokenNum = "VNS-" + Math.floor(10000 + Math.random() * 90000);
+            let countryCode = document.getElementById('countryCode').value;
+            let leaderMobile = "+" + countryCode + " " + mob;
+            let emailVal = document.getElementById('email').value || "Not Provided";
+            let dateStr = new Date().toLocaleString();
             
-            const batch = document.getElementById('batch').value;
-            const payment = document.getElementById('payment').value;
-            
-            let gender = '';
-            if (document.getElementById('male').checked) { gender = 'Male'; }
-            else if (document.getElementById('female').checked) { gender = 'Female'; }
+            try {
+                // 1. ટેક્સ્ટ મેસેજ મોકલો (આ એક જ સેકન્ડમાં થઈ જશે)
+                let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
+                headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
+                headerText += `🕒 <b>Batch:</b> ${btc}\n`;
+                headerText += `💰 <b>Total Amount:</b> ₹${totalAmount} (Pending)\n`;
+                headerText += `📱 <b>Leader WhatsApp:</b> ${leaderMobile}\n`;
+                headerText += `📧 <b>Email:</b> ${emailVal}\n`;
+                headerText += `🗓 <b>Date:</b> ${dateStr}`;
 
-            // બધો ડેટા ભેગો કરીને એક પેકેટ (Object) બનાવ્યું
-            const formData = {
-                name: `${fName} ${mName} ${lName}`,
-                age: age,
-                dob: dob,
-                gender: gender,
-                phone: mobile,
-                email: email,
-                batch: batch,
-                payment: payment,
-                date: new Date().toLocaleString()
-            };
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: headerText, parse_mode: "HTML" })
+                });
 
-            // આ કમાન્ડ ડેટાને તારા ફાયરબેઝ (view-registrations) માં મોકલશે
-            db.ref('registrations').push(formData).then(() => {
+                // દરેક સ્ટુડન્ટની ડિટેલ્સ અને ફોટા (બેકગ્રાઉન્ડમાં)
+                for(let i = 1; i <= totalStudents; i++) {
+                    let gender = document.querySelector(`input[name="gender_${i}"]:checked`).value;
+                    let sName = `${document.getElementById(`fName_${i}`).value} ${document.getElementById(`mName_${i}`).value} ${document.getElementById(`lName_${i}`).value}`;
+                    let sAge = document.getElementById(`age_${i}`).value;
+                    let sDob = document.getElementById(`dob_${i}`).value;
+                    let sMob = document.getElementById(`stdMobile_${i}`).value;
+
+                    let studentText = `👤 <b>Student ${i} Details</b>\n\n`;
+                    studentText += `<b>Name:</b> ${sName}\n`;
+                    studentText += `<b>Age:</b> ${sAge} | <b>DOB:</b> ${sDob}\n`;
+                    studentText += `<b>Gender:</b> ${gender}\n`;
+                    studentText += `<b>Personal Mobile:</b> +91 ${sMob}`;
+
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: "POST", 
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ chat_id: CHAT_ID, text: studentText, parse_mode: "HTML" })
+                    });
+
+                    // ફોટા બેકગ્રાઉન્ડમાં મોકલો (આમાં 'await' નથી વાપર્યું એટલે સ્ક્રીન નહિ ચોંટે)
+                    let aadhaarFile = document.getElementById(`aadhaar_${i}`).files[0];
+                    let photoFile = document.getElementById(`photo_${i}`).files[0];
+                    sendFileToTelegram(aadhaarFile, `Aadhaar - ${tokenNum} - Std ${i}`);
+                    sendFileToTelegram(photoFile, `Photo - ${tokenNum} - Std ${i}`);
+                }
+
+            } catch (error) {
+                console.log("Error sending some messages, but continuing to show popup.");
+            } finally {
+                // 3. ગમે તે થાય, લોડિંગ બંધ થઈને પોપઅપ ખુલશે જ (Fail-safe)
+                try {
+                    if (document.getElementById('tokenDisplay')) {
+                        document.getElementById('tokenDisplay').innerText = tokenNum;
+                    }
+                    if (document.getElementById('popupTotalFee')) {
+                        document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
+                    }
+                } catch(e) {}
                 
-                // ડેટા સેવ થયા પછી વોટ્સએપ પર મેસેજ જશે
-                const BOT_TOKEN = "8526718255:AAEkKAJ5OKXHsxIYedl277x6exDDQctdtCg";
-const CHAT_ID = "-1004295830268";
-
-const telegramMessage =
-`🎉 New V&S Garba Registration
-
-👤 Name: ${formData.name}
-🎂 Age: ${formData.age}
-📅 DOB: ${formData.dob}
-🚻 Gender: ${formData.gender}
-
-📱 Mobile: ${formData.phone}
-📧 Email: ${formData.email}
-
-🕒 Batch: ${formData.batch}
-💳 Payment: ${formData.payment}
-
-🗓 Date: ${formData.date}`;
-
-fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: telegramMessage
-    })
-});
-                
-                // ફોર્મ ક્લીયર કરી દેશે 
-                document.getElementById('vipRegistrationForm').reset();
-                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
-                
-            }).catch((error) => {
-                alert("Error saving data: " + error.message);
-                btn.innerHTML = `Complete Registration <i class="fas fa-arrow-right"></i>`;
-            });
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('successOverlay').style.display = 'flex';
+            }
         });
     </script>
 </body>

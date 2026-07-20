@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment Portal | V & S Garba</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #ff512f, #dd2476, #ff9800, #ff5722);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+            padding: 40px 15px; color: #333;
+            display: flex; justify-content: center; align-items: center;
+        }
+        @keyframes bgMove { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        
+        .main-container { width: 100%; max-width: 500px; position: relative; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-radius: 25px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.20);
+            border: 1px solid rgba(255,255,255,0.5); text-align: center;
+        }
+        
+        .logo-area img { width: 90px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); margin-bottom: 10px; }
+        h2 { color: #c62828; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; }
+        p.subtitle { font-size: 13px; color: #666; margin-bottom: 25px; }
+
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 5px; color: #555; }
+        .input-group input { width: 100%; padding: 12px 10px 12px 40px; border: 2px solid #ddd; border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: #ff5722; }
+        .input-group i { position: absolute; left: 15px; top: 35px; color: #888; font-size: 16px; }
+
+        .file-group input[type="file"] { padding: 10px; border: 2px dashed #ff5722; border-radius: 10px; background: #fff5f2; font-size: 13px; padding-left: 10px; }
+
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: #fff; background: linear-gradient(45deg, #ff5722, #dd2476); transition: 0.3s; }
+        .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
+        .btn-check { background: #333; margin-bottom: 20px; }
+
+        .details-box { background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; }
+        .details-box p { font-size: 14px; margin-bottom: 5px; }
+        .details-box h3 { color: #c62828; margin-top: 10px; font-size: 22px; }
+
+        .qr-box { border: 2px dashed #ccc; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
+        .qr-box img { width: 180px; border-radius: 10px; margin: 10px 0; }
+
+        /* Loader */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="glass-card">
+            
+            <div class="logo-area">
+                <img src="favicon.png" alt="V&S Logo" onerror="this.src='https://via.placeholder.com/90?text=V%26S'">
+                <h2>Payment Portal</h2>
+                <p class="subtitle">Enter your Token Number to proceed with payment</p>
+            </div>
+
+            <!-- Token Entry Section -->
+            <div id="tokenSection">
+                <div class="input-group">
+                    <label>Token Number</label>
+                    <input type="text" id="tokenInput" placeholder="e.g. VNS-12345" style="text-transform: uppercase;" required>
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <button class="btn btn-check" onclick="verifyToken()">Verify Token <i class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Payment Section (Hidden initially) -->
+            <form id="paymentForm" style="display: none;">
+                
+                <div class="details-box" id="studentDetails">
+                    <p><strong>Type:</strong> <span id="dispType"></span></p>
+                    <p><strong>Mobile:</strong> <span id="dispMob"></span></p>
+                    <h3>Total Fee: <span id="dispFee">₹0</span></h3>
+                </div>
+
+                <div class="qr-box" id="qrContainer">
+                    <p style="font-weight: bold; color: #333;">Scan QR to Pay</p>
+                    <!-- તારો અસલી QR Code ની લિંક અહિંયા નાખજે -->
+                    <img src="https://via.placeholder.com/180x180.png?text=V%26S+QR+Code" alt="QR Code">
+                    <p style="font-size: 13px; color: #666; font-weight: bold;">UPI ID: vnsgarba@upi</p>
+                </div>
+
+                <div class="input-group">
+                    <label>Transaction ID / UTR Number</label>
+                    <input type="text" id="txnId" placeholder="12 Digit UTR Number" required>
+                    <i class="fas fa-receipt"></i>
+                </div>
+
+                <div class="input-group file-group">
+                    <label>Upload Payment Screenshot</label>
+                    <input type="file" id="payScreenshot" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn">Submit Payment <i class="fas fa-check-circle"></i></button>
+                <button type="button" class="btn" style="background: #999; margin-top: 10px;" onclick="window.location.reload()">Back</button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Overlays -->
+    <div class="overlay" id="loadingOverlay">
+        <div class="popup-box">
+            <div class="loader"></div>
+            <h3 style="color:#ff5722;">Verifying...</h3>
+            <p style="font-size:14px; margin-top:10px;">Please wait.</p>
+        </div>
+    </div>
+
+    <div class="overlay" id="successOverlay">
+        <div class="popup-box">
+            <i class="fas fa-check-circle" style="font-size: 60px; color: #4CAF50; margin-bottom: 15px;"></i>
+            <h3 style="color:#4CAF50;">Payment Submitted!</h3>
+            <p style="font-size:14px; margin-top:10px;">Your payment details have been sent to the Admin. Your admission will be confirmed shortly.</p>
+            <button class="btn" style="margin-top:20px; width:100%;" onclick="window.location.href='index.html'">Back to Home</button>
+        </div>
+    </div>
+
+    <script>
+        // FIREBASE & TELEGRAM SETUP
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
+            databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
+            projectId: "vns-garba-and-dodhiya-classes"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
+        const BOT_TOKEN = "8526718255:AAEkKAJ5OKXHsxIYedl277x6exDDQctdtCg";
+        const CHAT_ID = "-1004295830268";
+
+        let verifiedAmount = 0;
+        let verifiedToken = "";
+
+        // 1. Verify Token Function
+        async function verifyToken() {
+            let tokenInput = document.getElementById('tokenInput').value.trim().toUpperCase();
+            if(!tokenInput) { alert("Please enter Token Number"); return; }
+            if(!tokenInput.startsWith("VNS-")) { alert("Invalid format. Token must start with VNS-"); return; }
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                let snapshot = await db.ref('registrations/' + tokenInput).once('value');
+                if(snapshot.exists()) {
+                    let data = snapshot.val();
+                    verifiedToken = tokenInput;
+                    verifiedAmount = data.totalAmount;
+
+                    // Show Details
+                    document.getElementById('dispType').innerText = data.type.toUpperCase();
+                    document.getElementById('dispMob').innerText = data.mobile;
+                    document.getElementById('dispFee').innerText = `₹${data.totalAmount}`;
+                    
+                    // Switch UI
+                    document.getElementById('tokenSection').style.display = 'none';
+                    document.getElementById('studentDetails').style.display = 'block';
+                    document.getElementById('qrContainer').style.display = 'block';
+                    document.getElementById('paymentForm').style.display = 'block';
+                } else {
+                    alert("Token not found! Please check the token number or contact Admin.");
+                }
+            } catch(e) {
+                alert("Error checking token. Try again.");
+            }
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // 2. Submit Payment Details
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.querySelector('#loadingOverlay h3').innerText = "Submitting Payment...";
+
+            let txnId = document.getElementById('txnId').value;
+            let screenshot = document.getElementById('payScreenshot').files[0];
+
+            let msg = `💰 *Payment Received Alert*\n\n`;
+            msg += `🎟 *Token:* ${verifiedToken}\n`;
+            msg += `🧾 *Transaction ID:* ${txnId}\n`;
+            msg += `💵 *Amount:* ₹${verifiedAmount}\n`;
+            msg += `⏳ *Status:* Pending Admin Verification`;
+
+            try {
+                // Update Firebase
+                await db.ref('registrations/' + verifiedToken).update({
+                    transactionId: txnId,
+                    paymentStatus: "Screenshot Submitted"
+                });
+
+                // Send Msg to Telegram
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: "Markdown" })
+                });
+
+                // Send Screenshot to Telegram
+                let form = new FormData();
+                form.append("chat_id", CHAT_ID);
+                form.append("photo", screenshot);
+                form.append("caption", `Payment Screenshot for ${verifiedToken}`);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
+
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('successOverlay').style.display = 'flex';
+
+            } catch(error) {
+                alert("Payment submission failed. Check internet connection.");
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
