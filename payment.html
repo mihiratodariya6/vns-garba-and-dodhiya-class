@@ -108,6 +108,10 @@
             <!-- Details Section -->
             <div class="details-box" id="studentDetails">
                 <p><i class="fas fa-users" style="color:#ff5722; margin-right:5px;"></i> <strong>Type:</strong> <span id="dispType"></span></p>
+                <!-- NEW MEMBERSHIP FIELDS -->
+                <p><i class="fas fa-crown" style="color:#ff5722; margin-right:5px;"></i> <strong>Membership:</strong> <span id="dispPlan" style="font-weight: bold; color: #ff9800;"></span></p>
+                <p><i class="fas fa-calendar-check" style="color:#ff5722; margin-right:5px;"></i> <strong>Validity:</strong> <span id="dispValidity"></span></p>
+                <!-- END NEW FIELDS -->
                 <p><i class="fas fa-phone" style="color:#ff5722; margin-right:5px;"></i> <strong>Leader Mobile:</strong> <span id="dispMob"></span></p>
                 <p><i class="fas fa-clock" style="color:#ff5722; margin-right:5px;"></i> <strong>Batch:</strong> <span id="dispBatch"></span></p>
                 
@@ -214,6 +218,10 @@
         let verifiedLeaderName = "";
         let verifiedMobile = "";
         let verifiedTotalStudents = 1;
+        
+        // NEW MEMBERSHIP VARIABLES
+        let verifiedPlanName = ""; 
+        let verifiedPlanValidity = "";
 
         async function verifyToken() {
             let tokenInput = document.getElementById('tokenInput').value.trim().toUpperCase();
@@ -233,12 +241,17 @@
                     verifiedType = data.type.toUpperCase();
                     verifiedMobile = data.mobile;
                     verifiedTotalStudents = data.totalStudents;
+                    verifiedPlanName = data.membershipPlan || "Navratri 2026 Pass"; // Fetch from DB
+                    verifiedPlanValidity = data.membershipValidity || "Till Navratri 2026"; // Fetch from DB
+
                     if(data.students && data.students.length > 0) {
                         verifiedLeaderName = data.students[0].name; // પહેલા સ્ટુડન્ટનું નામ લીડર તરીકે લેશે
                     }
 
                     // ડિસ્પ્લે કરો
                     document.getElementById('dispType').innerText = verifiedType + ` (${verifiedTotalStudents} Students)`;
+                    document.getElementById('dispPlan').innerText = verifiedPlanName; // NEW
+                    document.getElementById('dispValidity').innerText = verifiedPlanValidity; // NEW
                     document.getElementById('dispMob').innerText = verifiedMobile;
                     document.getElementById('dispBatch').innerText = data.batch;
                     document.getElementById('dispFee').innerText = `₹${verifiedAmount}`;
@@ -289,7 +302,8 @@
             msg += `🎟 *Token:* ${verifiedToken}\n`;
             msg += `👤 *Name:* ${verifiedLeaderName}\n`;
             msg += `📱 *Mobile:* ${verifiedMobile}\n`;
-            msg += `📋 *Type:* ${verifiedType} (${verifiedTotalStudents} Entry)\n\n`;
+            msg += `📋 *Type:* ${verifiedType} (${verifiedTotalStudents} Entry)\n`;
+            msg += `👑 *Membership:* ${verifiedPlanName}\n\n`; // NEW
             msg += `💵 *Amount Paid:* ₹${verifiedAmount}\n`;
             msg += `🧾 *UTR Number:* ${txnId}\n`;
             msg += `⏳ *Status:* Please Check Screenshot`;
@@ -311,7 +325,7 @@
                 let form = new FormData();
                 form.append("chat_id", CHAT_ID);
                 form.append("photo", screenshot);
-                form.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName}`);
+                form.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName} | Plan: ${verifiedPlanName}`);
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
 
                 document.getElementById('loadingOverlay').style.display = 'none';

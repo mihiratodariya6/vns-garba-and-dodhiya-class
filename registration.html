@@ -127,8 +127,9 @@
 
             <form id="vipRegistrationForm">
                 
-                <!-- STEP 1: Registration Type -->
+                <!-- STEP 1: Registration Type & Plan -->
                 <div id="step1" class="form-step active-step">
+                    
                     <h3 class="section-title">Select Registration Type</h3>
                     <div class="type-grid">
                         <div class="type-card" id="card-single" onclick="selectType('single')">
@@ -144,6 +145,30 @@
                     <div id="group-count-box" style="display: none; margin-top: 25px; text-align: center;">
                         <label style="font-weight: bold; font-size: 16px;">How many students in group?</label><br>
                         <input type="number" id="memberCount" min="2" max="50" value="2" style="width: 100px; padding: 10px; text-align: center; font-size: 18px; border: 2px solid #ff5722; border-radius: 10px; margin-top: 10px;">
+                    </div>
+
+                    <!-- NEW: Membership Plan Section -->
+                    <h3 class="section-title" style="margin-top: 40px;">Choose Membership Plan</h3>
+                    <div class="type-grid">
+                        <!-- Option 1 -->
+                        <div class="type-card" id="plan-navratri" onclick="selectPlan('navratri', 1500)" style="padding: 20px; text-align: left;">
+                            <h4 style="color:#ff5722; margin-bottom:5px; font-size:18px;">🎉 Navratri 2026 Pass</h4>
+                            <h3 style="color:#333; font-size:24px;">₹1500 <span style="font-size:12px; font-weight:normal; color:#666;">/ member</span></h3>
+                            <p style="font-size:13px; color:#555; margin-top:10px;"><i class="fas fa-calendar-check" style="font-size:13px; margin:0 5px 0 0;"></i> Valid till Navratri 2026</p>
+                        </div>
+                        
+                        <!-- Option 2 (Most Popular) -->
+                        <div class="type-card" id="plan-yearly" onclick="selectPlan('yearly', 3500)" style="padding: 20px; text-align: left; position: relative;">
+                            <div style="position:absolute; top:-12px; right:15px; background:#ff9800; color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2);">⭐ Most Popular</div>
+                            <h4 style="color:#ff9800; margin-bottom:5px; font-size:18px;">👑 1 Year Membership</h4>
+                            <h3 style="color:#333; font-size:24px;">₹3500 <span style="font-size:12px; font-weight:normal; color:#666;">/ member</span></h3>
+                            <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> Nov 2026 → Navratri 2027</p>
+                            <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
+                                <li>✔️ Unlimited Garba Practice</li>
+                                <li>✔️ Regular Training & Workshops</li>
+                                <li>✔️ Priority & Premium Membership</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="btn-flex">
@@ -197,13 +222,13 @@
                         </div>
                     </div>
                     <div class="input-group" style="margin-bottom: 20px;">
-    <label>Payment Method </label>
-    <select id="payMethod" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #ddd;" required>
-        <option value="" disabled selected>Select Payment Method...</option>
-        <option value="Online">Online (Pay via Portal)</option>
-        <option value="Cash">Cash (Pay at Class)</option>
-    </select>
-</div>
+                        <label>Payment Method </label>
+                        <select id="payMethod" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #ddd;" required>
+                            <option value="" disabled selected>Select Payment Method...</option>
+                            <option value="Online">Online (Pay via Portal)</option>
+                            <option value="Cash">Cash (Pay at Class)</option>
+                        </select>
+                    </div>
                     
                     <div class="btn-flex">
                         <button type="button" class="btn btn-secondary" onclick="changeStep(2)">Back</button>
@@ -224,7 +249,7 @@
         </div>
     </div>
     
-   <!-- Success Token Overlay (આ આખું નવું છે, લિંક્સ અને 40% ડિસ્કાઉન્ટ સાથે) -->
+   <!-- Success Token Overlay -->
     <div class="overlay" id="successOverlay" style="align-items: flex-start; padding-top: 20px; overflow-y: auto;">
         <div class="popup-box" style="max-width: 450px; margin: auto; padding: 30px 20px;">
             <i class="fas fa-check-circle success-icon" style="font-size: 50px; color: #4CAF50; margin-bottom: 10px;"></i>
@@ -287,6 +312,12 @@
         let currentType = '';
         let totalStudents = 1;
         let totalAmount = 0;
+        
+        // NEW MEMBERSHIP VARIABLES
+        let currentPlan = '';
+        let planPrice = 0;
+        let planName = '';
+        let planValidity = '';
 
         function selectType(type) {
             currentType = type;
@@ -296,13 +327,35 @@
             document.getElementById('group-count-box').style.display = type === 'group' ? 'block' : 'none';
         }
 
+        // NEW FUNCTION TO HANDLE MEMBERSHIP PLANS
+        function selectPlan(plan, price) {
+            currentPlan = plan;
+            planPrice = price;
+            
+            document.getElementById('plan-navratri').classList.remove('selected');
+            document.getElementById('plan-yearly').classList.remove('selected');
+            
+            if(plan === 'navratri') {
+                document.getElementById('plan-navratri').classList.add('selected');
+                planName = "Navratri 2026 Pass";
+                planValidity = "Till Navratri 2026";
+            } else {
+                document.getElementById('plan-yearly').classList.add('selected');
+                planName = "1 Year Membership";
+                planValidity = "November 2026 - Navratri 2027";
+            }
+        }
+
         function goToStep2() {
-            if(!currentType) { alert("Please select Registration Type!"); return; }
+            if(!currentType) { alert("Please select Registration Type (Single/Group)!"); return; }
+            if(!currentPlan) { alert("Please select a Membership Plan!"); return; }
+            
             let countInput = document.getElementById('memberCount').value;
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
             if(currentType === 'group' && totalStudents < 2) { alert("Group must have at least 2 members!"); return; }
             
-            totalAmount = currentType === 'single' ? 1500 : (totalStudents * 1400);
+            // DYNAMIC PRICING LOGIC
+            totalAmount = (totalStudents * planPrice);
             
             let container = document.getElementById('dynamic-students');
             container.innerHTML = '';
@@ -393,7 +446,7 @@
             
             let mob = document.getElementById('mobile').value;
             let btc = document.getElementById('batch').value;
-            let payMethod = document.getElementById('payMethod') ? document.getElementById('payMethod').value : "Not Selected"; // પેમેન્ટ મેથડ લીધી
+            let payMethod = document.getElementById('payMethod') ? document.getElementById('payMethod').value : "Not Selected";
             
             if(mob.length !== 10 || !btc || !payMethod) { 
                 alert("Please provide a valid 10-digit Leader WhatsApp number, select a batch, and choose a Payment Method."); 
@@ -409,7 +462,6 @@
             
             let studentsData = []; 
 
-            // ડેટા ભેગો કરો
             for(let i = 1; i <= totalStudents; i++) {
                 studentsData.push({
                     name: `${document.getElementById(`fName_${i}`).value} ${document.getElementById(`mName_${i}`).value} ${document.getElementById(`lName_${i}`).value}`,
@@ -420,35 +472,39 @@
                 });
             }
 
+            // ADDING MEMBERSHIP DATA TO FIREBASE
             let fullData = {
                 token: tokenNum,
                 type: currentType,
                 totalStudents: totalStudents,
                 totalAmount: totalAmount,
+                membershipPlan: planName,         // NEW
+                membershipPrice: planPrice,       // NEW
+                membershipValidity: planValidity, // NEW
                 mobile: leaderMobile,
                 email: emailVal,
                 batch: btc,
-                paymentMethod: payMethod, // Firebase માં સેવ થશે
+                paymentMethod: payMethod, 
                 date: dateStr,
                 status: "Pending Payment",
                 students: studentsData
             };
 
             try {
-                // 1. સૌથી પહેલા Firebase માં સેવ કરો
                 await db.ref('registrations/' + tokenNum).set(fullData);
 
-                // 2. હવે ટેલિગ્રામ પર મેસેજ મોકલો (Payment Method અને Approve બટન સાથે!)
+                // TELEGRAM MESSAGE WITH MEMBERSHIP DETAILS
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
+                headerText += `👑 <b>Membership:</b> ${planName}\n`;
+                headerText += `🗓 <b>Validity:</b> ${planValidity}\n`;
                 headerText += `🕒 <b>Batch:</b> ${btc}\n`;
-                headerText += `💳 <b>Payment Method:</b> ${payMethod}\n`; // ટેલિગ્રામ માં દેખાશે
+                headerText += `💳 <b>Payment Method:</b> ${payMethod}\n`; 
                 headerText += `💰 <b>Total Amount:</b> ₹${totalAmount} (Pending)\n`;
                 headerText += `📱 <b>Leader WhatsApp:</b> ${leaderMobile}\n`;
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
                 headerText += `🗓 <b>Date:</b> ${dateStr}`;
 
-                // Approve બટન (Inline Keyboard)
                 let keyboard = {
                     inline_keyboard: [[
                         { text: `✅ Approve ${tokenNum}`, callback_data: `APPROVE_${tokenNum}` }
@@ -461,7 +517,7 @@
                         chat_id: CHAT_ID, 
                         text: headerText, 
                         parse_mode: "HTML",
-                        reply_markup: keyboard // આનાથી ટેલિગ્રામમાં બટન દેખાશે!
+                        reply_markup: keyboard
                     })
                 });
                 await sleep(500);
@@ -484,7 +540,6 @@
             } catch (error) {
                 console.log("Telegram delay, but data saved to Firebase.");
             } finally {
-                // પોપઅપ બતાવો
                 try {
                     if (document.getElementById('tokenDisplay')) document.getElementById('tokenDisplay').innerText = tokenNum;
                     if (document.getElementById('popupTotalFee')) document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
