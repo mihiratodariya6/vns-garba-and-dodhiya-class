@@ -51,7 +51,7 @@
         .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
         .btn-check { background: #333; margin-bottom: 20px; }
         
-        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; }
+        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; text-align: center; display: block; width: 100%;}
 
         .details-box { background: #f9f9f9; padding: 20px; border-radius: 15px; border-left: 5px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .details-box p { font-size: 13px; margin-bottom: 8px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
@@ -138,11 +138,14 @@
                 <i class="fas fa-check-circle"></i> Token Approved! Proceed to Pay.
             </div>
 
-            <!-- ALREADY PAID MESSAGE -->
+            <!-- ALREADY PAID MESSAGE WITH DOWNLOAD BUTTON -->
             <div class="paid-msg" id="paidMsg">
                 <i class="fas fa-check-circle" style="font-size: 20px; color: #2196F3; margin-bottom: 5px;"></i><br>
                 Payment Screenshot Already Submitted!<br>
                 <span style="font-size: 12px; font-weight: normal; color: #555;">Your payment is currently under verification by the Admin.</span>
+                
+                <!-- NEW: Download Receipt Again Button -->
+                <a id="downloadPaidBtn" class="btn-download" href="#" style="display:none; background: #2196F3; margin-top: 15px;"><i class="fas fa-download"></i> Download Receipt Again</a>
             </div>
 
             <form id="paymentForm" style="display: none;">
@@ -225,14 +228,13 @@
             <h3 style="color:#4CAF50; margin-bottom: 5px;">Payment Submitted!</h3>
             <p style="font-size:13px; color:#555;">Your transaction screenshot has been sent to the Admin.</p>
             
-            <a id="downloadBtn" class="btn-download" href="#" download="VNS_Receipt.png"><i class="fas fa-download"></i> Download Receipt</a>
+            <a id="downloadBtn" class="btn-download" href="#" style="display:none;" download="VNS_Receipt.png"><i class="fas fa-download"></i> Download Receipt</a>
             
             <button class="btn" style="margin-top:15px; width:100%; background: #e0e0e0; color: #333;" onclick="window.location.reload()">Done</button>
         </div>
     </div>
 
     <script>
-        // FIREBASE & TELEGRAM SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
             databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
@@ -253,6 +255,7 @@
         let verifiedPlanName = ""; 
         let verifiedPlanValidity = "";
         let verifiedBatch = "";
+        let verifiedDate = "";
 
         async function verifyToken() {
             let tokenInput = document.getElementById('tokenInput').value.trim().toUpperCase();
@@ -275,6 +278,7 @@
                     verifiedTotalStudents = data.totalStudents;
                     verifiedPlanName = data.membershipPlan || "Navratri 2026 Pass";
                     verifiedPlanValidity = data.membershipValidity || "Till Navratri 2026";
+                    verifiedDate = data.date ? data.date.split(',')[0] : new Date().toLocaleDateString('en-GB');
 
                     if(data.students && data.students.length > 0) {
                         verifiedLeaderName = data.students[0].name;
@@ -295,7 +299,6 @@
                         });
                     }
 
-                    // Reset messages
                     document.getElementById('pendingMsg').style.display = 'none';
                     document.getElementById('approvedMsg').style.display = 'none';
                     document.getElementById('paidMsg').style.display = 'none';
@@ -306,18 +309,36 @@
                     document.getElementById('backBtn').style.display = 'block';
                     document.getElementById('socialLinksArea').style.display = 'block';
 
-                    // POWERFUL STATUS CHECK
                     let currentStatus = (data.status || "").toUpperCase();
                     
                     if(currentStatus.includes("SCREENSHOT") || currentStatus.includes("PAID") || currentStatus.includes("SENT")) {
                         // Already Paid State
                         document.getElementById('paidMsg').style.display = 'block';
+                        
+                        // GENERATE RECEIPT IN BACKGROUND FOR DOWNLOAD
+                        document.getElementById('r-token').innerText = verifiedToken;
+                        document.getElementById('r-name').innerText = verifiedLeaderName;
+                        document.getElementById('r-type').innerText = verifiedType + ` (${verifiedTotalStudents})`;
+                        document.getElementById('r-plan').innerText = verifiedPlanName;
+                        document.getElementById('r-batch').innerText = verifiedBatch.split('(')[0];
+                        document.getElementById('r-date').innerText = verifiedDate;
+                        document.getElementById('r-amount').innerText = `₹${verifiedAmount}`;
+
+                        const receiptElement = document.getElementById('receipt-template');
+                        html2canvas(receiptElement, { scale: 2 }).then(async canvas => {
+                            canvas.toBlob(async function(blob) {
+                                let url = URL.createObjectURL(blob);
+                                let downloadBtn = document.getElementById('downloadPaidBtn');
+                                downloadBtn.href = url;
+                                downloadBtn.download = `VNS_Receipt_${verifiedToken}.png`;
+                                downloadBtn.style.display = 'block'; // Make button visible
+                            }, "image/png");
+                        });
+
                     } else if(currentStatus.includes("APPROVE")) {
-                        // Approved State - Form Opens
                         document.getElementById('approvedMsg').style.display = 'block';
-                        document.getElementById('paymentForm').style.display = 'block'; // QR ફોર્મ ખુલશે!
+                        document.getElementById('paymentForm').style.display = 'block'; 
                     } else {
-                        // Pending State
                         document.getElementById('pendingMsg').style.display = 'block';
                     }
 
@@ -330,7 +351,6 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // 2. Submit Payment
         document.getElementById('paymentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             document.getElementById('loaderText').innerText = "Processing Payment & Generating Receipt...";
@@ -350,26 +370,22 @@
             msg += `⏳ *Status:* Please Check Screenshot`;
 
             try {
-                // Update DB Status
                 await db.ref('registrations/' + verifiedToken).update({
                     transactionId: txnId,
                     status: "Payment Screenshot Sent"
                 });
 
-                // Send Msg
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: "Markdown" })
                 });
 
-                // Send Photo
                 let formSS = new FormData();
                 formSS.append("chat_id", CHAT_ID);
                 formSS.append("photo", screenshot);
                 formSS.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName}`);
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formSS });
 
-                // GENERATE RECEIPT
                 document.getElementById('r-token').innerText = verifiedToken;
                 document.getElementById('r-name').innerText = verifiedLeaderName;
                 document.getElementById('r-type').innerText = verifiedType + ` (${verifiedTotalStudents})`;

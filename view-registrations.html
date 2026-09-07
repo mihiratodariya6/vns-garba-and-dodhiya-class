@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Dashboard | V & S Garba</title>
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     
@@ -40,7 +38,6 @@
         
         .token-badge { background: #333; color: #ff9800; padding: 4px 8px; border-radius: 6px; font-weight: bold; letter-spacing: 1px; font-size: 14px; }
         
-        /* Status Badges Update */
         .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11.5px; font-weight: bold; color: white; text-align: center; margin-top: 5px; letter-spacing: 0.5px;}
         .status-pending { background: #ff9800; box-shadow: 0 2px 5px rgba(255,152,0,0.3); } 
         .status-approved { background: #2196F3; box-shadow: 0 2px 5px rgba(33,150,243,0.3); } 
@@ -61,7 +58,7 @@
         <div class="btn-group">
             <button class="btn btn-refresh" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
             <button class="btn btn-history" onclick="downloadHistory()"><i class="fas fa-file-excel"></i> Download History</button>
-            <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-trash-alt"></i> Reset All Data</button>
+            <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-eye-slash"></i> Clear Dashboard</button>
         </div>
     </div>
 
@@ -85,7 +82,6 @@
 </div>
 
 <script>
-    // 1. Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
         databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
@@ -95,7 +91,6 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
-    // 2. Table Render Logic
     function renderTable(snapshot) {
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = ''; 
@@ -106,9 +101,13 @@
                 records.push(child.val());
             });
 
-            // ઊંધા ક્રમમાં બતાવો (નવા ફોર્મ સૌથી ઉપર દેખાય)
+            let visibleCount = 0;
+
             records.reverse().forEach((data) => {
-                
+                // અહીંયા લોજીક છે: જો ડેટા 'archived' (છુપાવેલો) હોય તો ડેશબોર્ડમાં નહિ બતાવે!
+                if(data.archived === true) return; 
+
+                visibleCount++;
                 let studentsHTML = `<ul class="student-list">`;
                 if(data.students && data.students.length > 0) {
                     data.students.forEach((s, index) => {
@@ -122,7 +121,6 @@
                 }
                 studentsHTML += `</ul>`;
 
-                // Status Badge Logic (આનાથી લીલો કલર તરત પકડાઈ જશે)
                 let currentStatus = data.status || "Pending Payment";
                 let badgeClass = "status-pending";
                 
@@ -133,7 +131,6 @@
                     badgeClass = "status-approved";
                 }
 
-                // Row Generation
                 const row = `<tr>
                     <td>
                         <span class="token-badge">${data.token}</span><br>
@@ -164,20 +161,21 @@
                         <span class="status-badge ${badgeClass}">${currentStatus}</span>
                     </td>
                 </tr>`;
-                
                 tableBody.innerHTML += row;
             });
+
+            if(visibleCount === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="no-data"><i class="fas fa-eye-slash" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> Dashboard is clear. No new registrations.</td></tr>';
+            }
         } else {
             tableBody.innerHTML = '<tr><td colspan="6" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found.</td></tr>';
         }
     }
 
-    // 3. Real-Time Fetch
     db.ref('registrations').on('value', (snapshot) => {
         renderTable(snapshot);
     });
 
-    // 4. Manual Refresh Function
     function refreshData() {
         document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="no-data">Refreshing Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>';
         db.ref('registrations').once('value').then((snapshot) => {
@@ -185,25 +183,33 @@
         });
     }
 
-    // 5. Reset All Data Function
+    // SMART HIDE LOGIC (Clear Dashboard but keep data for Payment Portal)
     function resetData() {
-        let userConfirm = confirm("⚠️ WARNING!\n\nAre you absolutely sure you want to RESET & DELETE all registration data?\n\nThis action cannot be undone!");
+        let userConfirm = confirm("⚠️ Dashboard ક્લિયર કરવું છે?\n\nઆનાથી લિસ્ટ ખાલી થઈ જશે, પણ ડેટાબેઝમાં સેવ રહેશે જેથી સ્ટુડન્ટ્સ Payment Portal માં એમની રસીદ જોઈ શકે.");
         
         if(userConfirm) {
-            let finalConfirm = prompt("Type 'DELETE' to confirm clearing all data:");
-            if(finalConfirm === 'DELETE') {
-                db.ref('registrations').remove().then(() => {
-                    alert("✅ All records have been successfully reset and deleted.");
+            let finalConfirm = prompt("Type 'CLEAR' to confirm:");
+            if(finalConfirm === 'CLEAR') {
+                
+                db.ref('registrations').once('value').then((snapshot) => {
+                    let updates = {};
+                    snapshot.forEach((child) => {
+                        updates[child.key + '/archived'] = true; // આ કમાન્ડ ડેટાને હાઈડ કરે છે, ડીલીટ નહિ કરે!
+                    });
+                    return db.ref('registrations').update(updates);
+                }).then(() => {
+                    alert("✅ Dashboard cleared successfully! Data is safe for students.");
+                    refreshData();
                 }).catch((error) => {
-                    alert("❌ Failed to delete records: " + error.message);
+                    alert("❌ Error: " + error.message);
                 });
+                
             } else {
                 alert("Reset cancelled.");
             }
         }
     }
 
-    // 6. Download History
     function downloadHistory() {
         let csvContent = "Token No,Date,Type,Membership Plan,Total Members,Batch,Payment Method,Total Amount,Status,Leader Mobile,Email\n";
         
@@ -211,6 +217,8 @@
             if(snapshot.exists()) {
                 snapshot.forEach((child) => {
                     let d = child.val();
+                    if(d.archived === true) return; // જે હાઈડ છે એ ડાઉનલોડ માં નહિ આવે
+                    
                     let date = d.date ? d.date.replace(/,/g, " ") : "-";
                     let type = d.type || "-";
                     let plan = d.membershipPlan || "-";
