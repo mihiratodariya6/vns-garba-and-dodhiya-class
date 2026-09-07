@@ -62,8 +62,10 @@
         .student-list ul { list-style: none; padding: 0; }
         .student-list li { font-size: 12px; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
 
+        /* STATUS MESSAGES */
         .pending-msg { background: #fff3cd; color: #ff9800; padding: 15px; border-radius: 10px; border: 2px dashed #ff9800; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
         .approved-msg { background: #e8f5e9; color: #4CAF50; padding: 10px; border-radius: 10px; border: 2px solid #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
+        .paid-msg { background: #e3f2fd; color: #1976D2; padding: 15px; border-radius: 10px; border: 2px solid #2196F3; font-weight: bold; font-size: 15px; margin-bottom: 20px; display: none; }
 
         .qr-box { border: 2px dashed #ccc; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: #fff; text-align: center; }
         .qr-box img { width: 220px; height: 220px; border-radius: 10px; margin: 10px 0; border: 3px solid #eee; padding: 5px; }
@@ -79,14 +81,12 @@
         .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; width: 90%; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
 
-        /* RECEIPT DESIGN (Hidden from view but used for generation) */
+        /* RECEIPT DESIGN (Hidden from view) */
         #receipt-template { position: absolute; left: -9999px; top: 0; width: 400px; background: #fff; padding: 25px; border: 5px solid #ff5722; border-radius: 15px; font-family: 'Poppins', sans-serif; color: #333; }
         .receipt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
-        .receipt-header img { width: 60px; margin-bottom: 10px; }
         .receipt-header h2 { font-size: 20px; color: #c62828; margin: 0; }
         .receipt-header p { font-size: 12px; color: #666; margin: 0; }
-        .receipt-body { font-size: 14px; }
-        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 14px;}
         .receipt-row strong { color: #555; }
         .receipt-total { background: #fff0eb; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; border: 2px dashed #ff5722; }
         .receipt-total h3 { margin: 0; font-size: 24px; color: #ff5722; }
@@ -128,6 +128,7 @@
                 <h3>Total Fee: <span id="dispFee">₹0</span></h3>
             </div>
 
+            <!-- STATUS MESSAGES -->
             <div class="pending-msg" id="pendingMsg">
                 <i class="fas fa-hourglass-half fa-spin"></i> Your Token is Pending.<br>
                 <span style="font-size: 12px; font-weight: normal; color: #666;">Please wait for Admin approval on Telegram. The payment form will open once approved.</span>
@@ -135,6 +136,13 @@
 
             <div class="approved-msg" id="approvedMsg">
                 <i class="fas fa-check-circle"></i> Token Approved! Proceed to Pay.
+            </div>
+
+            <!-- ALREADY PAID MESSAGE -->
+            <div class="paid-msg" id="paidMsg">
+                <i class="fas fa-check-circle" style="font-size: 20px; color: #2196F3; margin-bottom: 5px;"></i><br>
+                Payment Screenshot Already Submitted!<br>
+                <span style="font-size: 12px; font-weight: normal; color: #555;">Your payment is currently under verification by the Admin.</span>
             </div>
 
             <form id="paymentForm" style="display: none;">
@@ -217,10 +225,9 @@
             <h3 style="color:#4CAF50; margin-bottom: 5px;">Payment Submitted!</h3>
             <p style="font-size:13px; color:#555;">Your transaction screenshot has been sent to the Admin.</p>
             
-            <!-- Download Button -->
             <a id="downloadBtn" class="btn-download" href="#" download="VNS_Receipt.png"><i class="fas fa-download"></i> Download Receipt</a>
             
-            <button class="btn" style="margin-top:15px; width:100%; background: #e0e0e0; color: #333;" onclick="window.location.href='index.html'">Back to Home</button>
+            <button class="btn" style="margin-top:15px; width:100%; background: #e0e0e0; color: #333;" onclick="window.location.reload()">Done</button>
         </div>
     </div>
 
@@ -288,19 +295,30 @@
                         });
                     }
 
+                    // Reset messages
+                    document.getElementById('pendingMsg').style.display = 'none';
+                    document.getElementById('approvedMsg').style.display = 'none';
+                    document.getElementById('paidMsg').style.display = 'none';
+                    document.getElementById('paymentForm').style.display = 'none';
+
                     document.getElementById('tokenSection').style.display = 'none';
                     document.getElementById('studentDetails').style.display = 'block';
                     document.getElementById('backBtn').style.display = 'block';
                     document.getElementById('socialLinksArea').style.display = 'block';
 
-                    if(data.status === "Approved" || data.status === "Approve") {
+                    // POWERFUL STATUS CHECK
+                    let currentStatus = (data.status || "").toUpperCase();
+                    
+                    if(currentStatus.includes("SCREENSHOT") || currentStatus.includes("PAID") || currentStatus.includes("SENT")) {
+                        // Already Paid State
+                        document.getElementById('paidMsg').style.display = 'block';
+                    } else if(currentStatus.includes("APPROVE")) {
+                        // Approved State - Form Opens
                         document.getElementById('approvedMsg').style.display = 'block';
-                        document.getElementById('paymentForm').style.display = 'block';
-                        document.getElementById('pendingMsg').style.display = 'none';
+                        document.getElementById('paymentForm').style.display = 'block'; // QR ફોર્મ ખુલશે!
                     } else {
+                        // Pending State
                         document.getElementById('pendingMsg').style.display = 'block';
-                        document.getElementById('approvedMsg').style.display = 'none';
-                        document.getElementById('paymentForm').style.display = 'none';
                     }
 
                 } else {
@@ -312,7 +330,7 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // 2. Submit Payment & Generate Receipt
+        // 2. Submit Payment
         document.getElementById('paymentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             document.getElementById('loaderText').innerText = "Processing Payment & Generating Receipt...";
@@ -332,27 +350,26 @@
             msg += `⏳ *Status:* Please Check Screenshot`;
 
             try {
-                // 1. Update Firebase Status
+                // Update DB Status
                 await db.ref('registrations/' + verifiedToken).update({
                     transactionId: txnId,
                     status: "Payment Screenshot Sent"
                 });
 
-                // 2. Send Text Msg to Telegram
+                // Send Msg
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: "Markdown" })
                 });
 
-                // 3. Send Payment Screenshot to Telegram
+                // Send Photo
                 let formSS = new FormData();
                 formSS.append("chat_id", CHAT_ID);
                 formSS.append("photo", screenshot);
                 formSS.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName}`);
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formSS });
 
-                // 4. GENERATE RECEIPT IMAGE
-                // Set values in the hidden template
+                // GENERATE RECEIPT
                 document.getElementById('r-token').innerText = verifiedToken;
                 document.getElementById('r-name').innerText = verifiedLeaderName;
                 document.getElementById('r-type').innerText = verifiedType + ` (${verifiedTotalStudents})`;
@@ -361,26 +378,21 @@
                 document.getElementById('r-date').innerText = new Date().toLocaleDateString('en-GB');
                 document.getElementById('r-amount').innerText = `₹${verifiedAmount}`;
 
-                // Convert HTML to Image
                 const receiptElement = document.getElementById('receipt-template');
                 html2canvas(receiptElement, { scale: 2 }).then(async canvas => {
                     canvas.toBlob(async function(blob) {
-                        
-                        // Set Download Button Link for User
                         let url = URL.createObjectURL(blob);
                         let downloadBtn = document.getElementById('downloadBtn');
                         downloadBtn.href = url;
                         downloadBtn.download = `VNS_Receipt_${verifiedToken}.png`;
                         downloadBtn.style.display = 'block';
 
-                        // 5. Send Receipt Image to Telegram
                         let formReceipt = new FormData();
                         formReceipt.append("chat_id", CHAT_ID);
                         formReceipt.append("photo", blob, "receipt.png");
                         formReceipt.append("caption", `🧾 System Generated Receipt\nToken: ${verifiedToken}`);
                         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formReceipt });
 
-                        // Show Success Overlay
                         document.getElementById('loadingOverlay').style.display = 'none';
                         document.getElementById('successOverlay').style.display = 'flex';
                     }, "image/png");
