@@ -20,8 +20,10 @@
         .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         h2 { color: #C62828; margin: 0; text-transform: uppercase; font-weight: 800; font-size: 24px; }
         
-        .btn-group { display: flex; gap: 10px; }
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 5px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 5px; font-size: 13px;}
+        .btn-refresh { background: #2196F3; }
+        .btn-refresh:hover { background: #1976D2; box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); }
         .btn-history { background: #4CAF50; }
         .btn-history:hover { background: #388E3C; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
         .btn-reset { background: #f44336; }
@@ -38,11 +40,11 @@
         
         .token-badge { background: #333; color: #ff9800; padding: 4px 8px; border-radius: 6px; font-weight: bold; letter-spacing: 1px; font-size: 14px; }
         
-        /* Status Badges */
-        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-align: center; margin-top: 5px; }
-        .status-pending { background: #ff9800; } /* Orange */
-        .status-approved { background: #2196F3; } /* Blue */
-        .status-paid { background: #4CAF50; } /* Green */
+        /* Status Badges Update */
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11.5px; font-weight: bold; color: white; text-align: center; margin-top: 5px; letter-spacing: 0.5px;}
+        .status-pending { background: #ff9800; box-shadow: 0 2px 5px rgba(255,152,0,0.3); } 
+        .status-approved { background: #2196F3; box-shadow: 0 2px 5px rgba(33,150,243,0.3); } 
+        .status-paid { background: #4CAF50; box-shadow: 0 2px 5px rgba(76,175,80,0.4); } 
         
         .student-list { list-style: none; padding: 0; margin: 0; }
         .student-list li { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; }
@@ -57,6 +59,7 @@
     <div class="header-flex">
         <h2><i class="fas fa-users-cog"></i> Live Admin Dashboard</h2>
         <div class="btn-group">
+            <button class="btn btn-refresh" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
             <button class="btn btn-history" onclick="downloadHistory()"><i class="fas fa-file-excel"></i> Download History</button>
             <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-trash-alt"></i> Reset All Data</button>
         </div>
@@ -92,8 +95,8 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
-    // 2. Data Fetching (Live Tracking)
-    db.ref('registrations').on('value', (snapshot) => {
+    // 2. Table Render Logic
+    function renderTable(snapshot) {
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = ''; 
 
@@ -106,7 +109,6 @@
             // ઊંધા ક્રમમાં બતાવો (નવા ફોર્મ સૌથી ઉપર દેખાય)
             records.reverse().forEach((data) => {
                 
-                // સ્ટુડન્ટ લિસ્ટ બનાવવું 
                 let studentsHTML = `<ul class="student-list">`;
                 if(data.students && data.students.length > 0) {
                     data.students.forEach((s, index) => {
@@ -120,14 +122,15 @@
                 }
                 studentsHTML += `</ul>`;
 
-                // Status Badge Color Logic
+                // Status Badge Logic (આનાથી લીલો કલર તરત પકડાઈ જશે)
                 let currentStatus = data.status || "Pending Payment";
                 let badgeClass = "status-pending";
                 
-                if (currentStatus.includes("Approved") || currentStatus === "Approve") {
-                    badgeClass = "status-approved";
-                } else if (currentStatus.includes("Screenshot") || currentStatus.includes("Paid")) {
+                if (currentStatus.includes("Screenshot") || currentStatus.includes("Paid") || currentStatus.includes("Payment Screenshot Sent")) {
                     badgeClass = "status-paid";
+                    currentStatus = "✅ Payment Screenshot Sent";
+                } else if (currentStatus.includes("Approved") || currentStatus === "Approve") {
+                    badgeClass = "status-approved";
                 }
 
                 // Row Generation
@@ -167,9 +170,22 @@
         } else {
             tableBody.innerHTML = '<tr><td colspan="6" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found.</td></tr>';
         }
+    }
+
+    // 3. Real-Time Fetch
+    db.ref('registrations').on('value', (snapshot) => {
+        renderTable(snapshot);
     });
 
-    // 3. Reset All Data Function
+    // 4. Manual Refresh Function
+    function refreshData() {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="no-data">Refreshing Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+        db.ref('registrations').once('value').then((snapshot) => {
+            renderTable(snapshot);
+        });
+    }
+
+    // 5. Reset All Data Function
     function resetData() {
         let userConfirm = confirm("⚠️ WARNING!\n\nAre you absolutely sure you want to RESET & DELETE all registration data?\n\nThis action cannot be undone!");
         
@@ -187,7 +203,7 @@
         }
     }
 
-    // 4. Download History (Export to CSV)
+    // 6. Download History
     function downloadHistory() {
         let csvContent = "Token No,Date,Type,Membership Plan,Total Members,Batch,Payment Method,Total Amount,Status,Leader Mobile,Email\n";
         
@@ -195,7 +211,6 @@
             if(snapshot.exists()) {
                 snapshot.forEach((child) => {
                     let d = child.val();
-                    // Clean fields for CSV (removing commas to prevent layout break)
                     let date = d.date ? d.date.replace(/,/g, " ") : "-";
                     let type = d.type || "-";
                     let plan = d.membershipPlan || "-";
@@ -210,7 +225,6 @@
                     csvContent += `${d.token},${date},${type},${plan},${members},${batch},${payMethod},${amount},${status},${mobile},${email}\n`;
                 });
                 
-                // Create Download Link
                 let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 let link = document.createElement("a");
                 let url = URL.createObjectURL(blob);
