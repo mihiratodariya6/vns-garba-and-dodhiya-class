@@ -12,6 +12,9 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- html2canvas for Receipt Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -47,8 +50,9 @@
         .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: #fff; background: linear-gradient(45deg, #ff5722, #dd2476); transition: 0.3s; }
         .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
         .btn-check { background: #333; margin-bottom: 20px; }
+        
+        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; }
 
-        /* Student Details Box */
         .details-box { background: #f9f9f9; padding: 20px; border-radius: 15px; border-left: 5px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .details-box p { font-size: 13px; margin-bottom: 8px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
         .details-box h3 { color: #c62828; margin-top: 15px; font-size: 20px; text-align: center; background: #fff0eb; padding: 10px; border-radius: 10px; border: 1px solid #ffd5c2; }
@@ -57,31 +61,36 @@
         .student-list h4 { font-size: 14px; color: #ff5722; margin-bottom: 10px; }
         .student-list ul { list-style: none; padding: 0; }
         .student-list li { font-size: 12px; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
-        .student-list li:last-child { border-bottom: none; }
 
-        /* Status Messages */
         .pending-msg { background: #fff3cd; color: #ff9800; padding: 15px; border-radius: 10px; border: 2px dashed #ff9800; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
         .approved-msg { background: #e8f5e9; color: #4CAF50; padding: 10px; border-radius: 10px; border: 2px solid #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 20px; display: none; }
 
-        /* Payment Section Update */
         .qr-box { border: 2px dashed #ccc; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: #fff; text-align: center; }
         .qr-box img { width: 220px; height: 220px; border-radius: 10px; margin: 10px 0; border: 3px solid #eee; padding: 5px; }
         
         .upi-link { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff0eb; border: 1px dashed #ff5722; border-radius: 20px; color: #c62828; font-weight: bold; text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .upi-link:hover { background: #ff5722; color: #fff; }
-
-        /* Social Links */
-        .social-links { margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; }
+        
+        .social-links { margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; display: none; }
         .social-links h4 { margin-bottom: 10px; color: #555; font-size: 14px; }
         .social-wrap { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         .social-wrap a { text-decoration: none; color: #fff; padding: 8px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; transition: 0.3s; }
-        .social-wrap a:hover { transform: translateY(-2px); }
 
-        /* Overlays */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
+        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; width: 90%; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* RECEIPT DESIGN (Hidden from view but used for generation) */
+        #receipt-template { position: absolute; left: -9999px; top: 0; width: 400px; background: #fff; padding: 25px; border: 5px solid #ff5722; border-radius: 15px; font-family: 'Poppins', sans-serif; color: #333; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
+        .receipt-header img { width: 60px; margin-bottom: 10px; }
+        .receipt-header h2 { font-size: 20px; color: #c62828; margin: 0; }
+        .receipt-header p { font-size: 12px; color: #666; margin: 0; }
+        .receipt-body { font-size: 14px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .receipt-row strong { color: #555; }
+        .receipt-total { background: #fff0eb; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; border: 2px dashed #ff5722; }
+        .receipt-total h3 { margin: 0; font-size: 24px; color: #ff5722; }
+        .receipt-footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -95,7 +104,6 @@
                 <p class="subtitle">Enter your Token Number to verify and pay</p>
             </div>
 
-            <!-- Token Entry Section -->
             <div id="tokenSection">
                 <div class="input-group">
                     <label>Token Number</label>
@@ -105,13 +113,10 @@
                 <button class="btn btn-check" onclick="verifyToken()">Verify Details <i class="fas fa-search"></i></button>
             </div>
 
-            <!-- Details Section -->
             <div class="details-box" id="studentDetails">
                 <p><i class="fas fa-users" style="color:#ff5722; margin-right:5px;"></i> <strong>Type:</strong> <span id="dispType"></span></p>
-                <!-- NEW MEMBERSHIP FIELDS -->
                 <p><i class="fas fa-crown" style="color:#ff5722; margin-right:5px;"></i> <strong>Membership:</strong> <span id="dispPlan" style="font-weight: bold; color: #ff9800;"></span></p>
                 <p><i class="fas fa-calendar-check" style="color:#ff5722; margin-right:5px;"></i> <strong>Validity:</strong> <span id="dispValidity"></span></p>
-                <!-- END NEW FIELDS -->
                 <p><i class="fas fa-phone" style="color:#ff5722; margin-right:5px;"></i> <strong>Leader Mobile:</strong> <span id="dispMob"></span></p>
                 <p><i class="fas fa-clock" style="color:#ff5722; margin-right:5px;"></i> <strong>Batch:</strong> <span id="dispBatch"></span></p>
                 
@@ -123,7 +128,6 @@
                 <h3>Total Fee: <span id="dispFee">₹0</span></h3>
             </div>
 
-            <!-- Pending Message -->
             <div class="pending-msg" id="pendingMsg">
                 <i class="fas fa-hourglass-half fa-spin"></i> Your Token is Pending.<br>
                 <span style="font-size: 12px; font-weight: normal; color: #666;">Please wait for Admin approval on Telegram. The payment form will open once approved.</span>
@@ -133,13 +137,9 @@
                 <i class="fas fa-check-circle"></i> Token Approved! Proceed to Pay.
             </div>
 
-            <!-- Payment Form -->
             <form id="paymentForm" style="display: none;">
-                
                 <div class="qr-box" id="qrContainer">
                     <p style="font-weight: bold; color: #333; margin-bottom: 5px;">Scan QR to Pay</p>
-                    
-                    <!-- Direct Clickable QR and Link -->
                     <a href="upi://pay?pa=vnsgarba@upi&pn=V%20%26%20S%20Garba%20Classes" title="Click to pay">
                         <img src="qr.jpeg" alt="QR Code" onerror="this.src='https://via.placeholder.com/220x220.png?text=QR+Code'">
                     </a>
@@ -165,8 +165,7 @@
 
             <button type="button" class="btn" id="backBtn" style="background: #e0e0e0; color: #555; margin-top: 15px; display: none;" onclick="window.location.reload()"><i class="fas fa-arrow-left"></i> Check Another Token</button>
 
-            <!-- Social Links Area -->
-            <div class="social-links" id="socialLinksArea" style="display: none;">
+            <div class="social-links" id="socialLinksArea">
                 <h4>✨ Follow & Join Us</h4>
                 <div class="social-wrap">
                     <a href="https://www.instagram.com/vnsgarbanddodhiya?igsh=aWpqa2xtYjY3MnJj" target="_blank" style="background: #E1306C;"><i class="fab fa-instagram"></i> Main</a>
@@ -179,21 +178,49 @@
         </div>
     </div>
 
+    <!-- Hidden Receipt Template -->
+    <div id="receipt-template">
+        <div class="receipt-header">
+            <h2>V & S Garba Classes</h2>
+            <p>Payment Receipt</p>
+        </div>
+        <div class="receipt-body">
+            <div class="receipt-row"><strong>Token No:</strong> <span id="r-token"></span></div>
+            <div class="receipt-row"><strong>Name:</strong> <span id="r-name"></span></div>
+            <div class="receipt-row"><strong>Type:</strong> <span id="r-type"></span></div>
+            <div class="receipt-row"><strong>Membership:</strong> <span id="r-plan"></span></div>
+            <div class="receipt-row"><strong>Batch:</strong> <span id="r-batch"></span></div>
+            <div class="receipt-row"><strong>Date:</strong> <span id="r-date"></span></div>
+            <div class="receipt-row"><strong>Status:</strong> <span style="color: #4CAF50; font-weight: bold;">PAID (Verification Pending)</span></div>
+        </div>
+        <div class="receipt-total">
+            <p style="margin:0; font-size:12px; color:#555;">Total Amount Paid</p>
+            <h3 id="r-amount">₹0</h3>
+        </div>
+        <div class="receipt-footer">
+            *This is an automatically generated receipt.<br>Valid only upon final admin verification.
+        </div>
+    </div>
+
     <!-- Overlays -->
     <div class="overlay" id="loadingOverlay">
         <div class="popup-box">
             <div class="loader"></div>
-            <h3 style="color:#ff5722;">Fetching Details...</h3>
+            <h3 id="loaderText" style="color:#ff5722;">Fetching Details...</h3>
             <p style="font-size:14px; margin-top:10px;">Please wait.</p>
         </div>
     </div>
 
     <div class="overlay" id="successOverlay">
-        <div class="popup-box">
+        <div class="popup-box" style="padding: 30px;">
             <i class="fas fa-check-circle" style="font-size: 60px; color: #4CAF50; margin-bottom: 15px;"></i>
-            <h3 style="color:#4CAF50;">Payment Submitted!</h3>
-            <p style="font-size:14px; margin-top:10px;">Your transaction screenshot has been sent to the Admin.</p>
-            <button class="btn" style="margin-top:20px; width:100%;" onclick="window.location.href='index.html'">Back to Home</button>
+            <h3 style="color:#4CAF50; margin-bottom: 5px;">Payment Submitted!</h3>
+            <p style="font-size:13px; color:#555;">Your transaction screenshot has been sent to the Admin.</p>
+            
+            <!-- Download Button -->
+            <a id="downloadBtn" class="btn-download" href="#" download="VNS_Receipt.png"><i class="fas fa-download"></i> Download Receipt</a>
+            
+            <button class="btn" style="margin-top:15px; width:100%; background: #e0e0e0; color: #333;" onclick="window.location.href='index.html'">Back to Home</button>
         </div>
     </div>
 
@@ -212,22 +239,20 @@
 
         let verifiedAmount = 0;
         let verifiedToken = "";
-        
-        // પેમેન્ટ મેસેજ માટે ડેટા સાચવવાના વેરીએબલ્સ
         let verifiedType = "";
         let verifiedLeaderName = "";
         let verifiedMobile = "";
         let verifiedTotalStudents = 1;
-        
-        // NEW MEMBERSHIP VARIABLES
         let verifiedPlanName = ""; 
         let verifiedPlanValidity = "";
+        let verifiedBatch = "";
 
         async function verifyToken() {
             let tokenInput = document.getElementById('tokenInput').value.trim().toUpperCase();
             if(!tokenInput) { alert("Please enter Token Number"); return; }
             if(!tokenInput.startsWith("VNS-")) { alert("Invalid format. Token must start with VNS-"); return; }
 
+            document.getElementById('loaderText').innerText = "Fetching Details...";
             document.getElementById('loadingOverlay').style.display = 'flex';
 
             try {
@@ -235,25 +260,24 @@
                 if(snapshot.exists()) {
                     let data = snapshot.val();
                     
-                    // ડેટા સ્ટોર કરી લો જેથી પેમેન્ટ વખતે કામ લાગે
                     verifiedToken = tokenInput;
                     verifiedAmount = data.totalAmount;
                     verifiedType = data.type.toUpperCase();
                     verifiedMobile = data.mobile;
+                    verifiedBatch = data.batch;
                     verifiedTotalStudents = data.totalStudents;
-                    verifiedPlanName = data.membershipPlan || "Navratri 2026 Pass"; // Fetch from DB
-                    verifiedPlanValidity = data.membershipValidity || "Till Navratri 2026"; // Fetch from DB
+                    verifiedPlanName = data.membershipPlan || "Navratri 2026 Pass";
+                    verifiedPlanValidity = data.membershipValidity || "Till Navratri 2026";
 
                     if(data.students && data.students.length > 0) {
-                        verifiedLeaderName = data.students[0].name; // પહેલા સ્ટુડન્ટનું નામ લીડર તરીકે લેશે
+                        verifiedLeaderName = data.students[0].name;
                     }
 
-                    // ડિસ્પ્લે કરો
                     document.getElementById('dispType').innerText = verifiedType + ` (${verifiedTotalStudents} Students)`;
-                    document.getElementById('dispPlan').innerText = verifiedPlanName; // NEW
-                    document.getElementById('dispValidity').innerText = verifiedPlanValidity; // NEW
+                    document.getElementById('dispPlan').innerText = verifiedPlanName;
+                    document.getElementById('dispValidity').innerText = verifiedPlanValidity;
                     document.getElementById('dispMob').innerText = verifiedMobile;
-                    document.getElementById('dispBatch').innerText = data.batch;
+                    document.getElementById('dispBatch').innerText = verifiedBatch;
                     document.getElementById('dispFee').innerText = `₹${verifiedAmount}`;
                     
                     let ul = document.getElementById('studentsUl');
@@ -288,48 +312,79 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // 2. Submit Payment Details
+        // 2. Submit Payment & Generate Receipt
         document.getElementById('paymentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            document.getElementById('loaderText').innerText = "Processing Payment & Generating Receipt...";
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.querySelector('#loadingOverlay h3').innerText = "Submitting Payment...";
 
             let txnId = document.getElementById('txnId').value.trim() || "Not Provided (Screenshot Only)";
             let screenshot = document.getElementById('payScreenshot').files[0];
 
-            // નવો અને ડિટેલ વાળો ટેલિગ્રામ મેસેજ
             let msg = `💰 *New Payment Submitted!*\n\n`;
             msg += `🎟 *Token:* ${verifiedToken}\n`;
             msg += `👤 *Name:* ${verifiedLeaderName}\n`;
             msg += `📱 *Mobile:* ${verifiedMobile}\n`;
             msg += `📋 *Type:* ${verifiedType} (${verifiedTotalStudents} Entry)\n`;
-            msg += `👑 *Membership:* ${verifiedPlanName}\n\n`; // NEW
+            msg += `👑 *Membership:* ${verifiedPlanName}\n\n`;
             msg += `💵 *Amount Paid:* ₹${verifiedAmount}\n`;
             msg += `🧾 *UTR Number:* ${txnId}\n`;
             msg += `⏳ *Status:* Please Check Screenshot`;
 
             try {
-                // Update Firebase Status
+                // 1. Update Firebase Status
                 await db.ref('registrations/' + verifiedToken).update({
                     transactionId: txnId,
                     status: "Payment Screenshot Sent"
                 });
 
-                // Send Text Msg to Telegram
+                // 2. Send Text Msg to Telegram
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: "Markdown" })
                 });
 
-                // Send Screenshot to Telegram with short caption
-                let form = new FormData();
-                form.append("chat_id", CHAT_ID);
-                form.append("photo", screenshot);
-                form.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName} | Plan: ${verifiedPlanName}`);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
+                // 3. Send Payment Screenshot to Telegram
+                let formSS = new FormData();
+                formSS.append("chat_id", CHAT_ID);
+                formSS.append("photo", screenshot);
+                formSS.append("caption", `📸 Payment Screenshot\nToken: ${verifiedToken} | Name: ${verifiedLeaderName}`);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formSS });
 
-                document.getElementById('loadingOverlay').style.display = 'none';
-                document.getElementById('successOverlay').style.display = 'flex';
+                // 4. GENERATE RECEIPT IMAGE
+                // Set values in the hidden template
+                document.getElementById('r-token').innerText = verifiedToken;
+                document.getElementById('r-name').innerText = verifiedLeaderName;
+                document.getElementById('r-type').innerText = verifiedType + ` (${verifiedTotalStudents})`;
+                document.getElementById('r-plan').innerText = verifiedPlanName;
+                document.getElementById('r-batch').innerText = verifiedBatch.split('(')[0];
+                document.getElementById('r-date').innerText = new Date().toLocaleDateString('en-GB');
+                document.getElementById('r-amount').innerText = `₹${verifiedAmount}`;
+
+                // Convert HTML to Image
+                const receiptElement = document.getElementById('receipt-template');
+                html2canvas(receiptElement, { scale: 2 }).then(async canvas => {
+                    canvas.toBlob(async function(blob) {
+                        
+                        // Set Download Button Link for User
+                        let url = URL.createObjectURL(blob);
+                        let downloadBtn = document.getElementById('downloadBtn');
+                        downloadBtn.href = url;
+                        downloadBtn.download = `VNS_Receipt_${verifiedToken}.png`;
+                        downloadBtn.style.display = 'block';
+
+                        // 5. Send Receipt Image to Telegram
+                        let formReceipt = new FormData();
+                        formReceipt.append("chat_id", CHAT_ID);
+                        formReceipt.append("photo", blob, "receipt.png");
+                        formReceipt.append("caption", `🧾 System Generated Receipt\nToken: ${verifiedToken}`);
+                        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formReceipt });
+
+                        // Show Success Overlay
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        document.getElementById('successOverlay').style.display = 'flex';
+                    }, "image/png");
+                });
 
             } catch(error) {
                 alert("Payment submission failed. Check internet connection.");

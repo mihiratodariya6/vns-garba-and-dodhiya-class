@@ -13,6 +13,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- html2canvas for Receipt Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body {
@@ -35,7 +38,6 @@
         .logo-area img { width: 100px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
         .logo-area h2 { color: #c62828; font-weight: 800; font-size: 1.8rem; margin-top: 10px; }
 
-        /* WIZARD STEPS (3 STEPS) */
         .steps { display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 30px; flex-wrap: wrap; }
         .step { display: flex; flex-direction: column; align-items: center; width: 60px; }
         .step span { width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #777; transition: 0.3s; }
@@ -51,7 +53,6 @@
 
         h3.section-title { color: #c62828; text-align: center; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px dashed #eee; padding-bottom: 10px; }
 
-        /* CARDS & INPUTS */
         .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .type-card { background: #fff; padding: 30px; border-radius: 15px; text-align: center; border: 3px solid #eee; cursor: pointer; transition: 0.3s; }
         .type-card:hover, .type-card.selected { border-color: #ff5722; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,87,34,0.15); }
@@ -70,20 +71,17 @@
         .input-group input:focus, .input-group select:focus { border-color: #ff5722; }
         .input-group i { position: absolute; left: 12px; top: 35px; color: #888; font-size: 14px; }
         
-        /* Phone Box */
         .phone-box { display: flex; align-items: center; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: #fff; position: relative; margin-top: 5px; }
         .phone-box:focus-within { border-color: #ff5722; }
         .phone-box select { width: 100px; padding: 10px 5px 10px 30px; border: none; background: #f9f9f9; outline: none; font-size: 13px; font-weight: 600; }
         .phone-box input { flex: 1; border: none; padding: 10px; font-size: 14px; outline: none; }
         .phone-box i { position: absolute; left: 10px; color: #25D366; font-size: 16px; top: 12px; }
 
-        /* Gender Radio */
         .gender-wrapper { display: flex; gap: 10px; align-items: flex-end; height: 100%; padding-bottom: 5px; }
         .gender-option input { display: none; }
         .gender-option label { padding: 8px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #555; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
         .gender-option input:checked + label { border-color: #ff5722; background: #ff5722; color: #fff; }
 
-        /* File Upload */
         .file-group input[type="file"] { padding: 8px; border: 2px dashed #ff5722; border-radius: 8px; background: #fff5f2; font-size: 12px; padding-left: 10px; }
 
         .btn-flex { display: flex; gap: 15px; margin-top: 30px; }
@@ -91,16 +89,25 @@
         .btn-primary { background: linear-gradient(45deg, #ff5722, #dd2476); }
         .btn-secondary { background: #999; }
 
-        /* Overlays & Popup */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
+        .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 450px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Custom Success Token Styling */
         .success-icon { font-size: 50px; color: #4CAF50; margin-bottom: 10px; }
-        .token-box { background: #fff5f2; padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #ff5722; border: 2px dashed #ff5722; }
-        .policy-text { font-size: 13px; color: #555; margin-top: 15px; line-height: 1.6; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #c62828; }
+
+        /* PROFESSIONAL RECEIPT TEMPLATE (Hidden) */
+        #receipt-template { position: absolute; left: -9999px; top: 0; width: 450px; background: #fff; padding: 25px; border: 4px solid #ff5722; border-radius: 15px; font-family: 'Poppins', sans-serif; color: #333; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 12px; margin-bottom: 12px; }
+        .receipt-header h2 { font-size: 20px; color: #c62828; font-weight: 800; margin: 0; }
+        .receipt-header p { font-size: 11px; color: #666; margin: 0; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 4px; font-size: 13px; }
+        .receipt-row strong { color: #555; }
+        .receipt-total { background: #fff0eb; padding: 12px; border-radius: 8px; text-align: center; margin-top: 15px; border: 2px dashed #ff5722; }
+        .receipt-total h3 { margin: 0; font-size: 22px; color: #ff5722; }
+        
+        /* UPDATED RULES STYLING */
+        .receipt-rules { font-size: 10.5px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; margin-top: 12px; line-height: 1.5; border-left: 3px solid #c62828; text-align: left; }
 
         @media(max-width: 768px) { .row-3, .row-2, .type-grid { grid-template-columns: 1fr; } .line{width:20px;} }
     </style>
@@ -116,7 +123,6 @@
                 <p style="font-size: 14px; color: #666;">Fill out the details below to join V&S Garba Classes</p>
             </div>
 
-            <!-- 3 Steps Wizard -->
             <div class="steps">
                 <div class="step active" id="st1"><span>1</span><p>Type</p></div>
                 <div class="line" id="ln1"></div>
@@ -127,9 +133,7 @@
 
             <form id="vipRegistrationForm">
                 
-                <!-- STEP 1: Registration Type & Plan -->
                 <div id="step1" class="form-step active-step">
-                    
                     <h3 class="section-title">Select Registration Type</h3>
                     <div class="type-grid">
                         <div class="type-card" id="card-single" onclick="selectType('single')">
@@ -147,17 +151,14 @@
                         <input type="number" id="memberCount" min="2" max="50" value="2" style="width: 100px; padding: 10px; text-align: center; font-size: 18px; border: 2px solid #ff5722; border-radius: 10px; margin-top: 10px;">
                     </div>
 
-                    <!-- NEW: Membership Plan Section -->
                     <h3 class="section-title" style="margin-top: 40px;">Choose Membership Plan</h3>
                     <div class="type-grid">
-                        <!-- Option 1 -->
                         <div class="type-card" id="plan-navratri" onclick="selectPlan('navratri', 1500)" style="padding: 20px; text-align: left;">
                             <h4 style="color:#ff5722; margin-bottom:5px; font-size:18px;">🎉 Navratri 2026 Pass</h4>
                             <h3 style="color:#333; font-size:24px;">₹1500 <span style="font-size:12px; font-weight:normal; color:#666;">/ member</span></h3>
                             <p style="font-size:13px; color:#555; margin-top:10px;"><i class="fas fa-calendar-check" style="font-size:13px; margin:0 5px 0 0;"></i> Valid till Navratri 2026</p>
                         </div>
                         
-                        <!-- Option 2 (Most Popular) -->
                         <div class="type-card" id="plan-yearly" onclick="selectPlan('yearly', 3500)" style="padding: 20px; text-align: left; position: relative;">
                             <div style="position:absolute; top:-12px; right:15px; background:#ff9800; color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2);">⭐ Most Popular</div>
                             <h4 style="color:#ff9800; margin-bottom:5px; font-size:18px;">👑 1 Year Membership</h4>
@@ -176,7 +177,6 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Student Details -->
                 <div id="step2" class="form-step">
                     <h3 class="section-title">Student Details</h3>
                     <div id="dynamic-students"></div>
@@ -186,7 +186,6 @@
                     </div>
                 </div>
 
-                <!-- STEP 3: Contact & Batch -->
                 <div id="step3" class="form-step">
                     <h3 class="section-title">Contact & Batch Selection</h3>
                     <div class="student-block">
@@ -235,8 +234,42 @@
                         <button type="submit" class="btn btn-primary" id="submitBtn">Generate Token & Book <i class="fas fa-check-circle"></i></button>
                     </div>
                 </div>
-                
             </form>
+        </div>
+    </div>
+
+    <!-- Hidden Professional Receipt Template -->
+    <div id="receipt-template">
+        <div class="receipt-header">
+            <h2>V & S Garba Classes</h2>
+            <p>Official Registration & Booking Slip</p>
+        </div>
+        <div>
+            <div class="receipt-row"><strong>Token No:</strong> <span id="r-token"></span></div>
+            <div class="receipt-row"><strong>Leader Name:</strong> <span id="r-name"></span></div>
+            <div class="receipt-row"><strong>Entry Type:</strong> <span id="r-type"></span></div>
+            <div class="receipt-row"><strong>Membership:</strong> <span id="r-plan"></span></div>
+            <div class="receipt-row"><strong>Batch Time:</strong> <span id="r-batch"></span></div>
+            <div class="receipt-row"><strong>Payment Mode:</strong> <span id="r-paymethod"></span></div>
+            <div class="receipt-row"><strong>Booking Date/Time:</strong> <span id="r-date"></span></div>
+            <div class="receipt-row"><strong>Status:</strong> <span style="color: #ff9800; font-weight: bold;">Pending Payment Verification</span></div>
+        </div>
+        <div class="receipt-total">
+            <p style="margin:0; font-size:11px; color:#555;">Total Amount Payable</p>
+            <h3 id="r-amount">₹0</h3>
+        </div>
+        
+        <!-- GUJARATI + ENGLISH RULES FOR SLIP -->
+        <div class="receipt-rules">
+            <strong>⚠️ Important Rules & Instructions:</strong><br>
+            • <strong>Mandatory Slip:</strong> Class પર આવતી વખતે અથવા Admin / Sir ને આ રસીદ ફરજિયાત બતાવવાની રહેશે.<br>
+            • <strong>Online Payment:</strong> વેબસાઈટ ખોલીને 'Payment Portal' માં જઈ તમારો Token નંબર નાખી Payment કરવું.<br>
+            • <strong>No Refund:</strong> એકવાર Payment કર્યા પછી કોઈપણ સંજોગોમાં Refund આપવામાં આવશે નહીં.<br>
+            • <strong>Community Rule:</strong> ફક્ત Hindu community ના સભ્યોને જ પ્રવેશ આપવામાં આવશે.
+        </div>
+
+        <div style="text-align: center; font-size: 10px; color: #888; margin-top: 10px;">
+            V & S Garba & Dodhiya Classes • Official System Generated Receipt
         </div>
     </div>
 
@@ -244,12 +277,12 @@
     <div class="overlay" id="loadingOverlay">
         <div class="popup-box">
             <div class="loader"></div>
-            <h3 style="color:#ff5722;">Generating Token...</h3>
+            <h3 id="loaderText" style="color:#ff5722;">Generating Token...</h3>
             <p style="font-size:14px; margin-top:10px;">Sending details securely. Please wait.</p>
         </div>
     </div>
     
-   <!-- Success Token Overlay -->
+    <!-- ORIGINAL SUCCESS POPUP WITH GUJARATI RULES -->
     <div class="overlay" id="successOverlay" style="align-items: flex-start; padding-top: 20px; overflow-y: auto;">
         <div class="popup-box" style="max-width: 450px; margin: auto; padding: 30px 20px;">
             <i class="fas fa-check-circle success-icon" style="font-size: 50px; color: #4CAF50; margin-bottom: 10px;"></i>
@@ -263,19 +296,25 @@
                 </button>
             </div>
 
+            <!-- POPUP GUJARATI RULES -->
             <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #c62828; margin-bottom: 20px;">
                 <h4 style="color: #c62828; margin-bottom: 5px;">💰 Total Fees to Pay: <span id="popupTotalFee">₹0</span></h4>
                 <p style="color: #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 10px;">🎉 Congratulations! You got 40% Discount!</p>
                 
                 <h4 style="color: #c62828; margin-bottom: 5px;"><i class="fas fa-exclamation-triangle"></i> Important Rules:</h4>
-                <p style="font-size: 13px; color: #555; line-height: 1.5;">
-                    • <strong>No Refund Policy:</strong> Fees once paid will not be refunded under any circumstances.<br>
-                    • <strong>Community Rule:</strong> Only Hindu community members are allowed.<br>
-                    • Our team will contact you shortly for payment confirmation. Keep this token safe.
+                <p style="font-size: 12px; color: #555; line-height: 1.6;">
+                    • <strong>No Refund:</strong> એકવાર Payment કર્યા પછી કોઈપણ સંજોગોમાં Refund આપવામાં આવશે નહીં.<br>
+                    • <strong>Community Rule:</strong> ફક્ત Hindu community ના સભ્યોને જ પ્રવેશ આપવામાં આવશે.<br>
+                    • <strong>Contact:</strong> Payment કન્ફર્મેશન માટે અમારી ટીમ ટૂંક સમયમાં તમારો સંપર્ક કરશે.
                 </p>
             </div>
 
-            <!-- Follow & Join Links -->
+            <!-- MANDATORY DOWNLOAD SLIP BUTTON -->
+            <a id="downloadSlipBtn" href="#" style="display: block; background: #ff5722; color: white; text-decoration: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; font-size: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);" onclick="enableDoneButton()">
+                <i class="fas fa-download"></i> 📥 Download Registration Slip (Mandatory)
+            </a>
+
+            <!-- ALL SOCIAL MEDIA BUTTONS -->
             <div style="margin-bottom: 20px;">
                 <h4 style="margin-bottom: 10px; color: #444;">✨ Follow Us</h4>
                 <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
@@ -291,7 +330,8 @@
                 </div>
             </div>
             
-            <button class="btn btn-primary" style="width:100%;" onclick="window.location.reload()">Done</button>
+            <!-- DONE BUTTON -->
+            <button id="doneBtn" class="btn" style="width:100%; background: #999; cursor: not-allowed; padding: 15px; font-size: 16px;" disabled onclick="window.location.href='payment.html'">🔒 Download Slip First</button>
         </div>
     </div>
 
@@ -313,7 +353,6 @@
         let totalStudents = 1;
         let totalAmount = 0;
         
-        // NEW MEMBERSHIP VARIABLES
         let currentPlan = '';
         let planPrice = 0;
         let planName = '';
@@ -327,7 +366,6 @@
             document.getElementById('group-count-box').style.display = type === 'group' ? 'block' : 'none';
         }
 
-        // NEW FUNCTION TO HANDLE MEMBERSHIP PLANS
         function selectPlan(plan, price) {
             currentPlan = plan;
             planPrice = price;
@@ -354,7 +392,6 @@
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
             if(currentType === 'group' && totalStudents < 2) { alert("Group must have at least 2 members!"); return; }
             
-            // DYNAMIC PRICING LOGIC
             totalAmount = (totalStudents * planPrice);
             
             let container = document.getElementById('dynamic-students');
@@ -441,6 +478,16 @@
             });
         }
 
+        // ENABLE DONE BUTTON WHEN RECEIPT IS DOWNLOADED
+        function enableDoneButton() {
+            let btn = document.getElementById('doneBtn');
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+            btn.style.opacity = '1';
+            btn.style.background = 'linear-gradient(45deg, #ff5722, #dd2476)'; 
+            btn.innerHTML = '✅ Done & Proceed to Payment';
+        }
+
         document.getElementById('vipRegistrationForm').addEventListener('submit', async function(e) {
             e.preventDefault(); 
             
@@ -453,12 +500,13 @@
                 return; 
             }
             
+            document.getElementById('loaderText').innerText = "Generating Registration Slip...";
             document.getElementById('loadingOverlay').style.display = 'flex';
 
             const tokenNum = "VNS-" + Math.floor(10000 + Math.random() * 90000);
             let leaderMobile = "+" + document.getElementById('countryCode').value + " " + mob;
             let emailVal = document.getElementById('email').value || "Not Provided";
-            let dateStr = new Date().toLocaleString();
+            let dateStr = new Date().toLocaleString(); 
             
             let studentsData = []; 
 
@@ -472,15 +520,14 @@
                 });
             }
 
-            // ADDING MEMBERSHIP DATA TO FIREBASE
             let fullData = {
                 token: tokenNum,
                 type: currentType,
                 totalStudents: totalStudents,
                 totalAmount: totalAmount,
-                membershipPlan: planName,         // NEW
-                membershipPrice: planPrice,       // NEW
-                membershipValidity: planValidity, // NEW
+                membershipPlan: planName,         
+                membershipPrice: planPrice,       
+                membershipValidity: planValidity, 
                 mobile: leaderMobile,
                 email: emailVal,
                 batch: btc,
@@ -491,9 +538,10 @@
             };
 
             try {
+                // 1. Save to Firebase
                 await db.ref('registrations/' + tokenNum).set(fullData);
 
-                // TELEGRAM MESSAGE WITH MEMBERSHIP DETAILS
+                // 2. Telegram Message
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
                 headerText += `👑 <b>Membership:</b> ${planName}\n`;
@@ -503,25 +551,45 @@
                 headerText += `💰 <b>Total Amount:</b> ₹${totalAmount} (Pending)\n`;
                 headerText += `📱 <b>Leader WhatsApp:</b> ${leaderMobile}\n`;
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
-                headerText += `🗓 <b>Date:</b> ${dateStr}`;
+                headerText += `🗓 <b>Date & Time:</b> ${dateStr}`;
 
-                let keyboard = {
-                    inline_keyboard: [[
-                        { text: `✅ Approve ${tokenNum}`, callback_data: `APPROVE_${tokenNum}` }
-                    ]]
-                };
+                let keyboard = { inline_keyboard: [[ { text: `✅ Approve ${tokenNum}`, callback_data: `APPROVE_${tokenNum}` } ]] };
 
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        chat_id: CHAT_ID, 
-                        text: headerText, 
-                        parse_mode: "HTML",
-                        reply_markup: keyboard
-                    })
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: headerText, parse_mode: "HTML", reply_markup: keyboard })
                 });
                 await sleep(500);
 
+                // 3. GENERATE PROFESSIONAL REGISTRATION SLIP IMAGE
+                document.getElementById('r-token').innerText = tokenNum;
+                document.getElementById('r-name').innerText = studentsData[0].name;
+                document.getElementById('r-type').innerText = currentType.toUpperCase() + ` (${totalStudents} Members)`;
+                document.getElementById('r-plan').innerText = planName;
+                document.getElementById('r-batch').innerText = btc;
+                document.getElementById('r-paymethod').innerText = payMethod;
+                document.getElementById('r-date').innerText = dateStr;
+                document.getElementById('r-amount').innerText = `₹${totalAmount}`;
+
+                const receiptElement = document.getElementById('receipt-template');
+                html2canvas(receiptElement, { scale: 2 }).then(async canvas => {
+                    canvas.toBlob(async function(blob) {
+                        
+                        let url = URL.createObjectURL(blob);
+                        let slipBtn = document.getElementById('downloadSlipBtn');
+                        slipBtn.href = url;
+                        slipBtn.download = `VNS_Registration_Slip_${tokenNum}.png`;
+
+                        let formSlip = new FormData();
+                        formSlip.append("chat_id", CHAT_ID);
+                        formSlip.append("photo", blob, "slip.png");
+                        formSlip.append("caption", `🧾 Official Registration Slip\nToken: ${tokenNum} | Name: ${studentsData[0].name}`);
+                        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formSlip });
+
+                    }, "image/png");
+                });
+
+                // 4. Send Student Info & Docs to Telegram
                 for(let i = 1; i <= totalStudents; i++) {
                     let s = studentsData[i-1];
                     let studentText = `👤 <b>Student ${i} Details</b>\n\n<b>Name:</b> ${s.name}\n<b>Age:</b> ${s.age} | <b>DOB:</b> ${s.dob}\n<b>Gender:</b> ${s.gender}\n<b>Personal Mobile:</b> +91 ${s.mobile}`;
