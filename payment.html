@@ -52,7 +52,7 @@
         .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
         .btn-check { background: #333; margin-bottom: 20px; }
         
-        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; text-align: center; display: block; width: 100%;}
+        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; text-align: center; width: 100%;}
 
         .details-box { background: #f9f9f9; padding: 20px; border-radius: 15px; border-left: 5px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .details-box p { font-size: 13px; margin-bottom: 8px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
@@ -310,6 +310,7 @@
                     document.getElementById('backBtn').style.display = 'block';
                     document.getElementById('socialLinksArea').style.display = 'block';
 
+                    // 🛠️ SMART STATUS CHECKING LOGIC
                     let currentStatus = (data.status || "").toUpperCase();
                     
                     if(currentStatus.includes("SCREENSHOT") || currentStatus.includes("PAID") || currentStatus.includes("SENT")) {
@@ -336,10 +337,12 @@
                             }, "image/png");
                         });
 
-                    } else if(currentStatus.includes("APPROVE")) {
+                    } else if(currentStatus.includes("APPROV") || currentStatus.includes("OK") || currentStatus.includes("DONE") || currentStatus.includes("ACCEPTED") || currentStatus === "APPROVE") {
+                        // 🟢 FIX: Any variation of 'Approve' will now open the form!
                         document.getElementById('approvedMsg').style.display = 'block';
                         document.getElementById('paymentForm').style.display = 'block'; 
                     } else {
+                        // Pending State
                         document.getElementById('pendingMsg').style.display = 'block';
                     }
 
