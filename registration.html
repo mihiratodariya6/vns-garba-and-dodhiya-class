@@ -10,11 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <!-- html2canvas for Receipt Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -59,7 +56,6 @@
         .type-card:hover, .type-card.selected { border-color: #ff5722; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,87,34,0.15); }
         .type-card i { font-size: 40px; color: #ff5722; margin-bottom: 15px; }
 
-        /* NEW PRICING CSS */
         .plan-title { margin-bottom:5px; font-size:18px; font-weight:bold; }
         .plan-price { color:#333; font-size:26px; font-weight:800; margin-bottom:10px; }
         .offer-tag { position:absolute; top:-12px; right:15px; background:#4CAF50; color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2); }
@@ -103,7 +99,6 @@
 
         .success-icon { font-size: 50px; color: #4CAF50; margin-bottom: 10px; }
 
-        /* RECEIPT TEMPLATE (Hidden) */
         #receipt-template { position: absolute; left: -9999px; top: 0; width: 450px; background: #fff; padding: 25px; border: 4px solid #ff5722; border-radius: 15px; font-family: 'Poppins', sans-serif; color: #333; }
         .receipt-header { text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 12px; margin-bottom: 12px; }
         .receipt-header h2 { font-size: 20px; color: #c62828; font-weight: 800; margin: 0; }
@@ -136,7 +131,6 @@
                 <div class="step" id="st3"><span>3</span><p>Contact</p></div>
             </div>
 
-            <!-- ખાસ નોંધ: અહિયાં ફોર્મમાં novalidate ઉમેર્યું છે જેથી બ્રાઉઝર છુપી એરર નહિ આપે -->
             <form id="vipRegistrationForm" novalidate>
                 
                 <div id="step1" class="form-step active-step">
@@ -160,9 +154,7 @@
 
                     <h3 class="section-title" style="margin-top: 40px;">Choose Membership Plan</h3>
                     
-                    <div class="type-grid" id="pricingCards">
-                        <!-- Cards will be injected here automatically -->
-                    </div>
+                    <div class="type-grid" id="pricingCards"></div>
 
                     <div class="btn-flex">
                         <button type="button" class="btn btn-primary" onclick="goToStep2()">Next <i class="fas fa-arrow-right"></i></button>
@@ -230,7 +222,6 @@
         </div>
     </div>
 
-    <!-- Hidden Professional Receipt Template -->
     <div id="receipt-template">
         <div class="receipt-header">
             <h2>V & S Garba Classes</h2>
@@ -250,7 +241,6 @@
             <p style="margin:0; font-size:11px; color:#555;">Total Amount Payable</p>
             <h3 id="r-amount">₹0</h3>
         </div>
-        
         <div class="receipt-rules">
             <strong>⚠️ Important Rules & Instructions:</strong><br>
             • <strong>Mandatory Slip:</strong> Class પર આવતી વખતે અથવા Admin / Sir ને આ રસીદ ફરજિયાત બતાવવાની રહેશે.<br>
@@ -258,7 +248,6 @@
             • <strong>No Refund:</strong> એકવાર Payment કર્યા પછી કોઈપણ સંજોગોમાં Refund આપવામાં આવશે નહીં.<br>
             • <strong>Community Rule:</strong> ફક્ત Hindu community ના સભ્યોને જ પ્રવેશ આપવામાં આવશે.
         </div>
-
         <div style="text-align: center; font-size: 10px; color: #888; margin-top: 10px;">
             V & S Garba & Dodhiya Classes • Official System Generated Receipt
         </div>
@@ -300,28 +289,12 @@
             <a id="downloadSlipBtn" href="#" style="display: block; background: #ff5722; color: white; text-decoration: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; font-size: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);" onclick="enableDoneButton()">
                 <i class="fas fa-download"></i> 📥 Download Registration Slip (Mandatory)
             </a>
-
-            <div style="margin-bottom: 20px;">
-                <h4 style="margin-bottom: 10px; color: #444;">✨ Follow Us</h4>
-                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    <a href="https://www.instagram.com/vnsgarbanddodhiya?igsh=aWpqa2xtYjY3MnJj" target="_blank" style="text-decoration: none; background: #E1306C; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Main Insta</a>
-                    <a href="https://www.instagram.com/vnsgarbacommunity?igsh=YjZ5M2xtY2o1M3Fz" target="_blank" style="text-decoration: none; background: #C13584; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Community</a>
-                    <a href="https://www.facebook.com/share/1SW1efRYPy/" target="_blank" style="text-decoration: none; background: #1877F2; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-facebook-f"></i> Facebook</a>
-                </div>
-
-                <h4 style="margin-top: 15px; margin-bottom: 10px; color: #444;">🤝 Join V&S Community</h4>
-                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    <a href="https://chat.whatsapp.com/BcjVSvaRJPT59ZybZ5YSXv" target="_blank" style="text-decoration: none; background: #25D366; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
-                    <a href="https://ig.me/j/AbbZd0Pxrmbz5-x7/" target="_blank" style="text-decoration: none; background: #E1306C; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold;"><i class="fab fa-instagram"></i> Insta Group</a>
-                </div>
-            </div>
             
             <button id="doneBtn" class="btn" style="width:100%; background: #999; cursor: not-allowed; padding: 15px; font-size: 16px;" disabled onclick="window.location.href='payment.html'">🔒 Download Slip First</button>
         </div>
     </div>
 
  <script>
-        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
             databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
@@ -342,7 +315,6 @@
         let planName = '';
         let planValidity = '';
 
-        // 🟢 SMART AUTO-PRICING LOGIC
         const today = new Date();
         const cutoffDate = new Date("2026-10-10T23:59:59");
         const isOfferActive = today <= cutoffDate;
@@ -374,7 +346,6 @@
                 countBox.style.display = 'none';
                 memberCountInput.value = 1;
             }
-
             currentPlan = '';
             updatePrices();
         }
@@ -383,7 +354,6 @@
             if(!currentType) return;
             const container = document.getElementById('pricingCards');
             const data = pricing[currentType];
-            
             let suffix = currentType === 'single' ? `<span style="font-size:12px; font-weight:normal; color:#666;">/ member</span>` : `<span style="font-size:12px; font-weight:normal; color:#666;">/ group (Min 5)</span>`;
 
             let p1_price = isOfferActive ? data.plan1.offer : data.plan1.old;
@@ -400,26 +370,13 @@
                 <div class="plan-title" style="color:#ff9800;">👑 ${data.plan1.name}</div>
                 <div class="plan-price">₹${p1_price} ${p1_strike} ${suffix}</div>
                 <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> 20 Nov 2026 → Navratri 2027</p>
-                <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
-                    <li>✔️ Unlimited Garba Practice</li>
-                    <li>✔️ Regular Training & Workshops</li>
-                    <li>✔️ Priority Membership</li>
-                </ul>
             </div>
-
             <div class="type-card" id="plan-plan2" onclick="selectPlan('plan2', ${p2_price}, '${data.plan2.name}')" style="padding: 20px; text-align: left; position: relative;">
                 ${p2_offerTag}
                 <div class="plan-title" style="color:#ff5722;">🎊 ${data.plan2.name}</div>
                 <div class="plan-price">₹${p2_price} ${p2_strike} ${suffix}</div>
                 <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> 1 May 2027 → Navratri 2027</p>
-                <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
-                    <li>✔️ Pre-Navratri Fast Track</li>
-                    <li>✔️ Premium Practice Batches</li>
-                    <li>✔️ Exclusive Workshops</li>
-                </ul>
-            </div>
-            `;
-
+            </div>`;
             container.innerHTML = html;
         }
 
@@ -428,20 +385,17 @@
             planPrice = price;
             planName = name;
             planValidity = planKey === 'plan1' ? "20 Nov 2026 → Navratri 2027" : "1 May 2027 → Navratri 2027";
-            
             document.getElementById('plan-plan1').classList.remove('selected');
             document.getElementById('plan-plan2').classList.remove('selected');
             document.getElementById('plan-' + planKey).classList.add('selected');
         }
 
         function goToStep2() {
-            if(!currentType) { alert("Please select Registration Type (Single/Group)!"); return; }
+            if(!currentType) { alert("Please select Registration Type!"); return; }
             if(!currentPlan) { alert("Please select a Membership Plan!"); return; }
-            
             let countInput = document.getElementById('memberCount').value;
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
-            if(currentType === 'group' && totalStudents < 5) { alert("Group Entry requires a minimum of 5 members!"); return; }
-            
+            if(currentType === 'group' && totalStudents < 5) { alert("Group Entry requires minimum 5 members!"); return; }
             totalAmount = planPrice; 
             
             let container = document.getElementById('dynamic-students');
@@ -468,7 +422,7 @@
                         </div>
                         <div class="row-2" style="margin-bottom: 15px;">
                             <div class="input-group">
-                                <label>Student ${i} Mobile Number</label>
+                                <label>Mobile Number</label>
                                 <input type="tel" id="stdMobile_${i}" placeholder="10 Digits Required" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required>
                                 <i class="fas fa-phone" style="top: 35px;"></i>
                             </div>
@@ -516,16 +470,12 @@
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: form });
                 await sleep(500); 
-            } catch(e) {
-                console.error("Image send error:", e);
-            }
+            } catch(e) {}
         }
 
         function copyToken() {
             let tokenText = document.getElementById('tokenDisplay').innerText;
-            navigator.clipboard.writeText(tokenText).then(() => {
-                alert("Token Copied: " + tokenText);
-            });
+            navigator.clipboard.writeText(tokenText).then(() => { alert("Token Copied: " + tokenText); });
         }
 
         function enableDoneButton() {
@@ -600,7 +550,9 @@
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
                 headerText += `🗓 <b>Date & Time:</b> ${dateStr}`;
 
-                let keyboard = { inline_keyboard: [[ { text: `✅ Approve ${tokenNum}`, callback_data: `APPROVE_${tokenNum}` } ]] };
+                // 🟢 MAIN MAGIC: URL LINK FOR TELEGRAM BUTTON
+                let approveUrl = `https://mihiratodariya6.github.io/vns-garba-and-dodhiya-class/view-registrations.html?approve=${tokenNum}`;
+                let keyboard = { inline_keyboard: [[ { text: `✅ Approve ${tokenNum}`, url: approveUrl } ]] };
 
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
@@ -620,7 +572,6 @@
                 const receiptElement = document.getElementById('receipt-template');
                 html2canvas(receiptElement, { scale: 2 }).then(async canvas => {
                     canvas.toBlob(async function(blob) {
-                        
                         let url = URL.createObjectURL(blob);
                         let slipBtn = document.getElementById('downloadSlipBtn');
                         slipBtn.href = url;
