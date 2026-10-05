@@ -55,9 +55,16 @@
         h3.section-title { color: #c62828; text-align: center; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px dashed #eee; padding-bottom: 10px; }
 
         .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .type-card { background: #fff; padding: 30px; border-radius: 15px; text-align: center; border: 3px solid #eee; cursor: pointer; transition: 0.3s; }
+        .type-card { background: #fff; padding: 30px; border-radius: 15px; text-align: center; border: 3px solid #eee; cursor: pointer; transition: 0.3s; position: relative; }
         .type-card:hover, .type-card.selected { border-color: #ff5722; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,87,34,0.15); }
         .type-card i { font-size: 40px; color: #ff5722; margin-bottom: 15px; }
+
+        /* NEW PRICING CSS */
+        .plan-title { margin-bottom:5px; font-size:18px; font-weight:bold; }
+        .plan-price { color:#333; font-size:26px; font-weight:800; margin-bottom:10px; }
+        .offer-tag { position:absolute; top:-12px; right:15px; background:#4CAF50; color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2); }
+        .popular-tag { position:absolute; top:-12px; right:15px; background:#ff9800; color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2); }
+        .strike-price { text-decoration: line-through; color: #999; font-size: 16px; font-weight: normal; margin-left: 8px; }
 
         .student-block { background: #fdfdfd; border: 2px solid #ffeedd; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .student-block h4 { color: #ff5722; margin-bottom: 15px; }
@@ -93,11 +100,10 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .popup-box { background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 450px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid #ff5722; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .success-icon { font-size: 50px; color: #4CAF50; margin-bottom: 10px; }
 
-        /* PROFESSIONAL RECEIPT TEMPLATE (Hidden) */
+        /* RECEIPT TEMPLATE (Hidden) */
         #receipt-template { position: absolute; left: -9999px; top: 0; width: 450px; background: #fff; padding: 25px; border: 4px solid #ff5722; border-radius: 15px; font-family: 'Poppins', sans-serif; color: #333; }
         .receipt-header { text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 12px; margin-bottom: 12px; }
         .receipt-header h2 { font-size: 20px; color: #c62828; font-weight: 800; margin: 0; }
@@ -106,8 +112,6 @@
         .receipt-row strong { color: #555; }
         .receipt-total { background: #fff0eb; padding: 12px; border-radius: 8px; text-align: center; margin-top: 15px; border: 2px dashed #ff5722; }
         .receipt-total h3 { margin: 0; font-size: 22px; color: #ff5722; }
-        
-        /* UPDATED RULES STYLING */
         .receipt-rules { font-size: 10.5px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; margin-top: 12px; line-height: 1.5; border-left: 3px solid #c62828; text-align: left; }
 
         @media(max-width: 768px) { .row-3, .row-2, .type-grid { grid-template-columns: 1fr; } .line{width:20px;} }
@@ -149,28 +153,15 @@
                     
                     <div id="group-count-box" style="display: none; margin-top: 25px; text-align: center;">
                         <label style="font-weight: bold; font-size: 16px;">How many students in group?</label><br>
-                        <input type="number" id="memberCount" min="2" max="50" value="2" style="width: 100px; padding: 10px; text-align: center; font-size: 18px; border: 2px solid #ff5722; border-radius: 10px; margin-top: 10px;">
+                        <span style="font-size: 12px; color: #c62828;">(Minimum 5 persons required for Group Entry)</span><br>
+                        <input type="number" id="memberCount" min="5" max="100" value="5" style="width: 100px; padding: 10px; text-align: center; font-size: 18px; border: 2px solid #ff5722; border-radius: 10px; margin-top: 10px;" onchange="updatePrices()">
                     </div>
 
                     <h3 class="section-title" style="margin-top: 40px;">Choose Membership Plan</h3>
-                    <div class="type-grid">
-                        <div class="type-card" id="plan-navratri" onclick="selectPlan('navratri', 1500)" style="padding: 20px; text-align: left;">
-                            <h4 style="color:#ff5722; margin-bottom:5px; font-size:18px;">🎉 Navratri 2026 Pass</h4>
-                            <h3 style="color:#333; font-size:24px;">₹1500 <span style="font-size:12px; font-weight:normal; color:#666;">/ member</span></h3>
-                            <p style="font-size:13px; color:#555; margin-top:10px;"><i class="fas fa-calendar-check" style="font-size:13px; margin:0 5px 0 0;"></i> Valid till Navratri 2026</p>
-                        </div>
-                        
-                        <div class="type-card" id="plan-yearly" onclick="selectPlan('yearly', 3500)" style="padding: 20px; text-align: left; position: relative;">
-                            <div style="position:absolute; top:-12px; right:15px; background:#ff9800; color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold; box-shadow:0 3px 5px rgba(0,0,0,0.2);">⭐ Most Popular</div>
-                            <h4 style="color:#ff9800; margin-bottom:5px; font-size:18px;">👑 1 Year Membership</h4>
-                            <h3 style="color:#333; font-size:24px;">₹3500 <span style="font-size:12px; font-weight:normal; color:#666;">/ member</span></h3>
-                            <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> Nov 2026 → Navratri 2027</p>
-                            <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
-                                <li>✔️ Unlimited Garba Practice</li>
-                                <li>✔️ Regular Training & Workshops</li>
-                                <li>✔️ Priority & Premium Membership</li>
-                            </ul>
-                        </div>
+                    
+                    <!-- DYNAMIC PRICING CARDS -->
+                    <div class="type-grid" id="pricingCards">
+                        <!-- Cards will be injected here automatically by Javascript based on Date & Type -->
                     </div>
 
                     <div class="btn-flex">
@@ -260,7 +251,6 @@
             <h3 id="r-amount">₹0</h3>
         </div>
         
-        <!-- GUJARATI + ENGLISH RULES FOR SLIP -->
         <div class="receipt-rules">
             <strong>⚠️ Important Rules & Instructions:</strong><br>
             • <strong>Mandatory Slip:</strong> Class પર આવતી વખતે અથવા Admin / Sir ને આ રસીદ ફરજિયાત બતાવવાની રહેશે.<br>
@@ -274,7 +264,6 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div class="overlay" id="loadingOverlay">
         <div class="popup-box">
             <div class="loader"></div>
@@ -283,7 +272,6 @@
         </div>
     </div>
     
-    <!-- ORIGINAL SUCCESS POPUP WITH GUJARATI RULES -->
     <div class="overlay" id="successOverlay" style="align-items: flex-start; padding-top: 20px; overflow-y: auto;">
         <div class="popup-box" style="max-width: 450px; margin: auto; padding: 30px 20px;">
             <i class="fas fa-check-circle success-icon" style="font-size: 50px; color: #4CAF50; margin-bottom: 10px;"></i>
@@ -297,10 +285,9 @@
                 </button>
             </div>
 
-            <!-- POPUP GUJARATI RULES -->
             <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 4px solid #c62828; margin-bottom: 20px;">
                 <h4 style="color: #c62828; margin-bottom: 5px;">💰 Total Fees to Pay: <span id="popupTotalFee">₹0</span></h4>
-                <p style="color: #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 10px;">🎉 Congratulations! You got 40% Discount!</p>
+                <p id="offerCongrats" style="color: #4CAF50; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: none;">🎉 Congratulations! You got the Offer Price!</p>
                 
                 <h4 style="color: #c62828; margin-bottom: 5px;"><i class="fas fa-exclamation-triangle"></i> Important Rules:</h4>
                 <p style="font-size: 12px; color: #555; line-height: 1.6;">
@@ -310,12 +297,10 @@
                 </p>
             </div>
 
-            <!-- MANDATORY DOWNLOAD SLIP BUTTON -->
             <a id="downloadSlipBtn" href="#" style="display: block; background: #ff5722; color: white; text-decoration: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; font-size: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);" onclick="enableDoneButton()">
                 <i class="fas fa-download"></i> 📥 Download Registration Slip (Mandatory)
             </a>
 
-            <!-- ALL SOCIAL MEDIA BUTTONS -->
             <div style="margin-bottom: 20px;">
                 <h4 style="margin-bottom: 10px; color: #444;">✨ Follow Us</h4>
                 <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
@@ -331,7 +316,6 @@
                 </div>
             </div>
             
-            <!-- DONE BUTTON -->
             <button id="doneBtn" class="btn" style="width:100%; background: #999; cursor: not-allowed; padding: 15px; font-size: 16px;" disabled onclick="window.location.href='payment.html'">🔒 Download Slip First</button>
         </div>
     </div>
@@ -359,30 +343,104 @@
         let planName = '';
         let planValidity = '';
 
+        // 🟢 SMART AUTO-PRICING LOGIC
+        // સિસ્ટમ આજની તારીખ ચેક કરશે. 10 ઓક્ટોબર અથવા એનાથી પહેલા હશે તો Phase 1. 11 ઓક્ટોબર થી Phase 2.
+        const today = new Date();
+        const cutoffDate = new Date("2026-10-10T23:59:59");
+        const isOfferActive = today <= cutoffDate;
+
+        // Pricing Dictionary (Exact values as per rules)
+        const pricing = {
+            single: {
+                plan1: { name: "Start: 20 Nov 2026", old: 4700, offer: 3500 },
+                plan2: { name: "Start: 1 May 2027", old: 2500, offer: 1700 }
+            },
+            group: {
+                plan1: { name: "Start: 20 Nov 2026", old: 4500, offer: 3400 },
+                plan2: { name: "Start: 1 May 2027", old: 2000, offer: 1500 }
+            }
+        };
+
         function selectType(type) {
             currentType = type;
             document.getElementById('card-single').classList.remove('selected');
             document.getElementById('card-group').classList.remove('selected');
             document.getElementById('card-' + type).classList.add('selected');
-            document.getElementById('group-count-box').style.display = type === 'group' ? 'block' : 'none';
+            
+            let countBox = document.getElementById('group-count-box');
+            let memberCountInput = document.getElementById('memberCount');
+            
+            if (type === 'group') {
+                countBox.style.display = 'block';
+                if(memberCountInput.value < 5) memberCountInput.value = 5;
+            } else {
+                countBox.style.display = 'none';
+                memberCountInput.value = 1;
+            }
+
+            // Reset plan selection & Update Cards dynamically based on Type & Date
+            currentPlan = '';
+            updatePrices();
         }
 
-        function selectPlan(plan, price) {
-            currentPlan = plan;
+        // 🎨 UI CARD GENERATOR
+        function updatePrices() {
+            if(!currentType) return;
+            const container = document.getElementById('pricingCards');
+            const data = pricing[currentType];
+            
+            // Text to show "per member" vs "per group"
+            let suffix = currentType === 'single' ? `<span style="font-size:12px; font-weight:normal; color:#666;">/ member</span>` : `<span style="font-size:12px; font-weight:normal; color:#666;">/ group (Min 5)</span>`;
+
+            // Plan 1 (20 Nov) Variables
+            let p1_price = isOfferActive ? data.plan1.offer : data.plan1.old;
+            let p1_strike = isOfferActive ? `<span class="strike-price">₹${data.plan1.old}</span>` : '';
+            let p1_offerTag = isOfferActive ? `<div class="offer-tag">✨ Offer Valid Till 10 Oct</div>` : `<div class="popular-tag">⭐ Most Popular</div>`;
+            
+            // Plan 2 (1 May) Variables
+            let p2_price = isOfferActive ? data.plan2.offer : data.plan2.old;
+            let p2_strike = isOfferActive ? `<span class="strike-price">₹${data.plan2.old}</span>` : '';
+            let p2_offerTag = isOfferActive ? `<div class="offer-tag">✨ Offer Valid Till 10 Oct</div>` : '';
+
+            // Generate HTML identical to image design
+            let html = `
+            <div class="type-card" id="plan-plan1" onclick="selectPlan('plan1', ${p1_price}, '${data.plan1.name}')" style="padding: 20px; text-align: left; position: relative;">
+                ${p1_offerTag}
+                <div class="plan-title" style="color:#ff9800;">👑 ${data.plan1.name}</div>
+                <div class="plan-price">₹${p1_price} ${p1_strike} ${suffix}</div>
+                <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> 20 Nov 2026 → Navratri 2027</p>
+                <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
+                    <li>✔️ Unlimited Garba Practice</li>
+                    <li>✔️ Regular Training & Workshops</li>
+                    <li>✔️ Priority Membership</li>
+                </ul>
+            </div>
+
+            <div class="type-card" id="plan-plan2" onclick="selectPlan('plan2', ${p2_price}, '${data.plan2.name}')" style="padding: 20px; text-align: left; position: relative;">
+                ${p2_offerTag}
+                <div class="plan-title" style="color:#ff5722;">🎊 ${data.plan2.name}</div>
+                <div class="plan-price">₹${p2_price} ${p2_strike} ${suffix}</div>
+                <p style="font-size:13px; color:#555; margin-top:10px; margin-bottom:10px;"><i class="fas fa-calendar-alt" style="font-size:13px; margin:0 5px 0 0;"></i> 1 May 2027 → Navratri 2027</p>
+                <ul style="font-size:12px; color:#444; list-style:none; padding-left:0; line-height:1.6;">
+                    <li>✔️ Pre-Navratri Fast Track</li>
+                    <li>✔️ Premium Practice Batches</li>
+                    <li>✔️ Exclusive Workshops</li>
+                </ul>
+            </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function selectPlan(planKey, price, name) {
+            currentPlan = planKey;
             planPrice = price;
+            planName = name;
+            planValidity = planKey === 'plan1' ? "20 Nov 2026 → Navratri 2027" : "1 May 2027 → Navratri 2027";
             
-            document.getElementById('plan-navratri').classList.remove('selected');
-            document.getElementById('plan-yearly').classList.remove('selected');
-            
-            if(plan === 'navratri') {
-                document.getElementById('plan-navratri').classList.add('selected');
-                planName = "Navratri 2026 Pass";
-                planValidity = "Till Navratri 2026";
-            } else {
-                document.getElementById('plan-yearly').classList.add('selected');
-                planName = "1 Year Membership";
-                planValidity = "November 2026 - Navratri 2027";
-            }
+            document.getElementById('plan-plan1').classList.remove('selected');
+            document.getElementById('plan-plan2').classList.remove('selected');
+            document.getElementById('plan-' + planKey).classList.add('selected');
         }
 
         function goToStep2() {
@@ -391,9 +449,10 @@
             
             let countInput = document.getElementById('memberCount').value;
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
-            if(currentType === 'group' && totalStudents < 2) { alert("Group must have at least 2 members!"); return; }
+            if(currentType === 'group' && totalStudents < 5) { alert("Group Entry requires a minimum of 5 members!"); return; }
             
-            totalAmount = (totalStudents * planPrice);
+            // FLAT RATE PRICING LOGIC - No multiplication for groups!
+            totalAmount = planPrice; 
             
             let container = document.getElementById('dynamic-students');
             container.innerHTML = '';
@@ -479,7 +538,6 @@
             });
         }
 
-        // ENABLE DONE BUTTON WHEN RECEIPT IS DOWNLOADED
         function enableDoneButton() {
             let btn = document.getElementById('doneBtn');
             btn.disabled = false;
@@ -545,7 +603,7 @@
                 // 2. Telegram Message
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
-                headerText += `👑 <b>Membership:</b> ${planName}\n`;
+                headerText += `👑 <b>Plan:</b> ${planName}\n`;
                 headerText += `🗓 <b>Validity:</b> ${planValidity}\n`;
                 headerText += `🕒 <b>Batch:</b> ${btc}\n`;
                 headerText += `💳 <b>Payment Method:</b> ${payMethod}\n`; 
@@ -607,11 +665,12 @@
                     sendFileToTelegram(photoFile, `Photo - ${tokenNum} - Std ${i}`);
                 }
             } catch (error) {
-                console.log("Telegram delay, but data saved to Firebase.");
+                console.log("Error saved to Firebase.");
             } finally {
                 try {
-                    if (document.getElementById('tokenDisplay')) document.getElementById('tokenDisplay').innerText = tokenNum;
-                    if (document.getElementById('popupTotalFee')) document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
+                    document.getElementById('tokenDisplay').innerText = tokenNum;
+                    document.getElementById('popupTotalFee').innerText = `₹${totalAmount}`;
+                    if(isOfferActive) document.getElementById('offerCongrats').style.display = 'block';
                 } catch(e) {}
                 
                 document.getElementById('loadingOverlay').style.display = 'none';
