@@ -242,7 +242,7 @@
             <h3 id="r-amount">₹0</h3>
         </div>
         <div class="receipt-rules">
-            <strong>⚠️️ Important Rules & Instructions:</strong><br>
+            <strong>⚠️ Important Rules & Instructions:</strong><br>
             • <strong>Mandatory Slip:</strong> Class પર આવતી વખતે અથવા Admin / Sir ને આ રસીદ ફરજિયાત બતાવવાની રહેશે.<br>
             • <strong>Online Payment:</strong> વેબસાઈટ ખોલીને 'Payment Portal' માં જઈ તમારો Token નંબર નાખી Payment કરવું.<br>
             • <strong>No Refund:</strong> એકવાર Payment કર્યા પછી કોઈપણ સંજોગોમાં Refund આપવામાં આવશે નહીં.<br>
@@ -354,7 +354,9 @@
             if(!currentType) return;
             const container = document.getElementById('pricingCards');
             const data = pricing[currentType];
-            let suffix = currentType === 'single' ? `<span style="font-size:12px; font-weight:normal; color:#666;">/ member</span>` : `<span style="font-size:12px; font-weight:normal; color:#666;">/ group (Min 5)</span>`;
+            
+            // 🟢 UPDATED: Text properly shows /member (Min 5) for groups so they know it multiplies
+            let suffix = currentType === 'single' ? `<span style="font-size:12px; font-weight:normal; color:#666;">/ member</span>` : `<span style="font-size:12px; font-weight:normal; color:#666;">/ member (Min 5)</span>`;
 
             let p1_price = isOfferActive ? data.plan1.offer : data.plan1.old;
             let p1_strike = isOfferActive ? `<span class="strike-price">₹${data.plan1.old}</span>` : '';
@@ -396,7 +398,9 @@
             let countInput = document.getElementById('memberCount').value;
             totalStudents = currentType === 'single' ? 1 : parseInt(countInput);
             if(currentType === 'group' && totalStudents < 5) { alert("Group Entry requires minimum 5 members!"); return; }
-            totalAmount = planPrice; 
+            
+            // 🟢 MAIN MULTIPLICATION LOGIC ADDED HERE 🟢
+            totalAmount = planPrice * totalStudents; 
             
             let container = document.getElementById('dynamic-students');
             container.innerHTML = '';
@@ -537,7 +541,6 @@
             };
 
             try {
-                // 1. Telegram ma Message Mokalvo (PENDING batavva mate)
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
                 headerText += `👑 <b>Plan:</b> ${planName}\n`;
@@ -549,13 +552,10 @@
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
                 headerText += `🗓 <b>Date & Time:</b> ${dateStr}`;
 
-                // Aa link payment page kholse jethi Firebase update thay ane Telegram message pan badlay
-                let approveUrl = `https://mihiratodariya6.github.io/vns-garba-and-dodhiya-class/payment.html?approve=${tokenNum}`;
+                let approveUrl = `https://mihiratodariya6.github.io/vns-garba-and-dodhiya-class/approve.html?token=${tokenNum}`;
                 
-                // PENDING vado button
                 let keyboard = { inline_keyboard: [[ { text: `⏳ PENDING - Click to Approve`, url: approveUrl } ]] };
 
-                // Telegram ne message moklo ane tyaathi Message ID pacho lyo
                 let tgResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: headerText, parse_mode: "HTML", reply_markup: keyboard })
@@ -563,15 +563,12 @@
                 
                 let tgData = await tgResponse.json();
                 
-                // Jo Telegram e successfully message mokli didho, to eno Message ID Firebase ma save karo
                 if(tgData.ok) {
                     fullData.telegramMsgId = tgData.result.message_id;
                 }
 
-                // 2. Firebase ma Data Save karo (Message ID sathe)
                 await db.ref('registrations/' + tokenNum).set(fullData);
 
-                // 3. Receipt ne e badhu banavo
                 document.getElementById('r-token').innerText = tokenNum;
                 document.getElementById('r-name').innerText = studentsData[0].name;
                 document.getElementById('r-type').innerText = currentType.toUpperCase() + ` (${totalStudents} Members)`;
@@ -610,7 +607,7 @@
 
                     let aadhaarFile = document.getElementById(`aadhaar_${i}`).files[0];
                     let photoFile = document.getElementById(`photo_${i}`).files[0];
-                    sendFileToTelegram(aadhaarFile, `Aadhaar - ${tokenNum} - Std ${i}`);
+                    sendFileToTelegram(aadhaarFile, `[Aadhaar Redacted] - ${tokenNum} - Std ${i}`);
                     sendFileToTelegram(photoFile, `Photo - ${tokenNum} - Std ${i}`);
                 }
             } catch (error) {
