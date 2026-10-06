@@ -27,6 +27,8 @@
         .btn-refresh:hover { background: #1976D2; box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); }
         .btn-history { background: #4CAF50; }
         .btn-history:hover { background: #388E3C; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
+        .btn-reset { background: #f44336; }
+        .btn-reset:hover { background: #d32f2f; box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3); }
 
         .table-responsive { overflow-x: auto; width: 100%; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
@@ -51,7 +53,6 @@
         
         .amount-text { font-size: 16px; font-weight: 800; color: #c62828; }
 
-        /* ACTION BUTTONS CSS */
         .action-btns { display: flex; gap: 8px; flex-direction: column; }
         .btn-action { padding: 8px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.3s; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);}
         .btn-approve { background: linear-gradient(45deg, #4CAF50, #2E7D32); }
@@ -69,6 +70,8 @@
         <div class="btn-group">
             <button class="btn btn-refresh" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
             <button class="btn btn-history" onclick="downloadHistory()"><i class="fas fa-file-excel"></i> Download History</button>
+            <!-- CLEAR DASHBOARD BUTTON RESTORED -->
+            <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-eye-slash"></i> Clear Dashboard</button>
         </div>
     </div>
 
@@ -93,7 +96,6 @@
 </div>
 
 <script>
-    // MAKE SURE THESE MATCH YOUR registration.html EXACTLY
     const firebaseConfig = {
         apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
         databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
@@ -113,9 +115,18 @@
                 records.push(child.val());
             });
 
+            // 🟢 SMART AUTO-SORTING (નવા ફોર્મ હંમેશા સૌથી ઉપર દેખાશે)
+            records.sort((a, b) => {
+                let timeA = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
+                let timeB = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
+                return timeB - timeA;
+            });
+
             let visibleCount = 0;
 
-            records.reverse().forEach((data) => {
+            records.forEach((data) => {
+                if(data.archived === true) return; 
+
                 visibleCount++;
                 let studentsHTML = `<ul class="student-list">`;
                 if(data.students && data.students.length > 0) {
@@ -147,7 +158,6 @@
                     currentStatus = "❌ Cancelled";
                     actionHTML = `<span style="color:#f44336; font-size:12px; font-weight:bold;">Request Rejected</span>`;
                 } else {
-                    // PENDING STATE - Show Both Approve and Cancel Buttons
                     actionHTML = `
                         <div class="action-btns">
                             <button class="btn-action btn-approve" onclick="approveToken('${data.token}')"><i class="fas fa-check-circle"></i> Approve</button>
@@ -193,14 +203,13 @@
             });
 
             if(visibleCount === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No new registrations found.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-eye-slash" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> Dashboard is clear. No new registrations.</td></tr>';
             }
         } else {
             tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found in the database.</td></tr>';
         }
     }
 
-    // LISTENER FOR LIVE UPDATES
     db.ref('registrations').on('value', (snapshot) => {
         renderTable(snapshot);
     });
@@ -212,40 +221,53 @@
         });
     }
 
-    // APPROVE BUTTON LOGIC
     window.approveToken = function(tokenStr) {
         if(confirm(`✅ Are you sure you want to APPROVE Token: [${tokenStr}]?\n\nThis will allow the student to pay online.`)) {
-            db.ref('registrations/' + tokenStr).update({
-                status: "Approved"
-            }).then(() => {
+            db.ref('registrations/' + tokenStr).update({ status: "Approved" }).then(() => {
                 alert(`✅ Success! Token ${tokenStr} has been Approved.`);
-            }).catch((error) => {
-                alert("❌ Error: " + error.message);
-            });
+            }).catch((error) => { alert("❌ Error: " + error.message); });
         }
     }
 
-    // CANCEL BUTTON LOGIC
     window.cancelToken = function(tokenStr) {
         if(confirm(`❌ Are you sure you want to CANCEL Token: [${tokenStr}]?\n\nThe student's request will be rejected.`)) {
-            db.ref('registrations/' + tokenStr).update({
-                status: "Cancelled"
-            }).then(() => {
+            db.ref('registrations/' + tokenStr).update({ status: "Cancelled" }).then(() => {
                 alert(`❌ Token ${tokenStr} has been Cancelled.`);
-            }).catch((error) => {
-                alert("❌ Error: " + error.message);
-            });
+            }).catch((error) => { alert("❌ Error: " + error.message); });
+        }
+    }
+
+    function resetData() {
+        let userConfirm = confirm("⚠️ Dashboard ક્લિયર કરવું છે?\n\nઆનાથી લિસ્ટ ખાલી થઈ જશે, પણ ડેટાબેઝમાં સેવ રહેશે જેથી સ્ટુડન્ટ્સ Payment Portal માં એમની રસીદ જોઈ શકે.");
+        
+        if(userConfirm) {
+            let finalConfirm = prompt("Type 'CLEAR' to confirm:");
+            if(finalConfirm === 'CLEAR') {
+                db.ref('registrations').once('value').then((snapshot) => {
+                    let updates = {};
+                    snapshot.forEach((child) => {
+                        updates[child.key + '/archived'] = true; 
+                    });
+                    return db.ref('registrations').update(updates);
+                }).then(() => {
+                    alert("✅ Dashboard cleared successfully! Data is safe for students.");
+                    refreshData();
+                }).catch((error) => {
+                    alert("❌ Error: " + error.message);
+                });
+            } else {
+                alert("Reset cancelled.");
+            }
         }
     }
 
     function downloadHistory() {
         let csvContent = "Token No,Date,Type,Membership Plan,Total Members,Batch,Payment Method,Total Amount,Status,Leader Mobile,Email\n";
-        
         db.ref('registrations').once('value').then((snapshot) => {
             if(snapshot.exists()) {
                 snapshot.forEach((child) => {
                     let d = child.val();
-                    
+                    if(d.archived === true) return; 
                     let date = d.date ? d.date.replace(/,/g, " ") : "-";
                     let type = d.type || "-";
                     let plan = d.membershipPlan || "-";
@@ -256,10 +278,8 @@
                     let status = d.status || "Pending";
                     let mobile = d.mobile || "-";
                     let email = d.email || "-";
-                    
                     csvContent += `${d.token},${date},${type},${plan},${members},${batch},${payMethod},${amount},${status},${mobile},${email}\n`;
                 });
-                
                 let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 let link = document.createElement("a");
                 let url = URL.createObjectURL(blob);
@@ -269,7 +289,6 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
             } else {
                 alert("No data available to download.");
             }
