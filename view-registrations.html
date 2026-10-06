@@ -27,8 +27,6 @@
         .btn-refresh:hover { background: #1976D2; box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); }
         .btn-history { background: #4CAF50; }
         .btn-history:hover { background: #388E3C; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
-        .btn-reset { background: #f44336; }
-        .btn-reset:hover { background: #d32f2f; box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3); }
 
         .table-responsive { overflow-x: auto; width: 100%; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
@@ -71,7 +69,6 @@
         <div class="btn-group">
             <button class="btn btn-refresh" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
             <button class="btn btn-history" onclick="downloadHistory()"><i class="fas fa-file-excel"></i> Download History</button>
-            <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-eye-slash"></i> Clear Dashboard</button>
         </div>
     </div>
 
@@ -84,8 +81,7 @@
                     <th>Registration Type & Plan</th>
                     <th>Batch & Contact</th>
                     <th>Payment Mode</th>
-                    <th>Status</th>
-                    <!-- NEW COLUMN ADDED -->
+                    <th>Total Fees & Status</th>
                     <th style="text-align: center;">Action (Approve / Cancel)</th> 
                 </tr>
             </thead>
@@ -97,6 +93,7 @@
 </div>
 
 <script>
+    // MAKE SURE THESE MATCH YOUR registration.html EXACTLY
     const firebaseConfig = {
         apiKey: "AIzaSyD1tN_i8vdP0CElrtm-Re-W4Nr2yLSqzhU",
         databaseURL: "https://vns-garba-and-dodhiya-classes-default-rtdb.firebaseio.com",
@@ -119,8 +116,6 @@
             let visibleCount = 0;
 
             records.reverse().forEach((data) => {
-                if(data.archived === true) return; 
-
                 visibleCount++;
                 let studentsHTML = `<ul class="student-list">`;
                 if(data.students && data.students.length > 0) {
@@ -147,7 +142,7 @@
                     badgeClass = "status-approved";
                     currentStatus = "✅ Token Approved";
                     actionHTML = `<span style="color:#2196F3; font-size:12px; font-weight:bold;">Approved & Waiting for Pay</span>`;
-                } else if (currentStatus.includes("Cancel") || currentStatus.includes("Reject")) {
+                } else if (currentStatus.includes("Cancel") || currentStatus.includes("Reject") || currentStatus.includes("Cancelled")) {
                     badgeClass = "status-cancelled";
                     currentStatus = "❌ Cancelled";
                     actionHTML = `<span style="color:#f44336; font-size:12px; font-weight:bold;">Request Rejected</span>`;
@@ -190,7 +185,6 @@
                         <span class="amount-text">₹${data.totalAmount || 0}</span><br>
                         <span class="status-badge ${badgeClass}">${currentStatus}</span>
                     </td>
-                    <!-- NEW COLUMN DATA -->
                     <td style="text-align: center; vertical-align: middle;">
                         ${actionHTML}
                     </td>
@@ -199,13 +193,14 @@
             });
 
             if(visibleCount === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-eye-slash" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> Dashboard is clear. No new registrations.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No new registrations found.</td></tr>';
             }
         } else {
-            tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found in the database.</td></tr>';
         }
     }
 
+    // LISTENER FOR LIVE UPDATES
     db.ref('registrations').on('value', (snapshot) => {
         renderTable(snapshot);
     });
@@ -217,7 +212,7 @@
         });
     }
 
-    // 🟢 APPROVE BUTTON LOGIC
+    // APPROVE BUTTON LOGIC
     window.approveToken = function(tokenStr) {
         if(confirm(`✅ Are you sure you want to APPROVE Token: [${tokenStr}]?\n\nThis will allow the student to pay online.`)) {
             db.ref('registrations/' + tokenStr).update({
@@ -230,7 +225,7 @@
         }
     }
 
-    // 🔴 CANCEL BUTTON LOGIC
+    // CANCEL BUTTON LOGIC
     window.cancelToken = function(tokenStr) {
         if(confirm(`❌ Are you sure you want to CANCEL Token: [${tokenStr}]?\n\nThe student's request will be rejected.`)) {
             db.ref('registrations/' + tokenStr).update({
@@ -243,30 +238,6 @@
         }
     }
 
-    function resetData() {
-        let userConfirm = confirm("⚠️ Dashboard ક્લિયર કરવું છે?\n\nઆનાથી લિસ્ટ ખાલી થઈ જશે, પણ ડેટાબેઝમાં સેવ રહેશે જેથી સ્ટુડન્ટ્સ Payment Portal માં એમની રસીદ જોઈ શકે.");
-        
-        if(userConfirm) {
-            let finalConfirm = prompt("Type 'CLEAR' to confirm:");
-            if(finalConfirm === 'CLEAR') {
-                db.ref('registrations').once('value').then((snapshot) => {
-                    let updates = {};
-                    snapshot.forEach((child) => {
-                        updates[child.key + '/archived'] = true; 
-                    });
-                    return db.ref('registrations').update(updates);
-                }).then(() => {
-                    alert("✅ Dashboard cleared successfully! Data is safe for students.");
-                    refreshData();
-                }).catch((error) => {
-                    alert("❌ Error: " + error.message);
-                });
-            } else {
-                alert("Reset cancelled.");
-            }
-        }
-    }
-
     function downloadHistory() {
         let csvContent = "Token No,Date,Type,Membership Plan,Total Members,Batch,Payment Method,Total Amount,Status,Leader Mobile,Email\n";
         
@@ -274,7 +245,6 @@
             if(snapshot.exists()) {
                 snapshot.forEach((child) => {
                     let d = child.val();
-                    if(d.archived === true) return; 
                     
                     let date = d.date ? d.date.replace(/,/g, " ") : "-";
                     let type = d.type || "-";
