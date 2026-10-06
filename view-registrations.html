@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Dashboard | V & S Garba</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -32,8 +31,8 @@
         .btn-reset:hover { background: #d32f2f; box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3); }
 
         .table-responsive { overflow-x: auto; width: 100%; border-radius: 10px; border: 1px solid #ddd; }
-        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; font-size: 13px; vertical-align: top; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; font-size: 13px; vertical-align: middle; }
         th { background-color: #ff5722; color: white; white-space: nowrap; font-weight: 600; }
         tr:nth-child(even) { background-color: #fcfcfc; }
         tr:hover { background-color: #f1f1f1; }
@@ -46,12 +45,22 @@
         .status-pending { background: #ff9800; box-shadow: 0 2px 5px rgba(255,152,0,0.3); } 
         .status-approved { background: #2196F3; box-shadow: 0 2px 5px rgba(33,150,243,0.3); } 
         .status-paid { background: #4CAF50; box-shadow: 0 2px 5px rgba(76,175,80,0.4); } 
+        .status-cancelled { background: #f44336; box-shadow: 0 2px 5px rgba(244,67,54,0.3); } 
         
         .student-list { list-style: none; padding: 0; margin: 0; }
         .student-list li { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; }
         .student-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         
         .amount-text { font-size: 16px; font-weight: 800; color: #c62828; }
+
+        /* ACTION BUTTONS CSS */
+        .action-btns { display: flex; gap: 8px; flex-direction: column; }
+        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.3s; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);}
+        .btn-approve { background: linear-gradient(45deg, #4CAF50, #2E7D32); }
+        .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(76,175,80,0.4); }
+        .btn-reject { background: linear-gradient(45deg, #f44336, #c62828); }
+        .btn-reject:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(244,67,54,0.4); }
+        
     </style>
 </head>
 <body>
@@ -73,13 +82,15 @@
                     <th>Token & Date</th>
                     <th>Students Details</th>
                     <th>Registration Type & Plan</th>
-                    <th>Batch & Leader Contact</th>
-                    <th>Payment Method</th>
-                    <th>Total Fees & Status</th>
+                    <th>Batch & Contact</th>
+                    <th>Payment Mode</th>
+                    <th>Status</th>
+                    <!-- NEW COLUMN ADDED -->
+                    <th style="text-align: center;">Action (Approve / Cancel)</th> 
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="6" class="no-data">Loading Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>
+                <tr><td colspan="7" class="no-data">Loading Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>
             </tbody>
         </table>
     </div>
@@ -108,7 +119,6 @@
             let visibleCount = 0;
 
             records.reverse().forEach((data) => {
-                // અહીંયા લોજીક છે: જો ડેટા 'archived' (છુપાવેલો) હોય તો ડેશબોર્ડમાં નહિ બતાવે!
                 if(data.archived === true) return; 
 
                 visibleCount++;
@@ -127,12 +137,28 @@
 
                 let currentStatus = data.status || "Pending Payment";
                 let badgeClass = "status-pending";
+                let actionHTML = "";
                 
-                if (currentStatus.includes("Screenshot") || currentStatus.includes("Paid") || currentStatus.includes("Payment Screenshot Sent")) {
+                if (currentStatus.includes("Screenshot") || currentStatus.includes("Paid") || currentStatus.includes("Sent")) {
                     badgeClass = "status-paid";
-                    currentStatus = "✅ Payment Screenshot Sent";
+                    currentStatus = "✅ Screenshot Sent";
+                    actionHTML = `<span style="color:#4CAF50; font-size:12px; font-weight:bold;">Payment Submitted</span>`;
                 } else if (currentStatus.includes("Approved") || currentStatus === "Approve") {
                     badgeClass = "status-approved";
+                    currentStatus = "✅ Token Approved";
+                    actionHTML = `<span style="color:#2196F3; font-size:12px; font-weight:bold;">Approved & Waiting for Pay</span>`;
+                } else if (currentStatus.includes("Cancel") || currentStatus.includes("Reject")) {
+                    badgeClass = "status-cancelled";
+                    currentStatus = "❌ Cancelled";
+                    actionHTML = `<span style="color:#f44336; font-size:12px; font-weight:bold;">Request Rejected</span>`;
+                } else {
+                    // PENDING STATE - Show Both Approve and Cancel Buttons
+                    actionHTML = `
+                        <div class="action-btns">
+                            <button class="btn-action btn-approve" onclick="approveToken('${data.token}')"><i class="fas fa-check-circle"></i> Approve</button>
+                            <button class="btn-action btn-reject" onclick="cancelToken('${data.token}')"><i class="fas fa-times-circle"></i> Cancel</button>
+                        </div>
+                    `;
                 }
 
                 const row = `<tr>
@@ -164,15 +190,19 @@
                         <span class="amount-text">₹${data.totalAmount || 0}</span><br>
                         <span class="status-badge ${badgeClass}">${currentStatus}</span>
                     </td>
+                    <!-- NEW COLUMN DATA -->
+                    <td style="text-align: center; vertical-align: middle;">
+                        ${actionHTML}
+                    </td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
 
             if(visibleCount === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="no-data"><i class="fas fa-eye-slash" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> Dashboard is clear. No new registrations.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-eye-slash" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> Dashboard is clear. No new registrations.</td></tr>';
             }
         } else {
-            tableBody.innerHTML = '<tr><td colspan="6" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" class="no-data"><i class="fas fa-folder-open" style="font-size:30px; color:#ccc; display:block; margin-bottom:10px;"></i> No registrations found.</td></tr>';
         }
     }
 
@@ -181,24 +211,48 @@
     });
 
     function refreshData() {
-        document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="no-data">Refreshing Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="no-data">Refreshing Live Data... <i class="fas fa-spinner fa-spin"></i></td></tr>';
         db.ref('registrations').once('value').then((snapshot) => {
             renderTable(snapshot);
         });
     }
 
-    // SMART HIDE LOGIC (Clear Dashboard but keep data for Payment Portal)
+    // 🟢 APPROVE BUTTON LOGIC
+    window.approveToken = function(tokenStr) {
+        if(confirm(`✅ Are you sure you want to APPROVE Token: [${tokenStr}]?\n\nThis will allow the student to pay online.`)) {
+            db.ref('registrations/' + tokenStr).update({
+                status: "Approved"
+            }).then(() => {
+                alert(`✅ Success! Token ${tokenStr} has been Approved.`);
+            }).catch((error) => {
+                alert("❌ Error: " + error.message);
+            });
+        }
+    }
+
+    // 🔴 CANCEL BUTTON LOGIC
+    window.cancelToken = function(tokenStr) {
+        if(confirm(`❌ Are you sure you want to CANCEL Token: [${tokenStr}]?\n\nThe student's request will be rejected.`)) {
+            db.ref('registrations/' + tokenStr).update({
+                status: "Cancelled"
+            }).then(() => {
+                alert(`❌ Token ${tokenStr} has been Cancelled.`);
+            }).catch((error) => {
+                alert("❌ Error: " + error.message);
+            });
+        }
+    }
+
     function resetData() {
         let userConfirm = confirm("⚠️ Dashboard ક્લિયર કરવું છે?\n\nઆનાથી લિસ્ટ ખાલી થઈ જશે, પણ ડેટાબેઝમાં સેવ રહેશે જેથી સ્ટુડન્ટ્સ Payment Portal માં એમની રસીદ જોઈ શકે.");
         
         if(userConfirm) {
             let finalConfirm = prompt("Type 'CLEAR' to confirm:");
             if(finalConfirm === 'CLEAR') {
-                
                 db.ref('registrations').once('value').then((snapshot) => {
                     let updates = {};
                     snapshot.forEach((child) => {
-                        updates[child.key + '/archived'] = true; // આ કમાન્ડ ડેટાને હાઈડ કરે છે, ડીલીટ નહિ કરે!
+                        updates[child.key + '/archived'] = true; 
                     });
                     return db.ref('registrations').update(updates);
                 }).then(() => {
@@ -207,7 +261,6 @@
                 }).catch((error) => {
                     alert("❌ Error: " + error.message);
                 });
-                
             } else {
                 alert("Reset cancelled.");
             }
@@ -221,7 +274,7 @@
             if(snapshot.exists()) {
                 snapshot.forEach((child) => {
                     let d = child.val();
-                    if(d.archived === true) return; // જે હાઈડ છે એ ડાઉનલોડ માં નહિ આવે
+                    if(d.archived === true) return; 
                     
                     let date = d.date ? d.date.replace(/,/g, " ") : "-";
                     let type = d.type || "-";
