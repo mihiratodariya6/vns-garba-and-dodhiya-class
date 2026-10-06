@@ -52,7 +52,7 @@
         .btn:hover { box-shadow: 0 8px 20px rgba(221,36,118,0.4); transform: translateY(-2px); }
         .btn-check { background: #333; margin-bottom: 20px; }
         
-        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; text-align: center; width: 100%;}
+        .btn-download { background: #4CAF50; display: none; margin-top: 15px; text-decoration: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; text-align: center; display: block; width: 100%;}
 
         .details-box { background: #f9f9f9; padding: 20px; border-radius: 15px; border-left: 5px solid #4CAF50; text-align: left; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .details-box p { font-size: 13px; margin-bottom: 8px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
@@ -258,32 +258,45 @@
         let verifiedBatch = "";
         let verifiedDate = "";
 
-        // 🟢 THE ULTIMATE MAGIC LINK FIX
-        // જ્યારે બ્રાઉઝર લોડ થાય, ત્યારે સૌથી પહેલાં Firebase માં ડેટા અપડેટ કરશે અને પછી જ પેજ બતાવશે!
+        // 🟢 TELEGRAM MAGIC LOGIC - UPDATE FIREBASE & CHANGE TELEGRAM BUTTON
         window.onload = async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const tokenToApprove = urlParams.get('approve');
             
             if (tokenToApprove) {
-                document.getElementById('loaderText').innerText = "Approving Token from Telegram...";
+                document.getElementById('loaderText').innerText = "Approving Token & Updating Telegram...";
                 document.getElementById('loadingOverlay').style.display = 'flex';
                 
                 try {
-                    // Firebase માં Status ને 100% "Approved" કરો
-                    await db.ref('registrations/' + tokenToApprove).update({
-                        status: "Approved"
-                    });
-                    
-                    document.getElementById('loadingOverlay').style.display = 'none';
-                    alert(`✅ Superb! Token ${tokenToApprove} is Approved.\n\nThe Payment Form & QR Code will now load automatically!`);
-                    
-                    // URL માંથી '?approve=VNS-XXX' કાઢી નાખો જેથી રિફ્રેશ કરવાથી પ્રોબ્લેમ ના આવે
-                    window.history.replaceState(null, null, window.location.pathname);
-                    
-                    // બોક્સમાં ટોકન નંબર નાખી દો અને Verify બટન જાતે જ દબાવી દો
-                    document.getElementById('tokenInput').value = tokenToApprove;
-                    verifyToken();
-                    
+                    // Fetch data to get Telegram Message ID
+                    let snapshot = await db.ref('registrations/' + tokenToApprove).once('value');
+                    let data = snapshot.val();
+
+                    if(data) {
+                        // 1. Firebase ma Status "Approved" karo
+                        await db.ref('registrations/' + tokenToApprove).update({ status: "Approved" });
+
+                        // 2. Telegram nu button badli ne "✅ APPROVED" karo (If msg id is saved)
+                        if(data.telegramMsgId) {
+                            let newKeyboard = { inline_keyboard: [[ { text: `✅ APPROVED ${tokenToApprove}`, url: window.location.origin + window.location.pathname } ]] };
+                            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageReplyMarkup`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    chat_id: CHAT_ID,
+                                    message_id: data.telegramMsgId,
+                                    reply_markup: newKeyboard
+                                })
+                            });
+                        }
+                        
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        
+                        // URL mathi link kadhi nakhse, pan form khulaj rese
+                        window.history.replaceState(null, null, window.location.pathname);
+                        document.getElementById('tokenInput').value = tokenToApprove;
+                        verifyToken();
+                    }
                 } catch (e) {
                     document.getElementById('loadingOverlay').style.display = 'none';
                     alert("Error: " + e.message);

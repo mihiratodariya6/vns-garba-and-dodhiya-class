@@ -537,8 +537,7 @@
             };
 
             try {
-                await db.ref('registrations/' + tokenNum).set(fullData);
-
+                // 1. Telegram ma Message Mokalvo (PENDING batavva mate)
                 let headerText = `🎉 <b>New Registration [${tokenNum}]</b>\n\n`;
                 headerText += `📋 <b>Type:</b> ${currentType.toUpperCase()} (${totalStudents} Students)\n`;
                 headerText += `👑 <b>Plan:</b> ${planName}\n`;
@@ -550,16 +549,29 @@
                 headerText += `📧 <b>Email:</b> ${emailVal}\n`;
                 headerText += `🗓 <b>Date & Time:</b> ${dateStr}`;
 
-                // 🟢 MAGIC LINK: Aa link Telegram ma aavse, jena par click karta j background ma aapo-aap approve thase!
+                // Aa link payment page kholse jethi Firebase update thay ane Telegram message pan badlay
                 let approveUrl = `https://mihiratodariya6.github.io/vns-garba-and-dodhiya-class/payment.html?approve=${tokenNum}`;
-                let keyboard = { inline_keyboard: [[ { text: `✅ Approve ${tokenNum}`, url: approveUrl } ]] };
+                
+                // PENDING vado button
+                let keyboard = { inline_keyboard: [[ { text: `⏳ PENDING - Click to Approve`, url: approveUrl } ]] };
 
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                // Telegram ne message moklo ane tyaathi Message ID pacho lyo
+                let tgResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: headerText, parse_mode: "HTML", reply_markup: keyboard })
                 });
-                await sleep(500);
+                
+                let tgData = await tgResponse.json();
+                
+                // Jo Telegram e successfully message mokli didho, to eno Message ID Firebase ma save karo
+                if(tgData.ok) {
+                    fullData.telegramMsgId = tgData.result.message_id;
+                }
 
+                // 2. Firebase ma Data Save karo (Message ID sathe)
+                await db.ref('registrations/' + tokenNum).set(fullData);
+
+                // 3. Receipt ne e badhu banavo
                 document.getElementById('r-token').innerText = tokenNum;
                 document.getElementById('r-name').innerText = studentsData[0].name;
                 document.getElementById('r-type').innerText = currentType.toUpperCase() + ` (${totalStudents} Members)`;
@@ -616,4 +628,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
