@@ -70,7 +70,6 @@
         <div class="btn-group">
             <button class="btn btn-refresh" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
             <button class="btn btn-history" onclick="downloadHistory()"><i class="fas fa-file-excel"></i> Download History</button>
-            <!-- CLEAR DASHBOARD BUTTON RESTORED -->
             <button class="btn btn-reset" onclick="resetData()"><i class="fas fa-eye-slash"></i> Clear Dashboard</button>
         </div>
     </div>
@@ -105,6 +104,27 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
+    // 🟢 FUNCTION TO CONVERT GUJARATI/INDIAN DATE TO USABLE TIMESTAMPS
+    function parseDateString(dateStr) {
+        if (!dateStr) return 0;
+        try {
+            // "10/6/2026, 10:26:48 AM" jova format mate
+            let parts = dateStr.split(',');
+            if(parts.length === 2) {
+                let dParts = parts[0].trim().split('/');
+                if(dParts.length === 3) {
+                    let d = dParts[0]; let m = dParts[1]; let y = dParts[2];
+                    let tStr = parts[1].trim();
+                    let newStr = `${m}/${d}/${y} ${tStr}`; 
+                    return new Date(newStr).getTime();
+                }
+            }
+            return new Date(dateStr).getTime();
+        } catch(e) {
+            return 0;
+        }
+    }
+
     function renderTable(snapshot) {
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = ''; 
@@ -115,11 +135,11 @@
                 records.push(child.val());
             });
 
-            // 🟢 SMART AUTO-SORTING (નવા ફોર્મ હંમેશા સૌથી ઉપર દેખાશે)
+            // 🟢 ADVANCED AUTO-SORTING LOGIC
             records.sort((a, b) => {
-                let timeA = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
-                let timeB = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
-                return timeB - timeA;
+                let timeA = a.timestamp ? a.timestamp : parseDateString(a.date);
+                let timeB = b.timestamp ? b.timestamp : parseDateString(b.date);
+                return timeB - timeA; // સૌથી લેટેસ્ટ સૌથી ઉપર
             });
 
             let visibleCount = 0;
@@ -239,25 +259,18 @@
 
     function resetData() {
         let userConfirm = confirm("⚠️ Dashboard ક્લિયર કરવું છે?\n\nઆનાથી લિસ્ટ ખાલી થઈ જશે, પણ ડેટાબેઝમાં સેવ રહેશે જેથી સ્ટુડન્ટ્સ Payment Portal માં એમની રસીદ જોઈ શકે.");
-        
         if(userConfirm) {
             let finalConfirm = prompt("Type 'CLEAR' to confirm:");
             if(finalConfirm === 'CLEAR') {
                 db.ref('registrations').once('value').then((snapshot) => {
                     let updates = {};
-                    snapshot.forEach((child) => {
-                        updates[child.key + '/archived'] = true; 
-                    });
+                    snapshot.forEach((child) => { updates[child.key + '/archived'] = true; });
                     return db.ref('registrations').update(updates);
                 }).then(() => {
                     alert("✅ Dashboard cleared successfully! Data is safe for students.");
                     refreshData();
-                }).catch((error) => {
-                    alert("❌ Error: " + error.message);
-                });
-            } else {
-                alert("Reset cancelled.");
-            }
+                }).catch((error) => { alert("❌ Error: " + error.message); });
+            } else { alert("Reset cancelled."); }
         }
     }
 
@@ -289,9 +302,7 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-            } else {
-                alert("No data available to download.");
-            }
+            } else { alert("No data available to download."); }
         });
     }
 </script>
