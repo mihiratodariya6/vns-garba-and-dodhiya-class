@@ -57,8 +57,11 @@
         .btn-action { padding: 8px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.3s; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);}
         .btn-approve { background: linear-gradient(45deg, #4CAF50, #2E7D32); }
         .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(76,175,80,0.4); }
-        .btn-reject { background: linear-gradient(45deg, #f44336, #c62828); }
-        .btn-reject:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(244,67,54,0.4); }
+        .btn-reject { background: linear-gradient(45deg, #ff9800, #f57c00); }
+        .btn-reject:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(244,152,0,0.4); }
+        /* NEW DELETE BUTTON STYLE */
+        .btn-delete { background: linear-gradient(45deg, #f44336, #c62828); margin-top: 5px; }
+        .btn-delete:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(244,67,54,0.4); }
         
     </style>
 </head>
@@ -104,11 +107,9 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
-    // 🟢 FUNCTION TO CONVERT GUJARATI/INDIAN DATE TO USABLE TIMESTAMPS
     function parseDateString(dateStr) {
         if (!dateStr) return 0;
         try {
-            // "10/6/2026, 10:26:48 AM" jova format mate
             let parts = dateStr.split(',');
             if(parts.length === 2) {
                 let dParts = parts[0].trim().split('/');
@@ -135,11 +136,10 @@
                 records.push(child.val());
             });
 
-            // 🟢 ADVANCED AUTO-SORTING LOGIC
             records.sort((a, b) => {
                 let timeA = a.timestamp ? a.timestamp : parseDateString(a.date);
                 let timeB = b.timestamp ? b.timestamp : parseDateString(b.date);
-                return timeB - timeA; // સૌથી લેટેસ્ટ સૌથી ઉપર
+                return timeB - timeA; 
             });
 
             let visibleCount = 0;
@@ -176,7 +176,7 @@
                 } else if (currentStatus.includes("Cancel") || currentStatus.includes("Reject") || currentStatus.includes("Cancelled")) {
                     badgeClass = "status-cancelled";
                     currentStatus = "❌ Cancelled";
-                    actionHTML = `<span style="color:#f44336; font-size:12px; font-weight:bold;">Request Rejected</span>`;
+                    actionHTML = `<span style="color:#ff9800; font-size:12px; font-weight:bold;">Request Rejected</span>`;
                 } else {
                     actionHTML = `
                         <div class="action-btns">
@@ -185,6 +185,13 @@
                         </div>
                     `;
                 }
+
+                // ADDING THE PERMANENT DELETE BUTTON TO ALL ROWS
+                actionHTML += `
+                    <div style="margin-top: 10px; border-top: 1px dashed #ddd; padding-top: 8px;">
+                        <button class="btn-action btn-delete" onclick="deleteToken('${data.token}')"><i class="fas fa-trash-alt"></i> Permanent Delete</button>
+                    </div>
+                `;
 
                 const row = `<tr>
                     <td>
@@ -254,6 +261,20 @@
             db.ref('registrations/' + tokenStr).update({ status: "Cancelled" }).then(() => {
                 alert(`❌ Token ${tokenStr} has been Cancelled.`);
             }).catch((error) => { alert("❌ Error: " + error.message); });
+        }
+    }
+
+    // 🟢 NEW DELETE TOKEN LOGIC
+    window.deleteToken = function(tokenStr) {
+        if(confirm(`⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE Token: [${tokenStr}]?\n\nThis action cannot be undone! The data will be completely removed from the database.`)) {
+            let finalConfirm = prompt(`To confirm deletion, type the word "DELETE" in the box below:`);
+            if(finalConfirm === "DELETE") {
+                db.ref('registrations/' + tokenStr).remove().then(() => {
+                    alert(`🗑️ Token ${tokenStr} has been permanently deleted.`);
+                }).catch((error) => { alert("❌ Error deleting: " + error.message); });
+            } else {
+                alert("Deletion cancelled.");
+            }
         }
     }
 
